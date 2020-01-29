@@ -1,0 +1,20 @@
+
+:SETR(PARITY)
+:SETS(F63,I,J)
+
+:DEFI(PARITY)
+<76 1024:77    F
+75 1027:20    I)
+:LOOP
+I-8→J
+:DO(16)
+<76 1026:40   1,
+00    J/77    0
+76 1024:77    F)
+1:ON(J)
+:REPE
+:REPE
+:CLOS
+
+:STAR(0,PARITY)
+::
