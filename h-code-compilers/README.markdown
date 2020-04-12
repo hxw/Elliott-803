@@ -1,5 +1,11 @@
 # H-Code compilers
 
+Most of the documentation comes from memory of use of this compiler in
+the late 1970's and translation of some H-Code programs to Fortran 5.
+Especially memorable was the inter procedural goto as I do not think
+any other langeage supports such a concept.
+
+
 Two different compilers.
 
 legible tape on these shows:
@@ -34,6 +40,43 @@ swapping of program tapes.
   of run code to create tables at compile time
 * **LR**, **LS**, **LV** define locals that can be hidden by **SET** ???
 * **STAR** Set the program entry point e.g. **START(4,MAIN)**
+
+### Variables
+
+Variables are all single letter or '@' and are all arrays.
+A variable is defined with a size e.g.:
+
+~~~
+:SETS(I4,J2,K)
+~~~
+
+This declares: I,I1,I2,I3,I4 and J,J1,J2 and K
+(this is different from C)
+
+Indexing is only single level so IJ and IJ2  are ok but IJK is an error.
+
+#### Special Variables
+
+Two variables are treated as special "O" called theta and "@" called alpha.
+these are uses as parameters to subroutines the forms:
+
+For integer:
+~~~
+:(expr1,eexpr2,expr3)SUBR→(I,J)
+
+expr1→O
+expr2→O1
+expr3→O2
+:SUBR
+O→I
+O→J
+~~~
+
+For floating point (**not exactly sure if this is right**)
+~~~
+*(exp1,exp2)SUBR
+~~~
+
 
 ## Unknown gobal scope words
 
