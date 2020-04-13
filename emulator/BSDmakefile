@@ -1,0 +1,44 @@
+# BSDmakefile
+
+CFLAGS = -g -Wall -Werror -std=c17
+
+LIBS = -lcursesw -lthr -lrt -Lcpu -l803 -Lio5 -lio5 -Lparser -lparser
+
+SRCS = emulator.c commands.c
+TESTS =
+
+.PHONY: all
+all: libs
+	cc ${CFLAGS} -o emulator ${SRCS} ${LIBS}
+
+.PHONY: test
+test:
+#	cc -g -Wall -Werror -DTESTING=1 -o testing processor.c -lthr -lrt
+#	./testing
+
+
+.PHONY: libs
+libs:
+	${MAKE} -C parser depend
+	${MAKE} -C parser
+	${MAKE} -C io5 depend
+	${MAKE} -C io5
+	${MAKE} -C cpu depend
+	${MAKE} -C cpu
+
+
+.PHONY: clean
+clean:
+	make -C parser clean
+	make -C io5 clean
+	make -C cpu clean
+	rm -f *.o
+	rm -f .depend
+	rm -f emulator
+
+.PHONY: depend
+depend:
+	rm -f .depend
+	env MKDEP_CPP_OPTS=-MM mkdep ${CFLAGS} ${SRCS} ${TESTS}
+
+.sinclude ".depend"

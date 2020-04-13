@@ -1,0 +1,6 @@
+# .gitignore
+
+emulator
+.depend
+*_test
+TAGS
