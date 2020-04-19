@@ -1,0 +1,14 @@
+hello;
+begin
+    comment simple hello world program;
+    integer i, j, k;
+    i := 23;
+    j := 94;
+    k := i * j;
+    punch(3); comment all output to printer;
+    prefix(` ´);
+    print `hello world`l´´;
+    print `hello another world`l´´;
+    print prefix(` ´), i, ` * ´, j, ` = ´, k, ``l´´;
+    print prefix(` ´), sqrt(2), ``l´´;
+end;
