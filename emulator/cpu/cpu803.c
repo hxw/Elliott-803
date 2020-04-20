@@ -212,8 +212,9 @@ static void cpu(processor_t *proc, int op, int address) {
       break;
     }
     case 6:
-      printf("56 not implemented\n");
-      proc->mode = exec_mode_stop;
+      proc->accumulator = alu_divide(&proc->overflow, proc->accumulator,
+                                     proc->auxiliary_register, n);
+      proc->auxiliary_register = 0;
       break;
     case 7:
       proc->accumulator = proc->auxiliary_register;

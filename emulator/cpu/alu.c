@@ -145,3 +145,89 @@ void alu_multiply(int64_t *acc, int64_t *ar, int64_t md1, int64_t mr1) {
   *acc = ah;
   *ar = al;
 }
+
+// 128-bit / 64-bit unsigned divide
+// derived from:
+//   https://codereview.stackexchange.com/questions/67962/mostly-portable-128-by-64-bit-division
+static uint64_t internal_divide(uint64_t dividend_high, uint64_t dividend_low,
+                                uint64_t divisor) {
+
+  uint64_t quotient = dividend_low << 1;
+  uint64_t remainder = dividend_high;
+
+  uint64_t carry = dividend_low >> 63;
+  uint64_t temp_carry = 0;
+
+  for (int i = 0; i < 64; i++) {
+    temp_carry = remainder >> 63;
+    remainder <<= 1;
+    remainder |= carry;
+    carry = temp_carry;
+
+    if (carry == 0) {
+      if (remainder >= divisor) {
+        carry = 1;
+      } else {
+        temp_carry = quotient >> 63;
+        quotient <<= 1;
+        quotient |= carry;
+        carry = temp_carry;
+        continue;
+      }
+    }
+
+    remainder -= divisor;
+    remainder -= (1 - carry);
+    carry = 1;
+    temp_carry = quotient >> 63;
+    quotient <<= 1;
+    quotient |= carry;
+    carry = temp_carry;
+  }
+
+  return quotient;
+}
+
+// double length division
+int64_t alu_divide(bool *overflow, int64_t acc, int64_t ar, int64_t divisor) {
+
+  if (0 == divisor) {
+    *overflow = true;
+    return acc;
+  }
+  bool negate = false;
+  if (acc < 0) {
+    negate = !negate;
+    acc = ~acc & thirty_nine_bits;
+    ar = (~ar & thirty_eight_bits) + one_bit;
+    if (0 != (ar & sign_bit)) {
+      acc += one_bit;
+      ar &= thirty_eight_bits;
+    }
+  }
+  if (divisor < 0) {
+    negate = !negate;
+    divisor = -divisor;
+  }
+
+  uint64_t dh = (uint64_t)(acc) >> 1;
+  dh |= ar >> (word_shift + 38 - (64 - 39) + 1);
+
+  uint64_t dl = (uint64_t)(ar) << (word_shift + 39 - 38 - 1);
+
+  // printf("acc ar:   %016lx %016lx\n"
+  //        "dh  dl:   %016lx %016lx\n"
+  //        "divisor:  %016lx %016lx\n",
+  //        acc >> word_shift, ar >> word_shift, dh, dl, divisor,
+  //        divisor >> word_shift);
+
+  uint64_t q = internal_divide(dh, dl, divisor);
+  if (negate) {
+    q = -q;
+  }
+  q &= thirty_nine_bits;
+
+  // printf("quotient: %016lx\n", q);
+
+  return q;
+}
