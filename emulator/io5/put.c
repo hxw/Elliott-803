@@ -56,7 +56,7 @@ static int process_hex_data(io5_conv_t *conv, uint8_t c) {
     break;
 
   case state_skip:
-    if ('\r' == c || 'n' == c) {
+    if ('\r' == c || '\n' == c) {
       conv->from_state = state_skip_hash;
     }
     break;
