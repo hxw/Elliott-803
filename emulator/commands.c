@@ -287,6 +287,7 @@ static bool command_reader(commands_t *cmd, const wchar_t *name, wchar_t **ptr,
     }
     w = w1;
   }
+
   char filename[1024];
   size_t n = snprintf(filename, sizeof(filename), "%ls", w);
   if (n >= sizeof(filename) - 1) {
@@ -296,13 +297,59 @@ static bool command_reader(commands_t *cmd, const wchar_t *name, wchar_t **ptr,
     return true;
   }
 
-  if (io5_ok != io5_file_open(cmd->file[io], filename, mode)) {
-    if (NULL != message) {
-      *message = wcsdup(L"error: file not found");
-    }
-    return true;
-  }
+  if ('/' == filename[0] || ('.' == filename[0] && '/' == filename[1]) ||
+      ('.' == filename[0] && '.' == filename[1] && '/' == filename[2])) {
 
+    // absolute/relative path
+    if (io5_ok == io5_file_open(cmd->file[io], filename, mode)) {
+      return true;
+    }
+
+  } else { // search the path
+    char *path = NULL;
+    char *p = getenv("803_TAPE_DIR");
+    if (NULL == p) {
+      path = malloc(1);
+      if (NULL == path) {
+        if (NULL != message) {
+          *message = wcsdup(L"error: malloc failed");
+        }
+        return true;
+      }
+      *path = '\0'; // just the current directory will be searched
+    } else {
+      size_t len = strlen(p) + 2; // colon prefix and trailing '\0'
+      path = malloc(len);
+      if (NULL == path) {
+        if (NULL != message) {
+          *message = wcsdup(L"error: malloc failed");
+        }
+        return true;
+      }
+      path[0] = ':'; // current directory will be searched
+      path[1] = '\0';
+      strlcat(path, p, len); // append rest of env
+    }
+
+    p = path;
+    const char *q = NULL;
+    while (NULL != (q = strsep(&p, ":"))) {
+      const char *s = '\0' == *q ? "" : "/";
+      size_t n = snprintf(filename, sizeof(filename), "%s%s%ls", q, s, w);
+      if (n >= sizeof(filename) - 1) {
+        if (NULL != message) {
+          *message = wcsdup(L"error: filename is too long");
+        }
+        return true;
+      }
+      if (io5_ok == io5_file_open(cmd->file[io], filename, mode)) {
+        return true;
+      }
+    }
+  }
+  if (NULL != message) {
+    *message = wcsdup(L"error: file not found");
+  }
   return true;
 }
 

@@ -1,5 +1,12 @@
 # Emulator
 
+## initial environment
+
+Variable          Description
+================  ============
+**803_TAPE_DIR**  colon separated list of paths to search for tapes
+
+
 ## Windows
 
 Key  Top Window
