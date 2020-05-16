@@ -318,6 +318,7 @@ static void cpu(processor_t *proc, int op, int address) {
     switch (op & 7) {
     case 0:
       proc->accumulator = proc->word_generator;
+      ++(proc->wg_polls);
       break;
     case 1: {
       int unit = 1;
@@ -384,6 +385,8 @@ static void cpu(processor_t *proc, int op, int address) {
 
   // update with incremented or destination of jump
   if (proc->program_counter == next_pc) {
+    // since 43 and 47 clear the overflow
+    // they cannot cause a stop
     int op1 = op & 073;
     if (040 == op1 || 041 == op1 || 042 == op1) {
       proc->mode = exec_mode_stop;
@@ -394,7 +397,14 @@ static void cpu(processor_t *proc, int op, int address) {
 
 void cpu803_execute(processor_t *proc) {
 
+  static const uint64_t stop_mask = ELLIOTT(077, 0, 1, 077, 8191);
+  static const uint64_t stop_inst = ELLIOTT(073, 0, 1, 040, 0);
+
+  // special check for stop like:  73 N / 40 0
   int64_t word = core_read_program(proc, proc->program_counter >> 1);
+  if ((word & stop_mask) == stop_inst) {
+    proc->mode = exec_mode_stop;
+  }
 
   if (0 == (1 & proc->program_counter)) {
     // first instruction

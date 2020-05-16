@@ -204,6 +204,7 @@ static void system_reset(elliott803_t *proc) {
   proc->overflow = false;
   proc->io_busy = busy_none;
   proc->mode = exec_mode_stop;
+  proc->wg_polls = 0;
 }
 
 static bool action_reset(elliott803_t *proc, const char *params) {
@@ -267,6 +268,7 @@ static bool action_run(elliott803_t *proc, const char *params) {
   proc->word_generator &= ~(op_a_bits | b_mod_bit);
   proc->word_generator |= ((0 == (half & 1)) ? 040LL : 044LL) << first_op_shift;
   proc->word_generator |= (uint64_t)addr << first_address_shift;
+  proc->wg_polls = 0;
 
   // start running
   proc->mode = exec_mode_run;
@@ -413,7 +415,7 @@ static bool action_current_status(elliott803_t *proc, const char *params) {
   if (b_modified) {
     word_p += word_1;
     word_p &= op_b_bits;
-    s = to_machine_code("sb  BMOD: ", word_p);
+    s = to_machine_code("sb BMOD: ", word_p);
     n = reply(proc, s, strlen(s) + 1); // include '\0'
     assert(0 != n);
     free(s);
@@ -542,6 +544,27 @@ static bool action_word_generator(elliott803_t *proc, const char *params) {
   return true;
 }
 
+// check for stopped or word generator polling
+static bool action_check(elliott803_t *proc, const char *params) {
+
+  if (exec_mode_stop == proc->mode) {
+    const_reply(proc, "check stop");
+    return true;
+  }
+  int polls = proc->wg_polls;
+  proc->wg_polls = 0;
+
+  if (0 == polls) {
+    const_reply(proc, "check run");
+  } else {
+    char buffer[256];
+    ssize_t n = snprintf(buffer, sizeof(buffer), "check wg=%d", polls);
+    n = reply(proc, buffer, n + 1); // include '\0'
+    assert(0 != n);
+  }
+  return true;
+}
+
 static bool action_help(elliott803_t *proc, const char *params) {
 
   static const char *help[] = {
@@ -554,6 +577,7 @@ static bool action_help(elliott803_t *proc, const char *params) {
       "?? stop                     halt the CPU",                             //
       "?? reader UNIT HEX          buffer up to 32 bytes for a reader",       //
       "?? wg [CODE|±N|msb|o2l|lsb] set word generator code or signed number", //
+      "?? check                    check for stop or word generator polling", //
       "?? ",                                                                  //
   };
   for (size_t i = 0; i < SizeOfArray(help); ++i) {
@@ -578,6 +602,7 @@ static const cmd_t command_list[] = {
     {"stop", action_stop},             //
     {"reader", action_reader},         //
     {"wg", action_word_generator},     //
+    {"check", action_check},           //
     {"?", action_help},                //
     {"terminate", action_terminate},   // last item (for internal use)
 };

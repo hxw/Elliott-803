@@ -23,9 +23,11 @@ typedef enum {
 typedef struct {
   io5_file_t *file[commands_io_count];
   elliott803_t *proc;
+  bool exit_program;
+  bool wait;
+  const wchar_t *error;
 } commands_t;
 
-bool commands_run(commands_t *cmd, wchar_t *buffer, size_t buffer_size,
-                  wchar_t **message);
+void commands_run(commands_t *cmd, wchar_t *buffer, size_t buffer_size);
 
 #endif

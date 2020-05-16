@@ -42,10 +42,12 @@ typedef struct elliott803_struct {
   int64_t accumulator;
   int64_t auxiliary_register;
 
-  int client_socket;      // client side
-  int processor_socket;   // processor side
-  pthread_t thread;       // execution state
+  int client_socket;    // client side
+  int processor_socket; // processor side
+  pthread_t thread;     // execution state
+
   int64_t word_generator; // cached value received via control channel
+  int wg_polls;           // number of time wg polled since last "check"
 
   execution_mode_t mode; // stop/run
   int program_counter;   // LSB is half word indicator

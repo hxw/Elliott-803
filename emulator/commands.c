@@ -39,13 +39,15 @@ static io5_mode_t string_to_mode(const wchar_t *w) {
   return io5_mode_invalid;
 }
 
-static bool command_exit(commands_t *cmd, const wchar_t *name, wchar_t **ptr,
-                         wchar_t **message) {
-  return false;
+static void command_exit(commands_t *cmd, const wchar_t *name, wchar_t **ptr) {
+  cmd->exit_program = true;
 }
 
-static bool command_list(commands_t *cmd, const wchar_t *name, wchar_t **ptr,
-                         wchar_t **message) {
+static void command_wait(commands_t *cmd, const wchar_t *name, wchar_t **ptr) {
+  cmd->wait = true;
+}
+
+static void command_list(commands_t *cmd, const wchar_t *name, wchar_t **ptr) {
 
   long address = 0;
   long count = 0;
@@ -75,12 +77,10 @@ static bool command_list(commands_t *cmd, const wchar_t *name, wchar_t **ptr,
     int n = snprintf(packet, sizeof(packet), "mr %ld", address + i);
     elliott803_send(cmd->proc, packet, n);
   }
-
-  return true;
 }
 
-static bool command_memory_write(commands_t *cmd, const wchar_t *name,
-                                 wchar_t **ptr, wchar_t **message) {
+static void command_memory_write(commands_t *cmd, const wchar_t *name,
+                                 wchar_t **ptr) {
 
   long address = -1;
 
@@ -94,12 +94,9 @@ static bool command_memory_write(commands_t *cmd, const wchar_t *name,
   memset(packet, 0, sizeof(packet));
   int n = snprintf(packet, sizeof(packet), "mw %ld %ls", address, *ptr);
   elliott803_send(cmd->proc, packet, n);
-
-  return true;
 }
 
-static bool command_reset(commands_t *cmd, const wchar_t *name, wchar_t **ptr,
-                          wchar_t **message) {
+static void command_reset(commands_t *cmd, const wchar_t *name, wchar_t **ptr) {
 
   const wchar_t *w = parser_get_token(ptr);
   if (NULL != w && 0 == wcscasecmp(L"run", w)) {
@@ -107,18 +104,15 @@ static bool command_reset(commands_t *cmd, const wchar_t *name, wchar_t **ptr,
   } else {
     elliott803_send(cmd->proc, "reset", 6);
   }
-
-  return true;
 }
 
-static bool command_run(commands_t *cmd, const wchar_t *name, wchar_t **ptr,
-                        wchar_t **message) {
+static void command_run(commands_t *cmd, const wchar_t *name, wchar_t **ptr) {
 
   long address = 0;
   const wchar_t *w = parser_get_token(ptr);
   if (NULL == w) {
     elliott803_send(cmd->proc, "cont", 5);
-    return true;
+    return;
   }
 
   wchar_t *end = NULL;
@@ -133,10 +127,7 @@ static bool command_run(commands_t *cmd, const wchar_t *name, wchar_t **ptr,
   } else if (0 == wcscasecmp(end, L".5")) {
     half = true;
   } else if (L'\0' != *end) {
-    if (NULL != message) {
-      *message = wcsdup(L"error: invalid address");
-    }
-    return true;
+    cmd->error = wcsdup(L"error: invalid address");
   }
 
   char packet[256];
@@ -144,24 +135,18 @@ static bool command_run(commands_t *cmd, const wchar_t *name, wchar_t **ptr,
   int n = snprintf(packet, sizeof(packet), "run %ld%s", address,
                    half ? ".5" : ".0");
   elliott803_send(cmd->proc, packet, n);
-
-  return true;
 }
 
-static bool command_stop(commands_t *cmd, const wchar_t *name, wchar_t **ptr,
-                         wchar_t **message) {
+static void command_stop(commands_t *cmd, const wchar_t *name, wchar_t **ptr) {
   elliott803_send(cmd->proc, "stop", 5);
-  return true;
 }
 
-static bool command_registers(commands_t *cmd, const wchar_t *name,
-                              wchar_t **ptr, wchar_t **message) {
+static void command_registers(commands_t *cmd, const wchar_t *name,
+                              wchar_t **ptr) {
   elliott803_send(cmd->proc, "status", 7);
-  return true;
 }
 
-static bool command_hello(commands_t *cmd, const wchar_t *name, wchar_t **ptr,
-                          wchar_t **message) {
+static void command_hello(commands_t *cmd, const wchar_t *name, wchar_t **ptr) {
   long address = 0;
   long punch = 0;
 
@@ -242,14 +227,12 @@ static bool command_hello(commands_t *cmd, const wchar_t *name, wchar_t **ptr,
     elliott803_send(cmd->proc, packet, n);
     ++address;
   }
-
-  return true;
 }
 
 // reader unit [mode] file
 // if mode is absent then assume "hex5"
-static bool command_reader(commands_t *cmd, const wchar_t *name, wchar_t **ptr,
-                           wchar_t **message) {
+static void command_reader(commands_t *cmd, const wchar_t *name,
+                           wchar_t **ptr) {
   long unit = 0;
 
   const wchar_t *w = parser_get_token(ptr);
@@ -257,17 +240,13 @@ static bool command_reader(commands_t *cmd, const wchar_t *name, wchar_t **ptr,
     unit = wcstol(w, NULL, 10);
   }
   if (unit < 1 || unit > 2) {
-    if (NULL != message) {
-      *message = wcsdup(L"error: invalid unit");
-    }
-    return true;
+    cmd->error = wcsdup(L"error: invalid unit");
+    return;
   }
   w = parser_get_token(ptr);
   if (NULL == w) {
-    if (NULL != message) {
-      *message = wcsdup(L"error: missing filename");
-    }
-    return true;
+    cmd->error = wcsdup(L"error: missing filename");
+    return;
   }
 
   commands_io_t io = 1 == unit ? commands_reader_1 : commands_reader_2;
@@ -278,12 +257,10 @@ static bool command_reader(commands_t *cmd, const wchar_t *name, wchar_t **ptr,
     mode = string_to_mode(w);
     if (0 == wcscasecmp(w1, L"close")) {
       io5_file_close(cmd->file[io]);
-      return true;
+      return;
     } else if (io5_mode_invalid == mode) {
-      if (NULL != message) {
-        *message = wcsdup(L"error: mode is invalid");
-      }
-      return true;
+      cmd->error = wcsdup(L"error: mode is invalid");
+      return;
     }
     w = w1;
   }
@@ -291,10 +268,8 @@ static bool command_reader(commands_t *cmd, const wchar_t *name, wchar_t **ptr,
   char filename[1024];
   size_t n = snprintf(filename, sizeof(filename), "%ls", w);
   if (n >= sizeof(filename) - 1) {
-    if (NULL != message) {
-      *message = wcsdup(L"error: filename is too long");
-    }
-    return true;
+    cmd->error = wcsdup(L"error: filename is too long");
+    return;
   }
 
   if ('/' == filename[0] || ('.' == filename[0] && '/' == filename[1]) ||
@@ -302,7 +277,7 @@ static bool command_reader(commands_t *cmd, const wchar_t *name, wchar_t **ptr,
 
     // absolute/relative path
     if (io5_ok == io5_file_open(cmd->file[io], filename, mode)) {
-      return true;
+      return;
     }
 
   } else { // search the path
@@ -311,20 +286,16 @@ static bool command_reader(commands_t *cmd, const wchar_t *name, wchar_t **ptr,
     if (NULL == p) {
       path = malloc(1);
       if (NULL == path) {
-        if (NULL != message) {
-          *message = wcsdup(L"error: malloc failed");
-        }
-        return true;
+        cmd->error = wcsdup(L"error: malloc failed");
+        return;
       }
       *path = '\0'; // just the current directory will be searched
     } else {
       size_t len = strlen(p) + 2; // colon prefix and trailing '\0'
       path = malloc(len);
       if (NULL == path) {
-        if (NULL != message) {
-          *message = wcsdup(L"error: malloc failed");
-        }
-        return true;
+        cmd->error = wcsdup(L"error: malloc failed");
+        return;
       }
       path[0] = ':'; // current directory will be searched
       path[1] = '\0';
@@ -337,26 +308,20 @@ static bool command_reader(commands_t *cmd, const wchar_t *name, wchar_t **ptr,
       const char *s = '\0' == *q ? "" : "/";
       size_t n = snprintf(filename, sizeof(filename), "%s%s%ls", q, s, w);
       if (n >= sizeof(filename) - 1) {
-        if (NULL != message) {
-          *message = wcsdup(L"error: filename is too long");
-        }
-        return true;
+        cmd->error = wcsdup(L"error: filename is too long");
+        return;
       }
       if (io5_ok == io5_file_open(cmd->file[io], filename, mode)) {
-        return true;
+        return;
       }
     }
   }
-  if (NULL != message) {
-    *message = wcsdup(L"error: file not found");
-  }
-  return true;
+  cmd->error = wcsdup(L"error: file not found");
 }
 
 // punch unit [mode] file
 // if mode is absent then assume "hex5"
-static bool command_punch(commands_t *cmd, const wchar_t *name, wchar_t **ptr,
-                          wchar_t **message) {
+static void command_punch(commands_t *cmd, const wchar_t *name, wchar_t **ptr) {
   long unit = 0;
 
   const wchar_t *w = parser_get_token(ptr);
@@ -364,17 +329,13 @@ static bool command_punch(commands_t *cmd, const wchar_t *name, wchar_t **ptr,
     unit = wcstol(w, NULL, 10);
   }
   if (unit < 1 || unit > 2) {
-    if (NULL != message) {
-      *message = wcsdup(L"error: invalid unit");
-    }
-    return true;
+    cmd->error = wcsdup(L"error: invalid unit");
+    return;
   }
   w = parser_get_token(ptr);
   if (NULL == w) {
-    if (NULL != message) {
-      *message = wcsdup(L"error: missing filename");
-    }
-    return true;
+    cmd->error = wcsdup(L"error: missing filename");
+    return;
   }
 
   commands_io_t io = 1 == unit ? commands_punch_1 : commands_punch_2;
@@ -385,40 +346,32 @@ static bool command_punch(commands_t *cmd, const wchar_t *name, wchar_t **ptr,
     mode = string_to_mode(w);
     if (0 == wcscasecmp(w1, L"close")) {
       io5_file_close(cmd->file[io]);
-      return true;
+      return;
     } else if (io5_mode_invalid == mode) {
-      if (NULL != message) {
-        *message = wcsdup(L"error: mode is invalid");
-      }
-      return true;
+      cmd->error = wcsdup(L"error: mode is invalid");
+      return;
     }
     w = w1;
   }
   char filename[1024];
   size_t n = snprintf(filename, sizeof(filename), "%ls", w);
   if (n >= sizeof(filename) - 1) {
-    if (NULL != message) {
-      *message = wcsdup(L"error: filename is too long");
-    }
-    return true;
+    cmd->error = wcsdup(L"error: filename is too long");
+    return;
   }
 
   if (io5_ok != io5_file_create(cmd->file[io], filename, mode)) {
-    if (NULL != message) {
-      *message = wcsdup(L"error: file already exists");
-    }
-    return true;
+    cmd->error = wcsdup(L"error: file already exists");
+    return;
   }
-
-  return true;
 }
 
-static bool command_word_generator(commands_t *cmd, const wchar_t *name,
-                                   wchar_t **ptr, wchar_t **message) {
+static void command_word_generator(commands_t *cmd, const wchar_t *name,
+                                   wchar_t **ptr) {
 
   if (L'\0' == **ptr) {
     elliott803_send(cmd->proc, "wg", 3);
-    return true;
+    return;
   }
 
   while (iswspace(**ptr)) {
@@ -427,17 +380,17 @@ static bool command_word_generator(commands_t *cmd, const wchar_t *name,
 
   if (0 == wcscasecmp(L"msb", *ptr)) {
     elliott803_send(cmd->proc, "wg msb", 7);
-    return true;
+    return;
   }
 
   if (0 == wcscasecmp(L"o2l", *ptr)) {
     elliott803_send(cmd->proc, "wg o2l", 7);
-    return true;
+    return;
   }
 
   if (0 == wcscasecmp(L"lsb", *ptr)) {
     elliott803_send(cmd->proc, "wg lsb", 7);
-    return true;
+    return;
   }
 
   char packet[256];
@@ -445,18 +398,16 @@ static bool command_word_generator(commands_t *cmd, const wchar_t *name,
   memset(packet, 0, sizeof(packet));
   int n = snprintf(packet, sizeof(packet), "wg %ls", *ptr);
   elliott803_send(cmd->proc, packet, n);
-
-  return true;
 }
 
 // help
 
-static bool command_help(commands_t *cmd, const wchar_t *name, wchar_t **ptr,
-                         wchar_t **message) {
+static void command_help(commands_t *cmd, const wchar_t *name, wchar_t **ptr) {
   const wchar_t *m =
       // clang-format: off
       L"help                  (?)   this message\n"
       L"exit                  (x)   exit emulation\n"
+      L"wait                        wait for stop or wg polling\n"
       L"list [ADDR [COUNT]]   (l)   display memory words\n"
       L"mw ADDR CODE|±DEC           write memory word\n"
       L"reset                       reset all regs and stop execution\n"
@@ -472,23 +423,20 @@ static bool command_help(commands_t *cmd, const wchar_t *name, wchar_t **ptr,
       // clang-format: on
       ;
 
-  if (NULL != message) {
-    *message = wcsdup(m);
-  }
-  return true;
+  cmd->error = wcsdup(m);
 }
 
 // lookup command
 
 typedef struct {
   const wchar_t *name;
-  bool (*func)(commands_t *cmd, const wchar_t *name, wchar_t **w,
-               wchar_t **message);
+  void (*func)(commands_t *cmd, const wchar_t *name, wchar_t **w);
 } command_t;
 
 const command_t commands[] = {
     {L"exit", command_exit},       {L"x", command_exit},
     {L"quit", command_exit},       {L"q", command_exit},
+    {L"wait", command_wait},
 
     {L"list", command_list},       {L"l", command_list},
     {L"mw", command_memory_write}, {L"reset", command_reset},
@@ -500,27 +448,26 @@ const command_t commands[] = {
     {L"help", command_help},       {L"?", command_help},
 };
 
-bool commands_run(commands_t *cmd, wchar_t *buffer, size_t buffer_size,
-                  wchar_t **message) {
+void commands_run(commands_t *cmd, wchar_t *buffer, size_t buffer_size) {
 
-  if (NULL != message) {
-    *message = NULL;
+  // free any previous message
+  if (NULL != cmd->error) {
+    free((void *)(cmd->error));
+    cmd->error = NULL;
   }
 
   wchar_t *str = buffer;
   const wchar_t *w = parser_get_token(&str);
   if (NULL == w) {
-    return true;
+    return;
   }
 
   for (size_t i = 0; i < SizeOfArray(commands); ++i) {
     if (0 == wcscasecmp(commands[i].name, w)) {
       buffer[0] = L'\0'; // assume no error
-      return commands[i].func(cmd, w, &str, message);
+      return commands[i].func(cmd, w, &str);
     }
   }
-  if (NULL != message) {
-    *message = wcsdup(L"error: invalid command");
-  }
-  return true;
+  cmd->error = wcsdup(L"error: invalid command");
+  return;
 }

@@ -34,6 +34,7 @@ int emulator(const char *name, const char *version, FILE *f, bool interactive) {
 
   commands_t cmd;
   memset(&cmd, 0, sizeof(cmd));
+  cmd.exit_program = false;
 
   cmd.proc = elliott803_create("Elliott 803B");
   if (NULL == cmd.proc) {
@@ -121,8 +122,7 @@ int emulator(const char *name, const char *version, FILE *f, bool interactive) {
   scrollok(status, true);
   keypad(status, true);
 
-  bool run = true;
-  while (run) {
+  while (!cmd.exit_program) {
     wprintw(status, "command: ");
     wrefresh(status);
 
@@ -132,7 +132,7 @@ int emulator(const char *name, const char *version, FILE *f, bool interactive) {
     memset(width, 0, sizeof(width));
     size_t index = 0;
 
-    while (run) {
+    while (!cmd.exit_program) {
 
       fd_set fds;
       FD_ZERO(&fds);
@@ -163,9 +163,12 @@ int emulator(const char *name, const char *version, FILE *f, bool interactive) {
 
           pad_select_t pad_modified = pad_console;
 
-          if (0 == strncmp("p1 ", in_buffer, 3) ||
-              0 == strncmp("p2 ", in_buffer, 3) ||
-              0 == strncmp("p3 ", in_buffer, 3)) {
+          if (0 == strncmp("check ", in_buffer, 6)) {
+            cmd.wait = 'r' == in_buffer[6];
+
+          } else if (0 == strncmp("p1 ", in_buffer, 3) ||
+                     0 == strncmp("p2 ", in_buffer, 3) ||
+                     0 == strncmp("p3 ", in_buffer, 3)) {
 
             pad_modified = pad_punch1;
             io5_conv_t *conv = conv_punch[0];
@@ -252,6 +255,10 @@ int emulator(const char *name, const char *version, FILE *f, bool interactive) {
         }
       }
 
+      if (cmd.wait) {
+        elliott803_send(cmd.proc, "check", 5);
+      }
+
       if (!FD_ISSET(STDIN_FILENO, &fds)) {
         continue;
       }
@@ -259,16 +266,20 @@ int emulator(const char *name, const char *version, FILE *f, bool interactive) {
       wint_t c = 0;
       rc = wget_wch(status, &c);
       if (OK == rc) {
+        if (cmd.wait) {
+          beep();
+          continue;
+        }
         if ('\n' == c || '\r' == c) {
           wprintw(status, "\n");
 
-          wchar_t *message = NULL;
           wprintw(pad[pad_console], "> %ls\n", buffer);
-          run = commands_run(&cmd, buffer, sizeof(buffer), &message);
-          if (NULL != message) {
-            // wprintw(status, "%ls\n", message);
-            wprintw(pad[pad_console], "%ls\n", message);
-            free(message);
+          commands_run(&cmd, buffer, sizeof(buffer));
+          if (NULL != cmd.error) {
+            // wprintw(status, "%ls\n", cmd.error);
+            wprintw(pad[pad_console], "%ls\n", cmd.error);
+            free((void *)cmd.error);
+            cmd.error = NULL;
           }
           if (pad_console == pad_select) {
             prefresh(pad[pad_select], 0, 0, 1, 1, text_lines + 1,
@@ -351,8 +362,11 @@ int emulator(const char *name, const char *version, FILE *f, bool interactive) {
         break;
 
       case KEY_F(7):
+        cmd.wait = false;
+        break;
+
       case KEY_F(8):
-        run = false;
+        cmd.exit_program = true;
         break;
 
       case KEY_F(9): {
