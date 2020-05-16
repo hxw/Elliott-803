@@ -7,6 +7,7 @@
 #include <errno.h>
 #include <locale.h>
 #include <pthread.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h> // memset
 #include <sys/select.h>
@@ -17,6 +18,7 @@
 
 #include "commands.h"
 #include "cpu/elliott803.h"
+#include "emulator.h"
 #include "io5/io5.h"
 
 #if !defined(SizeOfArray)
@@ -25,7 +27,7 @@
 
 // main program
 // displays a curses UI
-int main(int argc, char *argv[]) {
+int emulator(const char *name, const char *version, FILE *f, bool interactive) {
 
   // ensure locale is properly set up
   const char *l = setlocale(LC_ALL, "");
@@ -89,7 +91,6 @@ int main(int argc, char *argv[]) {
   // line above status window
   mvwhline(background, status_y - 1, 1, 0, COLS - 2);
 
-  // waddwstr(background L"…→£");
   scrollok(background, false);
   wrefresh(background);
 
@@ -110,7 +111,7 @@ int main(int argc, char *argv[]) {
   WINDOW *text = newwin(text_lines, text_cols, text_y, text_x);
   keypad(text, true);
   scrollok(text, true);
-  mvwprintw(text, 0, 0, "initialising…  `→ £´");
+  mvwprintw(text, 0, 0, "%s version: %s initialising…", name, version);
   mvwprintw(text, 1, 0, "locale: %s\n\n", l);
   wrefresh(text);
 
