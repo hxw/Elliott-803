@@ -2,9 +2,9 @@
 
 ## initial environment
 
-Variable          Description
-================  ============
-**803_TAPE_DIR**  colon separated list of paths to search for tapes
+Variable           Description
+================   ============
+**E803_TAPE_DIR**  colon separated list of paths to search for tapes
 
 
 ## Windows

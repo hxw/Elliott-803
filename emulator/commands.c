@@ -282,7 +282,7 @@ static void command_reader(commands_t *cmd, const wchar_t *name,
 
   } else { // search the path
     char *path = NULL;
-    char *p = getenv("803_TAPE_DIR");
+    char *p = getenv("E803_TAPE_DIR");
     if (NULL == p) {
       path = malloc(1);
       if (NULL == path) {
