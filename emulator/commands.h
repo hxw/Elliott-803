@@ -25,6 +25,8 @@ typedef struct {
   elliott803_t *proc;
   bool exit_program;
   bool wait;
+  int wait_delay;
+  int screen;
   const wchar_t *error;
 } commands_t;
 

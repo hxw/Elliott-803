@@ -6,6 +6,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-int emulator(const char *name, const char *version, FILE *f, bool interactive);
+int emulator(const char *name, const char *version, FILE *script,
+             bool interactive, int argc, char *argv[]);
 
 #endif

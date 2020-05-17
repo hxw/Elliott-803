@@ -44,7 +44,28 @@ static void command_exit(commands_t *cmd, const wchar_t *name, wchar_t **ptr) {
 }
 
 static void command_wait(commands_t *cmd, const wchar_t *name, wchar_t **ptr) {
+
   cmd->wait = true;
+  cmd->wait_delay = 0;
+
+  const wchar_t *w = parser_get_token(ptr);
+  if (NULL != w) {
+    long seconds = wcstol(w, NULL, 10);
+    if (seconds > 0 && seconds < 3600) {
+      cmd->wait_delay = (int)(seconds);
+    }
+  }
+}
+
+static void command_screen(commands_t *cmd, const wchar_t *name,
+                           wchar_t **ptr) {
+  const wchar_t *w = parser_get_token(ptr);
+  if (NULL != w) {
+    long s = wcstol(w, NULL, 10);
+    if (s > 0 && s < 4) {
+      cmd->screen = (int)(s);
+    }
+  }
 }
 
 static void command_list(commands_t *cmd, const wchar_t *name, wchar_t **ptr) {
@@ -419,6 +440,7 @@ static void command_help(commands_t *cmd, const wchar_t *name, wchar_t **ptr) {
       L"reader 1|2 [MODE] FILE      attach an existing file to a reader "
       L"(hex5)\n"
       L"punch 1|2 [MODE] FILE       create file and attach to a punch (hex5)\n"
+      L"screen 1|2|3|4              select current screen as Fn\n"
       L"wg [msb|o2l|lsb|CODE|±N]    set or display word generator\n"
       // clang-format: on
       ;
@@ -436,7 +458,7 @@ typedef struct {
 const command_t commands[] = {
     {L"exit", command_exit},       {L"x", command_exit},
     {L"quit", command_exit},       {L"q", command_exit},
-    {L"wait", command_wait},
+    {L"wait", command_wait},       {L"screen", command_screen},
 
     {L"list", command_list},       {L"l", command_list},
     {L"mw", command_memory_write}, {L"reset", command_reset},

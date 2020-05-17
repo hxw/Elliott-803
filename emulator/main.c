@@ -22,7 +22,7 @@ static void usage(const char *program, const char *format, ...) {
     fprintf(stderr, "\n");
   }
 
-  fprintf(stderr, "usage: %s [options]\n", program);
+  fprintf(stderr, "usage: %s [options] [arguments]\n", program);
   fprintf(stderr, "       -h           this message\n");
   fprintf(stderr, "       -e FILE      execute a file of commands\n");
   fprintf(stderr, "       -i           interactive mode (after commands)\n");
@@ -78,7 +78,8 @@ int main(int argc, char *argv[]) {
   }
   exit(99);
 #endif
-  int rc = emulator(program, version, f, interactive);
+
+  int rc = emulator(program, version, f, interactive, argc, argv);
   if (NULL != f) {
     fclose(f);
     f = NULL;
