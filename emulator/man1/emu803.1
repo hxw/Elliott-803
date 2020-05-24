@@ -1,0 +1,217 @@
+.\" Copyright (c) 2020 Christopher Hall
+.\"
+.\" Redistribution and use in source and binary forms, with or without
+.\" modification, are permitted provided that the following conditions
+.\" are met:
+.\" 1. Redistributions of source code must retain the above copyright
+.\"    notice, this list of conditions and the following disclaimer.
+.\" 2. Redistributions in binary form must reproduce the above copyright
+.\"    notice, this list of conditions and the following disclaimer in the
+.\"    documentation and/or other materials provided with the distribution.
+.\"
+.\" THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+.\" ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+.\" ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+.\" FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+.\" DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+.\" OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+.\" HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+.\" LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+.\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+.\" SUCH DAMAGE.
+.Dd 2020-04-25
+.Dt emu803
+.Os
+.Sh NAME
+.Nm emu803
+.Nd Elliott 803 emulator
+.Sh SYNOPSIS
+.Nm
+.Op Fl V
+.Ar command_file
+.Op Ar
+.Nm
+.Op Fl i
+.Op Fl e Ar command_file
+.Sh DESCRIPTION
+The
+.Nm
+is an emulator for the Elliott 803 Computer. It emulates all arithmetic
+and logic operations and some of the peripherals.
+.Pp
+A single script may be specified using the
+.Fl e
+option.
+.Pp
+The following options are available:
+.Bl -tag -width indent
+.It Fl V
+Display the program version on stdout and exit.
+.It Fl i
+Enter interactive mode after all commands have been processed, this is
+the default if no other arguments are specified.
+.It Fl e Ar command_file
+Append the commands commands found in the file
+.Ar command_file
+to the list of commands to be executed at startup.
+The commands must each be listed on a separate line.
+.Pp
+.Sh "Output Window"
+The output window is selected by using one of the function keys listed
+below:
+.Pp
+.Bl -tag -width ".It Bq F3 Teleprinter" -compact
+.It Bo F1 Bc Punch 1
+Display the output of Punch 1 using Elliott to UTF-8 conversion.
+.Pp
+.It [F2] Punch 1
+Display the output of Punch 2 using Elliott to UTF-8 conversion.
+.Pp
+.It [F3] Teleprinter
+Display the output of the teleprinter Elliott to UTF-8 conversion.
+.Pp
+.It [F4] Console
+Display the results of console commands.
+.Pp
+.Sh "Console Commands"
+The following commands can be typed in the console window.  Output is
+only visible if the Console Window
+.Bq F4
+is selected.
+.Pp
+.Bl -tag -width ".It list Bq ADDR Bq COUNT" -compact
+.It help
+.It Pq ?
+Display the list of console commands.
+.Pp
+.It exit
+.It Pq x
+Exit emulation.
+.Pp
+.It list Bq ADDR Bq COUNT
+.It Pq l
+Display
+.Dq COUNT
+memory words starting at
+.Dq ADDR
+.Pp
+.It mw ADDR CODE|±DEC
+Write memory word to
+.Dq ADDR
+.Pp
+.It reset
+Reset all registers and stop execution.
+.Pp
+.It reset run
+Reset all registers and restart from location zero.
+.Pp
+.It run Bq ADDR
+start running from
+.Dq ADDR
+or continue after a stop.
+.Pp
+.It stop
+Stop execution.
+.Pp
+.It regs
+.It Pq r
+Display registers and and current execution status.
+.Pp
+.It hello Bq ADDR Bq 1|2|3
+Load a simple hello world machine code program
+.Bq 4096 1
+.Pp
+.It reader 1|2 Bo MODE Bc FILE
+Attach an existing file to a reader. Default mode is
+.Em hex5 .
+.Pp
+.It punch 1|2 Bo MODE Bc FILE
+Create a new file and attach to a punch. Default mode is
+.Em hex5 .
+.Pp
+.It wg Bq msb|o2l|lsb|CODE|±N
+Set or display word generator.
+.Pp
+.It wait N
+Wait up to N seconds or for either a stop condition or for word generator
+polling.
+.Pp
+.It screen 1|2|3|4
+Switch screen (as F1…F4) for use in scripts
+.Pp
+.Sh ENVIRONMENT
+The following environment variables affect the execution of
+.Nm :
+.Bl -tag -width ".Ev E803_TAPE_DIR"
+.It Ev E803_TAPE_DIR
+A colon separated string of directories that are searches for tape files for the
+.Dq reader
+command.
+.It Ev LANG
+The locale to use when for curses output must be set to UTF-8
+to support the wide characters used in this program.
+See
+.Xr environ 7
+for more information.
+.It Ev TERM
+The terminal specified need to be one that is supported by the wide
+character version of the ncurses library.
+.Sh EXIT STATUS
+.Ex -std
+.Sh EXAMPLES
+Load the internal machine code hello program:
+.Bd -literal -offset indent
+reset
+hello
+screen 1
+run 4096
+.Ed
+.Pp
+Load the demo Algol60 hello program:
+.Bd -literal -offset indent
+reset
+reader 1 a104-tape-1.hex5
+reset run
+wait 5
+reader 1 a104-tape-2.hex5
+wg +0
+wait 5
+reader 1 elliott hello.a60
+wg -1
+wait 5
+screen 3
+wg +0
+.Ed
+.Pp
+Load the demo H-Code hello program:
+.Bd -literal -offset indent
+reset
+reader 1 h-code-compiler.hex5
+reset run
+wait 5
+reader 1 elliott hello.hc
+run 512
+wait 5
+screen 1
+run 513
+.Ed
+.Pp
+.Sh SEE ALSO
+.Xr ncurses 3 ,
+.Xr environ 7
+." .Sh HISTORY
+." .Pp
+.Sh AUTHORS
+.An Christopher Hall hsw@ms2.hinet.net
+.Sh BUGS
+Function 56
+.Dq Divide A/AR by N
+is not fully tested and its overflow conditions is not likely to be
+correct.  Currently it will only overflow on division by zero.
+.Pp
+The plotter is not implemented.
+.Pp
+The Film Handlers are not implemented.
+.Pp
+The teleprinter input is not implemented.
