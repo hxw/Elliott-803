@@ -9,6 +9,7 @@
 #include <unistd.h>
 
 #include "emulator.h"
+#include "pathsearch.h"
 
 // display usage message and exit
 static void usage(const char *program, const char *format, ...) {
@@ -46,9 +47,27 @@ int main(int argc, char *argv[]) {
       if (NULL != f) {
         usage(program, "only one -e option is permitted");
       }
-      f = fopen(optarg, "r");
-      if (NULL == f) {
-        usage(program, "file: %s  error: %s\n", optarg, strerror(errno));
+      char filename[1024];
+      switch (path_search(filename, sizeof(filename), optarg, L"")) {
+      case PS_ok:
+        f = fopen(filename, "r");
+        if (NULL == f) {
+          usage(program, "file: %s  error: %s\n", optarg, strerror(errno));
+        }
+        break;
+      case PS_malloc_failed:
+        usage(program, "file: %s  error: %s\n", optarg, "malloc failed");
+        break;
+      case PS_filename_too_long:
+        usage(program, "file: %s  error: %s\n", optarg, "filename too long");
+        break;
+      case PS_file_not_found:
+        usage(program, "file: %s  error: %s\n", optarg, "file not found");
+        break;
+      default:
+        usage(program, "file: %s  error: %s\n", optarg,
+              "unexpected path_search error");
+        break;
       }
       break;
 

@@ -16,7 +16,7 @@ CFLAGS += -D PROGRAM_STRING='"${PROG}"'
 LIBS = -lcursesw -lthr -lrt -Lcpu -l803 -Lio5 -lio5 -Lparser -lparser
 
 
-SRCS = main.c emulator.c commands.c
+SRCS = main.c emulator.c commands.c pathsearch.c
 TESTS =
 
 .PHONY: all

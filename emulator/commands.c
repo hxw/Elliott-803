@@ -10,6 +10,7 @@
 #include "commands.h"
 #include "cpu/elliott803.h"
 #include "parser/parser.h"
+#include "pathsearch.h"
 
 #if !defined(SizeOfArray)
 #define SizeOfArray(a) (sizeof(a) / sizeof((a)[0]))
@@ -302,42 +303,27 @@ static void command_reader(commands_t *cmd, const wchar_t *name,
     }
 
   } else { // search the path
-    char *path = NULL;
-    char *p = getenv("E803_TAPE_DIR");
-    if (NULL == p) {
-      path = malloc(1);
-      if (NULL == path) {
-        cmd->error = wcsdup(L"error: malloc failed");
-        return;
-      }
-      *path = '\0'; // just the current directory will be searched
-    } else {
-      size_t len = strlen(p) + 2; // colon prefix and trailing '\0'
-      path = malloc(len);
-      if (NULL == path) {
-        cmd->error = wcsdup(L"error: malloc failed");
-        return;
-      }
-      path[0] = ':'; // current directory will be searched
-      path[1] = '\0';
-      strlcat(path, p, len); // append rest of env
-    }
 
-    p = path;
-    const char *q = NULL;
-    while (NULL != (q = strsep(&p, ":"))) {
-      const char *s = '\0' == *q ? "" : "/";
-      size_t n = snprintf(filename, sizeof(filename), "%s%s%ls", q, s, w);
-      if (n >= sizeof(filename) - 1) {
-        cmd->error = wcsdup(L"error: filename is too long");
-        return;
+    switch (path_search(filename, sizeof(filename), "", w)) {
+    case PS_ok:
+      if (io5_ok != io5_file_open(cmd->file[io], filename, mode)) {
+        cmd->error = wcsdup(L"error: file cannot be opened");
       }
-      if (io5_ok == io5_file_open(cmd->file[io], filename, mode)) {
-        return;
-      }
+      break;
+    case PS_malloc_failed:
+      cmd->error = wcsdup(L"error: malloc failed");
+      break;
+    case PS_filename_too_long:
+      cmd->error = wcsdup(L"error: filename too long");
+      break;
+    case PS_file_not_found:
+      cmd->error = wcsdup(L"error: file not found");
+      break;
+    default:
+      cmd->error = wcsdup(L"error: unexpected path_search error");
+      break;
     }
   }
-  cmd->error = wcsdup(L"error: file not found");
 }
 
 // punch unit [mode] file
