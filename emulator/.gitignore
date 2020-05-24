@@ -1,6 +1,6 @@
 # .gitignore
 
-emulator
+emu803
 .depend
 *_test
 TAGS
