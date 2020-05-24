@@ -1,0 +1,12 @@
+reset
+reader 1 a104-tape-1.hex5
+reset run
+wait 5
+reader 1 a104-tape-2.hex5
+wg +0
+wait 5
+reader 1 elliott hello.a60
+wg -1
+wait 5
+screen 3
+wg +0
