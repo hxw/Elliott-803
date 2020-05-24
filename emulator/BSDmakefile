@@ -7,7 +7,7 @@ MAN1_DIR = ${DESTDIR}${PREFIX}/man/man1
 BIN_DIR = ${DESTDIR}${PREFIX}/bin
 
 PROG = emu803
-MAN = man1/emu803.1
+MAN1 = man1/emu803.1
 
 CFLAGS = -g -Wall -Werror -std=c17
 CFLAGS += -D VERSION_STRING='"${VERSION}"'
@@ -28,8 +28,10 @@ test:
 
 .PHONY: install
 install:
-	install -p -d -m 755 "${PROG}" "${BIN_DIR}"
-	install -p -d -m 644 "${MAN}" "${MAN1_DIR}"
+	install -d -m 755 "${BIN_DIR}"
+	install -C -m 755 "${PROG}" "${BIN_DIR}/${PROG}"
+	install -d -m 755 "${MAN1_DIR}"
+	install -C -m 644 "${MAN1}" "${MAN1_DIR}"
 
 
 .PHONY: libs
