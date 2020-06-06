@@ -1,4 +1,4 @@
-# Emulator
+# Elliott 803 Emulator
 
 ## initial environment
 
@@ -42,7 +42,7 @@ Names               Description
 hex8 h8             One 8 channel character per line represented as two hex digits [00.ff]
 hex5 h5             One 5 channel character per line represented as two hex digits [00.1f]
 binary bin          Straight 8 bit or 5 bit binary data
-elliott utf8 utf-8  ASCII/UTF-8 converted to Elliott 5 bit code
+elliott utf8 utf-8  ASCII/UTF-8 converted to/from Elliott 5 bit code
 
 
 # Elliott 5 Bit Code
@@ -50,9 +50,9 @@ elliott utf8 utf-8  ASCII/UTF-8 converted to Elliott 5 bit code
 Figures columns Notes:
 1. There are up to 4 characters in the figures column
 2. First character is standard Elliott code
-3. Second character is H-Code alterative print head
+3. Second character is H-Code alternative print head
 4  Third/fourth are convenience for ASCII/UTF-8 for Algol60 source
-5. Case of ASCII leters is ignored
+5. Case of ASCII letters is ignored
 
 Code  Letter  Figure  Control
 ====  ======  ======  ==========
