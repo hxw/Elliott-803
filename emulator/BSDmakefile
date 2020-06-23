@@ -12,6 +12,9 @@ MAN1 = man1/emu803.1
 CFLAGS = -g -Wall -Werror -std=c17
 CFLAGS += -D VERSION_STRING='"${VERSION}"'
 CFLAGS += -D PROGRAM_STRING='"${PROG}"'
+.ifdef DEFAULT_TAPE_DIR
+CFLAGS += -D DEFAULT_TAPE_DIR='"${DEFAULT_TAPE_DIR}"'
+.endif
 
 LIBS = -lcursesw -lthr -lrt -Lcpu -l803 -Lio5 -lio5 -Lparser -lparser
 

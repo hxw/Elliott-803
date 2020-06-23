@@ -15,12 +15,19 @@ ps_error_t path_search(char *buffer, size_t buffer_length, const char *filename,
   char *path = NULL;
   char *p = getenv("E803_TAPE_DIR");
   if (NULL == p) {
+#if defined(DEFAULT_TAPE_DIR)
+    path = malloc(sizeof(DEFAULT_TAPE_DIR));
+#else
     path = malloc(1);
+#endif
     if (NULL == path) {
       rc = PS_malloc_failed;
       goto clean_up;
     }
     *path = '\0'; // just the current directory will be searched
+#if defined(DEFAULT_TAPE_DIR)
+    strlcat(path, DEFAULT_TAPE_DIR, sizeof(DEFAULT_TAPE_DIR));
+#endif
   } else {
     size_t len = strlen(p) + 2; // colon prefix and trailing '\0'
     path = malloc(len);
