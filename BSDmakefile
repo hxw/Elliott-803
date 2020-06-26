@@ -1,8 +1,8 @@
 # BSDmakefile
 
 TAPES += Elliott-Algol60-A104
-TAPES += Elliott-programs
-TAPES += h-code-compilers
+TAPES += Elliott-Programs
+TAPES += H-Code-Compilers
 TAPES += hello
 
 PREFIX ?= /usr/local
@@ -13,7 +13,8 @@ p += ${PREFIX}/${d}
 
 DEFAULT_TAPE_DIR ?= ${p:S/ /:/gW}
 
-SHARE_DIR = ${DESTDIR}${PREFIX}/share/Elliott-803
+DATADIR ?= ${PREFIX}/share/Elliott-803
+SHARE_DIR = ${DESTDIR}${DATADIR}
 
 .PHONY: all
 all:
