@@ -35,7 +35,7 @@ punch 1|2 [MODE] FILE            create file and attach to a punch (hex5)
 wg [msb|o2l|lsb|CODE|±N]         set or display word generator
 
 
-## File Reding MODE Values
+## File Reading MODE Values
 
 Names               Description
 ==================  ==================

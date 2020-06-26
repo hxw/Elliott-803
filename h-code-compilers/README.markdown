@@ -3,7 +3,7 @@
 Most of the documentation comes from memory of use of this compiler in
 the late 1970's and translation of some H-Code programs to Fortran 5.
 Especially memorable was the inter procedural goto as I do not think
-any other langeage supports such a concept.
+any other language supports such a concept.
 
 
 Two different compilers.
@@ -26,7 +26,7 @@ H-CODE COMPILER PLUS.
 Note that only the first four characters are stored in the symbol
 tables. All reserved words must be preceded by a colon ":" e.g. **:SETS(I4,j7)**
 
-Double colon "::" pases until word generator LSB is toggled to allow
+Double colon "::" waits until word generator LSB is toggled to allow
 swapping of program tapes.
 
 ## Global scope
@@ -53,7 +53,7 @@ A variable is defined with a size e.g.:
 This declares: I,I1,I2,I3,I4 and J,J1,J2 and K
 (this is different from C)
 
-Indexing is only single level so IJ and IJ2  are ok but IJK is an error.
+Indexing is only single level so IJ and IJ2  are OK but IJK is an error.
 
 #### Special Variables
 
@@ -78,7 +78,7 @@ For floating point (**not exactly sure if this is right**)
 ~~~
 
 
-## Unknown gobal scope words
+## Unknown global scope words
 
 * **OBEY**
 * **PAGE**
@@ -91,7 +91,7 @@ For floating point (**not exactly sure if this is right**)
 * **GOTO** either **GOTO 4** or **GOTO(7,subr)** (inter subroutine jump)
 * **BRAN** Conditional branch e.g., **J+1:BRANCH(4,7,19)** (-,0,+) ???need double check for label order???
 * **IF** **THEN** **ELSE**  the end of an if is **:,** (simulation of semicolon perhaps)
-  also see condionals below
+  also see conditionals below
 * **LOOP** .. **REPE**  an infinite loop
 * **DO(expr)** .. **REPE**  a finite loop
 * **EXIT** As return in most C-like languages

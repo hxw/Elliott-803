@@ -13,7 +13,7 @@ p += ${PREFIX}/${d}
 
 DEFAULT_TAPE_DIR ?= ${p:S/ /:/gW}
 
-SHARE_DIR = ${DESTDIR}${PREFIX}/share/Elliott803
+SHARE_DIR = ${DESTDIR}${PREFIX}/share/Elliott-803
 
 .PHONY: all
 all:
