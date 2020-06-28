@@ -6,15 +6,14 @@ TAPES += H-Code-Compilers
 TAPES += hello
 
 PREFIX ?= /usr/local
+DATADIR ?= ${PREFIX}/share/Elliott-803
+SHARE_DIR = ${DESTDIR}${DATADIR}
 
 .for d in ${TAPES}
-p += ${PREFIX}/${d}
+p += ${DATADIR}/${d}
 .endfor
 
 DEFAULT_TAPE_DIR ?= ${p:S/ /:/gW}
-
-DATADIR ?= ${PREFIX}/share/Elliott-803
-SHARE_DIR = ${DESTDIR}${DATADIR}
 
 .PHONY: all
 all:
