@@ -11,7 +11,9 @@
 #include "io5.h"
 #include "structs.h"
 
-static int write_file(const char *file_name, io5_mode_t mode, const void *data,
+static int write_file(const char *file_name,
+                      io5_mode_t mode,
+                      const void *data,
                       size_t data_size) {
 
   io5_file_t *file = io5_file_allocate();
@@ -61,8 +63,8 @@ static int write_file(const char *file_name, io5_mode_t mode, const void *data,
   return 0;
 }
 
-static size_t raw_read_file(const char *file_name, void *buffer,
-                            size_t buffer_size) {
+static size_t
+raw_read_file(const char *file_name, void *buffer, size_t buffer_size) {
 
   // read back the temp file
   FILE *in = fopen(file_name, "r");
@@ -81,30 +83,30 @@ static size_t raw_read_file(const char *file_name, void *buffer,
 int do_test(const char *file_name) {
 
   const uint8_t lines[] = {
-      0x00, 0x00, 0x1c, 0x1d, 0x1e, // CR LF
+    0x00, 0x00, 0x1c, 0x1d, 0x1e, // CR LF
 
-      0x1f, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, // letters
-      0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x10, 0x11, 0x12, 0x13,
-      0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1c, 0x1d, 0x1e,
+    0x1f, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, // letters
+    0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x10, 0x11, 0x12, 0x13,
+    0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1c, 0x1d, 0x1e,
 
-      0x1b, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, // figures
-      0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x10, 0x11, 0x12, 0x13,
-      0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1c, 0x1d, 0x1e,
+    0x1b, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, // figures
+    0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x10, 0x11, 0x12, 0x13,
+    0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1c, 0x1d, 0x1e,
 
-      0x00, 0x00,
+    0x00, 0x00,
   };
   const uint8_t utf8_expected[] = "\0\0 \r\n"                       // control
                                   "abcdefghijklmnopqrstuvwxyz \r\n" // letters
                                   "12*4<=78',+:-.>0()3?56/@9→ \r\n" // figures
                                   "\0"; // also extra '\0' after end
   const uint8_t hex_expected[] =
-      "00\n00\n1c\n1d\n1e\n"
-      "1f\n01\n02\n03\n04\n05\n06\n07\n08\n09\n0a\n0b\n"
-      "0c\n0d\n0e\n0f\n10\n11\n12\n13\n14\n15\n16\n17\n"
-      "18\n19\n1a\n1c\n1d\n1e\n"
-      "1b\n01\n02\n03\n04\n05\n06\n07\n08\n09\n0a\n0b\n"
-      "0c\n0d\n0e\n0f\n10\n11\n12\n13\n14\n15\n16\n17\n"
-      "18\n19\n1a\n1c\n1d\n1e\n00\n00\n";
+    "00\n00\n1c\n1d\n1e\n"
+    "1f\n01\n02\n03\n04\n05\n06\n07\n08\n09\n0a\n0b\n"
+    "0c\n0d\n0e\n0f\n10\n11\n12\n13\n14\n15\n16\n17\n"
+    "18\n19\n1a\n1c\n1d\n1e\n"
+    "1b\n01\n02\n03\n04\n05\n06\n07\n08\n09\n0a\n0b\n"
+    "0c\n0d\n0e\n0f\n10\n11\n12\n13\n14\n15\n16\n17\n"
+    "18\n19\n1a\n1c\n1d\n1e\n00\n00\n";
 
   int rc = 0;
   uint8_t actual[1024];
@@ -123,7 +125,9 @@ int do_test(const char *file_name) {
     return 1;
   }
 
-  rc = check_data(actual, actual_size, hex_expected,
+  rc = check_data(actual,
+                  actual_size,
+                  hex_expected,
                   sizeof(hex_expected) - 1); // exclude trailing NUL
   if (0 != rc) {
     printf("check_data: hex encoding failed\n");

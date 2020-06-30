@@ -8,8 +8,13 @@
 #include "alu.h"
 #include "constants.h"
 
-static void test_add_op(const char *title, int op, int64_t acc, int64_t a,
-                        int64_t n, int64_t result, bool overflow) {
+static void test_add_op(const char *title,
+                        int op,
+                        int64_t acc,
+                        int64_t a,
+                        int64_t n,
+                        int64_t result,
+                        bool overflow) {
 
   bool actual_overflow = false;
   int64_t actual = alu_add(&actual_overflow, op, acc, a, n);
@@ -17,15 +22,18 @@ static void test_add_op(const char *title, int op, int64_t acc, int64_t a,
   if (actual != result || actual_overflow != overflow) {
     printf("%-16s: actual:   %013lo (%s)\n"
            "%-16s  expected: %013lo (%s)\n",
-           title, (actual >> word_shift) & lsb_thirty_nine_bits,
-           actual_overflow ? "v" : "_", "",
-           (result >> word_shift) & lsb_thirty_nine_bits, overflow ? "V" : "_");
+           title,
+           (actual >> word_shift) & lsb_thirty_nine_bits,
+           actual_overflow ? "v" : "_",
+           "",
+           (result >> word_shift) & lsb_thirty_nine_bits,
+           overflow ? "V" : "_");
     exit(1);
   }
 }
 
-static void test_mpy(const char *title, int64_t a, int64_t b, int64_t acc,
-                     int64_t ar) {
+static void
+test_mpy(const char *title, int64_t a, int64_t b, int64_t acc, int64_t ar) {
   int64_t actual_acc;
   int64_t actual_ar;
   alu_multiply(&actual_acc, &actual_ar, a, b);
@@ -33,15 +41,20 @@ static void test_mpy(const char *title, int64_t a, int64_t b, int64_t acc,
   if (actual_acc != acc || actual_ar != ar) {
     printf("%-16s: actual:   %013lo (%013lo)\n"
            "%-16s  expected: %013lo (%013lo)\n",
-           title, (actual_acc >> word_shift) & lsb_thirty_nine_bits,
-           (actual_ar >> word_shift) & lsb_thirty_nine_bits, "",
+           title,
+           (actual_acc >> word_shift) & lsb_thirty_nine_bits,
+           (actual_ar >> word_shift) & lsb_thirty_nine_bits,
+           "",
            (acc >> word_shift) & lsb_thirty_nine_bits,
            (ar >> word_shift) & lsb_thirty_nine_bits);
     exit(1);
   }
 }
 
-static void test_div(const char *title, int64_t dh, int64_t dl, int64_t divisor,
+static void test_div(const char *title,
+                     int64_t dh,
+                     int64_t dl,
+                     int64_t divisor,
                      int64_t expected_q) {
 
   bool overflow = false;
@@ -52,7 +65,9 @@ static void test_div(const char *title, int64_t dh, int64_t dl, int64_t divisor,
 
     printf("%-16s: actual:   %013lo\n"
            "%-16s  expected: %013lo\n",
-           title, (actual_q >> word_shift) & lsb_thirty_nine_bits, "",
+           title,
+           (actual_q >> word_shift) & lsb_thirty_nine_bits,
+           "",
            (expected_q >> word_shift) & lsb_thirty_nine_bits);
     exit(1);
   }

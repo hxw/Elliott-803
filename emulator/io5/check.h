@@ -6,13 +6,15 @@
 #include <locale.h>
 #include <stdint.h>
 
-static int check_data(const uint8_t *actual, size_t actual_size,
-                      const uint8_t *expected, size_t expected_size) {
+static int check_data(const uint8_t *actual,
+                      size_t actual_size,
+                      const uint8_t *expected,
+                      size_t expected_size) {
 
   if (expected_size != actual_size ||
       0 != memcmp(expected, actual, expected_size)) {
-    printf("incorrect actual: %zu  expected: %zu\n", actual_size,
-           expected_size);
+    printf(
+      "incorrect actual: %zu  expected: %zu\n", actual_size, expected_size);
     size_t max = expected_size;
     if (actual_size > max) {
       max = actual_size;

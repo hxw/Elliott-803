@@ -8,7 +8,9 @@
 
 #include "pathsearch.h"
 
-ps_error_t path_search(char *buffer, size_t buffer_length, const char *filename,
+ps_error_t path_search(char *buffer,
+                       size_t buffer_length,
+                       const char *filename,
                        const wchar_t *filename_wc) {
   ps_error_t rc = PS_ok;
 
@@ -44,8 +46,8 @@ ps_error_t path_search(char *buffer, size_t buffer_length, const char *filename,
   const char *q = NULL;
   while (NULL != (q = strsep(&p, ":"))) {
     const char *s = '\0' == *q ? "" : "/";
-    size_t n = snprintf(buffer, buffer_length, "%s%s%s%ls", q, s, filename,
-                        filename_wc);
+    size_t n =
+      snprintf(buffer, buffer_length, "%s%s%s%ls", q, s, filename, filename_wc);
     if (n >= buffer_length - 1) {
       rc = PS_filename_too_long;
       goto clean_up;

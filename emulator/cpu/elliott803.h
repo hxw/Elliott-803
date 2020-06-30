@@ -21,14 +21,14 @@ int elliott803_get_fd(elliott803_t *proc);
 // returns:
 //   positive: bytes sent
 //   negative: error code
-ssize_t elliott803_send(elliott803_t *proc, const char *buffer,
-                        size_t buffer_size);
+ssize_t
+elliott803_send(elliott803_t *proc, const char *buffer, size_t buffer_size);
 
 // receive a response
 // returns:
 //   positive: bytes received
 //   negative: error code
-ssize_t elliott803_receive(elliott803_t *proc, char *buffer,
-                           size_t buffer_size);
+ssize_t
+elliott803_receive(elliott803_t *proc, char *buffer, size_t buffer_size);
 
 #endif

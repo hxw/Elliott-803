@@ -7,31 +7,44 @@
 
 #include "fpu.h"
 
-static void test_1_arg(const char *title, int64_t (*f)(int64_t a), int64_t a,
-                       int64_t result, bool overflow) {
+static void test_1_arg(const char *title,
+                       int64_t (*f)(int64_t a),
+                       int64_t a,
+                       int64_t result,
+                       bool overflow) {
   int64_t actual = f(a);
 
   if (actual != result) {
     printf("%-16s: actual:   %013llo (%s)\n"
            "%-16s  expected: %013llo (%s)\n",
-           title, (actual >> exponent_shift) & 0x7fffffffffULL, "_", "",
-           (result >> exponent_shift) & 0x7fffffffffULL, overflow ? "V" : "_");
+           title,
+           (actual >> exponent_shift) & 0x7fffffffffULL,
+           "_",
+           "",
+           (result >> exponent_shift) & 0x7fffffffffULL,
+           overflow ? "V" : "_");
     exit(1);
   }
 }
 
 static void test_2_args(const char *title,
                         int64_t (*f)(bool *overflow, int64_t a, int64_t b),
-                        int64_t a, int64_t b, int64_t result, bool overflow) {
+                        int64_t a,
+                        int64_t b,
+                        int64_t result,
+                        bool overflow) {
   bool actual_overflow = false;
   int64_t actual = f(&actual_overflow, a, b);
 
   if (actual != result || actual_overflow != overflow) {
     printf("%-16s: actual:   %013llo (%s)\n"
            "%-16s  expected: %013llo (%s)\n",
-           title, (actual >> exponent_shift) & 0x7fffffffffULL,
-           actual_overflow ? "V" : "_", "",
-           (result >> exponent_shift) & 0x7fffffffffULL, overflow ? "V" : "_");
+           title,
+           (actual >> exponent_shift) & 0x7fffffffffULL,
+           actual_overflow ? "V" : "_",
+           "",
+           (result >> exponent_shift) & 0x7fffffffffULL,
+           overflow ? "V" : "_");
     exit(1);
   }
 }
@@ -93,20 +106,20 @@ int main(int argc, char *argv[]) {
   // standardise
 
   test_1_arg("stand      0", fpu_standardise, 0, zero, false);
-  test_1_arg("stand     -2", fpu_standardise, -2ULL << word_shift, neg_2,
-             false);
-  test_1_arg("stand     -1", fpu_standardise, -1ULL << word_shift, neg_1,
-             false);
+  test_1_arg(
+    "stand     -2", fpu_standardise, -2ULL << word_shift, neg_2, false);
+  test_1_arg(
+    "stand     -1", fpu_standardise, -1ULL << word_shift, neg_1, false);
   test_1_arg("stand      1", fpu_standardise, 1LL << word_shift, pos_1, false);
   test_1_arg("stand      2", fpu_standardise, 2LL << word_shift, pos_2, false);
-  test_1_arg("stand     10", fpu_standardise, 10LL << word_shift, pos_10,
-             false);
-  test_1_arg("stand    100", fpu_standardise, 100LL << word_shift, pos_100,
-             false);
-  test_1_arg("stand  1,000", fpu_standardise, 1000LL << word_shift, pos_1000,
-             false);
-  test_1_arg("stand 10,000", fpu_standardise, 10000LL << word_shift, pos_10000,
-             false);
+  test_1_arg(
+    "stand     10", fpu_standardise, 10LL << word_shift, pos_10, false);
+  test_1_arg(
+    "stand    100", fpu_standardise, 100LL << word_shift, pos_100, false);
+  test_1_arg(
+    "stand  1,000", fpu_standardise, 1000LL << word_shift, pos_1000, false);
+  test_1_arg(
+    "stand 10,000", fpu_standardise, 10000LL << word_shift, pos_10000, false);
 
   // addition
 
@@ -162,10 +175,10 @@ int main(int argc, char *argv[]) {
   test_2_args("div -1 / 0.5", fpu_div, neg_1, pos_0_5, neg_2, false);
 
   test_2_args("div  10 / 10", fpu_div, pos_10, pos_10, pos_1, false);
-  test_2_args("div  10.5/10", fpu_div, pos_10_5, pos_10, pos_10_5_div_10,
-              false);
-  test_2_args("div  10/10.5", fpu_div, pos_10, pos_10_5, pos_10_div_10_5,
-              false);
+  test_2_args(
+    "div  10.5/10", fpu_div, pos_10_5, pos_10, pos_10_5_div_10, false);
+  test_2_args(
+    "div  10/10.5", fpu_div, pos_10, pos_10_5, pos_10_div_10_5, false);
 
   return 0;
 }

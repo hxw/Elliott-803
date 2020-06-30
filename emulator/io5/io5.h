@@ -32,8 +32,8 @@ io5_error_t io5_file_deallocate(io5_file_t *file);
 
 // create a new files an attach to the io instance for writing
 // will close any existing attachment first
-io5_error_t io5_file_create(io5_file_t *file, const char *name,
-                            io5_mode_t mode);
+io5_error_t
+io5_file_create(io5_file_t *file, const char *name, io5_mode_t mode);
 
 // open a file for reading and attache to the io instance
 // will close any existing attachment first

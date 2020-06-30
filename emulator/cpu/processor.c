@@ -87,8 +87,8 @@ int elliott803_get_fd(elliott803_t *proc) { return proc->client_socket; }
 // returns:
 //   positive: bytes sent
 //   negative: error code
-ssize_t elliott803_send(elliott803_t *proc, const char *buffer,
-                        size_t buffer_size) {
+ssize_t
+elliott803_send(elliott803_t *proc, const char *buffer, size_t buffer_size) {
 
   for (;;) {
     errno = 0;
@@ -115,13 +115,13 @@ ssize_t elliott803_send(elliott803_t *proc, const char *buffer,
 // returns:
 //   positive: bytes received
 //   negative: error code
-ssize_t elliott803_receive(elliott803_t *proc, char *buffer,
-                           size_t buffer_size) {
+ssize_t
+elliott803_receive(elliott803_t *proc, char *buffer, size_t buffer_size) {
 
   for (;;) {
     errno = 0;
-    ssize_t n = recv(proc->client_socket, buffer, buffer_size,
-                     MSG_WAITALL | MSG_DONTWAIT);
+    ssize_t n = recv(
+      proc->client_socket, buffer, buffer_size, MSG_WAITALL | MSG_DONTWAIT);
     if (-1 == n) {
       // if interrupted system call, just retry
       if (EINTR != errno) {
@@ -136,13 +136,13 @@ ssize_t elliott803_receive(elliott803_t *proc, char *buffer,
 }
 
 // reply to client
-static ssize_t reply(elliott803_t *proc, const char *buffer,
-                     size_t buffer_size) {
+static ssize_t
+reply(elliott803_t *proc, const char *buffer, size_t buffer_size) {
 
   for (;;) {
     errno = 0;
     ssize_t n =
-        send(proc->processor_socket, buffer, buffer_size, MSG_DONTROUTE);
+      send(proc->processor_socket, buffer, buffer_size, MSG_DONTROUTE);
     if (-1 == n) {
       // if no buffer space, just retry
       if (ENOBUFS == errno) {
@@ -274,9 +274,11 @@ static bool action_run(elliott803_t *proc, const char *params) {
   proc->mode = exec_mode_run;
 
   char buffer[256];
-  ssize_t n =
-      snprintf(buffer, sizeof(buffer), "run %4d.%d",
-               (proc->program_counter >> 1), 5 * (proc->program_counter & 1));
+  ssize_t n = snprintf(buffer,
+                       sizeof(buffer),
+                       "run %4d.%d",
+                       (proc->program_counter >> 1),
+                       5 * (proc->program_counter & 1));
   n = reply(proc, buffer, n + 1); // include '\0'
   assert(0 != n);
 
@@ -374,10 +376,14 @@ static bool action_current_status(elliott803_t *proc, const char *params) {
   int address_p = proc->program_counter >> 1;
 
   char buffer[256];
-  ssize_t n = snprintf(buffer, sizeof(buffer),
-                       "sr  SCR:    %4d.%d  [%8s]  [%8s]  [%8s]", address_p,
-                       5 * (proc->program_counter & 1), state,
-                       proc->overflow ? "overflow" : "", busy_device(proc));
+  ssize_t n = snprintf(buffer,
+                       sizeof(buffer),
+                       "sr  SCR:    %4d.%d  [%8s]  [%8s]  [%8s]",
+                       address_p,
+                       5 * (proc->program_counter & 1),
+                       state,
+                       proc->overflow ? "overflow" : "",
+                       busy_device(proc));
   n = reply(proc, buffer, n + 1); // include '\0'
   assert(0 != n);
 
@@ -568,17 +574,17 @@ static bool action_check(elliott803_t *proc, const char *params) {
 static bool action_help(elliott803_t *proc, const char *params) {
 
   static const char *help[] = {
-      "?? reset [run]              reset CPU and optionally run T1 loader",   //
-      "?? mw ADDRESS CODE|±N       store code or signed number to address",   //
-      "?? mr ADDRESS               display code and numeric for address",     //
-      "?? status                   display registers and flags",              //
-      "?? run ADDRESS[.5]          run from specific address",                //
-      "?? cont                     continue after stop",                      //
-      "?? stop                     halt the CPU",                             //
-      "?? reader UNIT HEX          buffer up to 32 bytes for a reader",       //
-      "?? wg [CODE|±N|msb|o2l|lsb] set word generator code or signed number", //
-      "?? check                    check for stop or word generator polling", //
-      "?? ",                                                                  //
+    "?? reset [run]              reset CPU and optionally run T1 loader",   //
+    "?? mw ADDRESS CODE|±N       store code or signed number to address",   //
+    "?? mr ADDRESS               display code and numeric for address",     //
+    "?? status                   display registers and flags",              //
+    "?? run ADDRESS[.5]          run from specific address",                //
+    "?? cont                     continue after stop",                      //
+    "?? stop                     halt the CPU",                             //
+    "?? reader UNIT HEX          buffer up to 32 bytes for a reader",       //
+    "?? wg [CODE|±N|msb|o2l|lsb] set word generator code or signed number", //
+    "?? check                    check for stop or word generator polling", //
+    "?? ",                                                                  //
   };
   for (size_t i = 0; i < SizeOfArray(help); ++i) {
     const_reply(proc, help[i]);
@@ -593,18 +599,18 @@ typedef struct {
 } cmd_t;
 
 static const cmd_t command_list[] = {
-    {"reset", action_reset},           //
-    {"mw", action_memory_write},       //
-    {"mr", action_memory_read},        //
-    {"status", action_current_status}, //
-    {"run", action_run},               //
-    {"cont", action_cont},             //
-    {"stop", action_stop},             //
-    {"reader", action_reader},         //
-    {"wg", action_word_generator},     //
-    {"check", action_check},           //
-    {"?", action_help},                //
-    {"terminate", action_terminate},   // last item (for internal use)
+  {"reset", action_reset},           //
+  {"mw", action_memory_write},       //
+  {"mr", action_memory_read},        //
+  {"status", action_current_status}, //
+  {"run", action_run},               //
+  {"cont", action_cont},             //
+  {"stop", action_stop},             //
+  {"reader", action_reader},         //
+  {"wg", action_word_generator},     //
+  {"check", action_check},           //
+  {"?", action_help},                //
+  {"terminate", action_terminate},   // last item (for internal use)
 };
 
 // main processor control loop
@@ -616,8 +622,8 @@ static void *main_loop(void *arg) {
 
   for (bool run = true; run;) {
     struct timeval tzero = {
-        .tv_sec = 0,
-        .tv_usec = 0,
+      .tv_sec = 0,
+      .tv_usec = 0,
     };
 
     // if running poll for a command
@@ -642,8 +648,8 @@ static void *main_loop(void *arg) {
     case busy_reader_2:
     case busy_reader_3: {
       char buffer[256];
-      ssize_t n = snprintf(buffer, sizeof(buffer), "r%u busy",
-                           proc->io_busy - busy_reader_1 + 1);
+      ssize_t n = snprintf(
+        buffer, sizeof(buffer), "r%u busy", proc->io_busy - busy_reader_1 + 1);
       n = reply(proc, buffer, n + 1); // include '\0'
       assert(0 != n);
       break;
@@ -664,7 +670,9 @@ static void *main_loop(void *arg) {
 
     // receive a command
     char buffer[message_buffer_size];
-    ssize_t n = recv(proc->processor_socket, buffer, sizeof(buffer) - 1,
+    ssize_t n = recv(proc->processor_socket,
+                     buffer,
+                     sizeof(buffer) - 1,
                      MSG_WAITALL | MSG_DONTWAIT);
     if (n < 0) {
       continue;

@@ -13,7 +13,9 @@ typedef enum {
   PS_file_not_found,
 } ps_error_t;
 
-ps_error_t path_search(char *buffer, size_t buffer_length, const char *filename,
+ps_error_t path_search(char *buffer,
+                       size_t buffer_length,
+                       const char *filename,
                        const wchar_t *filename_wc);
 
 #endif

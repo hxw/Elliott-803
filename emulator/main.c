@@ -65,7 +65,9 @@ int main(int argc, char *argv[]) {
         usage(program, "file: %s  error: %s\n", optarg, "file not found");
         break;
       default:
-        usage(program, "file: %s  error: %s\n", optarg,
+        usage(program,
+              "file: %s  error: %s\n",
+              optarg,
               "unexpected path_search error");
         break;
       }

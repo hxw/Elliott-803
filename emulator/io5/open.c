@@ -7,9 +7,11 @@
 #include "io5.h"
 #include "structs.h"
 
-static io5_error_t internal_open(io5_file_t *file, const char *name,
+static io5_error_t internal_open(io5_file_t *file,
+                                 const char *name,
                                  const char *open_mode,
-                                 io_direction_t direction, io5_mode_t mode) {
+                                 io_direction_t direction,
+                                 io5_mode_t mode) {
   if (NULL == file) {
     return io5_error;
   }
@@ -56,8 +58,8 @@ static io5_error_t internal_open(io5_file_t *file, const char *name,
 
 // create a new files an attach to the io instance for writing
 // will close any existing attachment first
-io5_error_t io5_file_create(io5_file_t *file, const char *name,
-                            io5_mode_t mode) {
+io5_error_t
+io5_file_create(io5_file_t *file, const char *name, io5_mode_t mode) {
   return internal_open(file, name, "wx", io_direction_write, mode);
 }
 

@@ -59,21 +59,35 @@ typedef struct {
 } key_buffer_t;
 
 // handlers
-static void handle_proc_fd(commands_t *cmd, pads_t *pads,
-                           const layout_t *layout, io5_conv_t *conv_punch[3]);
-static bool handle_key(commands_t *cmd, pads_t *pads, const layout_t *layout,
-                       key_buffer_t *kb, FILE *script);
+static void handle_proc_fd(commands_t *cmd,
+                           pads_t *pads,
+                           const layout_t *layout,
+                           io5_conv_t *conv_punch[3]);
+static bool handle_key(commands_t *cmd,
+                       pads_t *pads,
+                       const layout_t *layout,
+                       key_buffer_t *kb,
+                       FILE *script);
 
 void set_pad(pads_t *pads, const layout_t *layout, pad_select_t next) {
   pads->select = next;
-  prefresh(pads->pad[pads->select], 0, 0, 1, 1, layout->text_lines + 1,
+  prefresh(pads->pad[pads->select],
+           0,
+           0,
+           1,
+           1,
+           layout->text_lines + 1,
            layout->text_cols + 1);
 }
 
 // main program
 // displays a curses UI
-int emulator(const char *name, const char *version, FILE *script,
-             bool interactive, int argc, char *argv[]) {
+int emulator(const char *name,
+             const char *version,
+             FILE *script,
+             bool interactive,
+             int argc,
+             char *argv[]) {
 
   // ensure locale is properly set up
   const char *l = setlocale(LC_ALL, "");
@@ -122,14 +136,14 @@ int emulator(const char *name, const char *version, FILE *script,
 
   // compute the window sizes
   const layout_t layout = {
-      .status_lines = 4,
-      .text_lines = LINES - 3 - layout.status_lines,
-      .text_cols = COLS - 2,
-      .text_y = 1,
-      .text_x = 1,
-      .status_cols = COLS - 2,
-      .status_y = layout.text_lines + 2,
-      .status_x = 1,
+    .status_lines = 4,
+    .text_lines = LINES - 3 - layout.status_lines,
+    .text_cols = COLS - 2,
+    .text_y = 1,
+    .text_x = 1,
+    .status_cols = COLS - 2,
+    .status_y = layout.text_lines + 2,
+    .status_x = 1,
   };
   WINDOW *background = newwin(LINES, COLS, 0, 0);
   keypad(background, false);
@@ -153,7 +167,7 @@ int emulator(const char *name, const char *version, FILE *script,
   }
 
   WINDOW *text =
-      newwin(layout.text_lines, layout.text_cols, layout.text_y, layout.text_x);
+    newwin(layout.text_lines, layout.text_cols, layout.text_y, layout.text_x);
   keypad(text, true);
   scrollok(text, true);
   mvwprintw(text, 0, 0, "%s version: %s initialising…", name, version);
@@ -162,8 +176,8 @@ int emulator(const char *name, const char *version, FILE *script,
 
   // napms(500);
 
-  pads.status = newwin(layout.status_lines, layout.status_cols, layout.status_y,
-                       layout.status_x);
+  pads.status = newwin(
+    layout.status_lines, layout.status_cols, layout.status_y, layout.status_x);
   scrollok(pads.status, true);
   keypad(pads.status, true);
 
@@ -264,7 +278,12 @@ int emulator(const char *name, const char *version, FILE *script,
         }
         cmd.screen = 0;
         if (pad_console == pads.select) {
-          prefresh(pads.pad[pads.select], 0, 0, 1, 1, layout.text_lines + 1,
+          prefresh(pads.pad[pads.select],
+                   0,
+                   0,
+                   1,
+                   1,
+                   layout.text_lines + 1,
                    layout.text_cols + 1);
         }
       }
@@ -310,7 +329,9 @@ fail:
   return EXIT_FAILURE;
 }
 
-void handle_proc_fd(commands_t *cmd, pads_t *pads, const layout_t *layout,
+void handle_proc_fd(commands_t *cmd,
+                    pads_t *pads,
+                    const layout_t *layout,
                     io5_conv_t *conv_punch[3]) {
   char in_buffer[1024];
   ssize_t n = elliott803_receive(cmd->proc, in_buffer, sizeof(in_buffer) - 1);
@@ -421,15 +442,23 @@ void handle_proc_fd(commands_t *cmd, pads_t *pads, const layout_t *layout,
     }
     // refresh if current pad is on the screen
     if (pads->select == pad_modified) {
-      prefresh(pads->pad[pads->select], 0, 0, 1, 1, layout->text_lines + 1,
+      prefresh(pads->pad[pads->select],
+               0,
+               0,
+               1,
+               1,
+               layout->text_lines + 1,
                layout->text_cols + 1);
     }
     wrefresh(pads->status); // ensure cursor is right
   }
 }
 
-bool handle_key(commands_t *cmd, pads_t *pads, const layout_t *layout,
-                key_buffer_t *kb, FILE *script) {
+bool handle_key(commands_t *cmd,
+                pads_t *pads,
+                const layout_t *layout,
+                key_buffer_t *kb,
+                FILE *script) {
 
   wint_t c = 0;
   int rc = wget_wch(pads->status, &c);
@@ -452,7 +481,12 @@ bool handle_key(commands_t *cmd, pads_t *pads, const layout_t *layout,
         cmd->error = NULL;
       }
       if (pad_console == pads->select) {
-        prefresh(pads->pad[pads->select], 0, 0, 1, 1, layout->text_lines + 1,
+        prefresh(pads->pad[pads->select],
+                 0,
+                 0,
+                 1,
+                 1,
+                 layout->text_lines + 1,
                  layout->text_cols + 1);
       }
 

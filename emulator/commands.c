@@ -24,11 +24,15 @@ typedef struct {
 } file_mode_t;
 
 const file_mode_t modes[] = {
-    {L"hex5", io5_mode_hex5},       {L"h5", io5_mode_hex5},
-    {L"hex8", io5_mode_hex8},       {L"h8", io5_mode_hex8},
-    {L"binary", io5_mode_binary},   {L"bin", io5_mode_binary},
-    {L"elliott", io5_mode_elliott}, {L"utf-8", io5_mode_elliott},
-    {L"utf8", io5_mode_elliott},
+  {L"hex5", io5_mode_hex5},
+  {L"h5", io5_mode_hex5},
+  {L"hex8", io5_mode_hex8},
+  {L"h8", io5_mode_hex8},
+  {L"binary", io5_mode_binary},
+  {L"bin", io5_mode_binary},
+  {L"elliott", io5_mode_elliott},
+  {L"utf-8", io5_mode_elliott},
+  {L"utf8", io5_mode_elliott},
 };
 
 static io5_mode_t string_to_mode(const wchar_t *w) {
@@ -58,8 +62,8 @@ static void command_wait(commands_t *cmd, const wchar_t *name, wchar_t **ptr) {
   }
 }
 
-static void command_screen(commands_t *cmd, const wchar_t *name,
-                           wchar_t **ptr) {
+static void
+command_screen(commands_t *cmd, const wchar_t *name, wchar_t **ptr) {
   const wchar_t *w = parser_get_token(ptr);
   if (NULL != w) {
     long s = wcstol(w, NULL, 10);
@@ -101,8 +105,8 @@ static void command_list(commands_t *cmd, const wchar_t *name, wchar_t **ptr) {
   }
 }
 
-static void command_memory_write(commands_t *cmd, const wchar_t *name,
-                                 wchar_t **ptr) {
+static void
+command_memory_write(commands_t *cmd, const wchar_t *name, wchar_t **ptr) {
 
   long address = -1;
 
@@ -154,8 +158,8 @@ static void command_run(commands_t *cmd, const wchar_t *name, wchar_t **ptr) {
 
   char packet[256];
   memset(packet, 0, sizeof(packet));
-  int n = snprintf(packet, sizeof(packet), "run %ld%s", address,
-                   half ? ".5" : ".0");
+  int n =
+    snprintf(packet, sizeof(packet), "run %ld%s", address, half ? ".5" : ".0");
   elliott803_send(cmd->proc, packet, n);
 }
 
@@ -163,8 +167,8 @@ static void command_stop(commands_t *cmd, const wchar_t *name, wchar_t **ptr) {
   elliott803_send(cmd->proc, "stop", 5);
 }
 
-static void command_registers(commands_t *cmd, const wchar_t *name,
-                              wchar_t **ptr) {
+static void
+command_registers(commands_t *cmd, const wchar_t *name, wchar_t **ptr) {
   elliott803_send(cmd->proc, "status", 7);
 }
 
@@ -196,9 +200,9 @@ static void command_hello(commands_t *cmd, const wchar_t *name, wchar_t **ptr) {
   }
 
   const char *hello_init[] = {
-      "mw %ld  26    4 : 02    4", //
-      "mw %ld  55    2 : 22    4", //
-      "mw %ld  04    4 : 21    4", // set [4] = -5
+    "mw %ld  26    4 : 02    4", //
+    "mw %ld  55    2 : 22    4", //
+    "mw %ld  04    4 : 21    4", // set [4] = -5
   };
 
   const char *hello_punch_two = "mw %ld  74 %4d : 74 %4d";
@@ -207,21 +211,21 @@ static void command_hello(commands_t *cmd, const wchar_t *name, wchar_t **ptr) {
     char c1;
     char c2;
   } hello_chars[] = {
-      {27, 31}, // FS LS
-      {29, 30}, // CR LF
-      {8, 5},   // hello, world.
-      {12, 12}, //
-      {15, 27}, //
-      {10, 28}, //
-      {31, 23}, //
-      {15, 18}, //
-      {12, 4},  //
-      {27, 14}, //
+    {27, 31}, // FS LS
+    {29, 30}, // CR LF
+    {8, 5},   // hello, world.
+    {12, 12}, //
+    {15, 27}, //
+    {10, 28}, //
+    {31, 23}, //
+    {15, 18}, //
+    {12, 4},  //
+    {27, 14}, //
   };
 
   const char *hello_loop[] = {
-      "mw %ld  22    4 : 30    4",  //
-      "mw %ld  42 %1$4d : 40%2$4d", //
+    "mw %ld  22    4 : 30    4",  //
+    "mw %ld  42 %1$4d : 40%2$4d", //
   };
 
   char packet[256];
@@ -236,8 +240,12 @@ static void command_hello(commands_t *cmd, const wchar_t *name, wchar_t **ptr) {
 
   for (size_t i = 0; i < SizeOfArray(hello_chars); ++i) {
     memset(packet, 0, sizeof(packet));
-    int n = snprintf(packet, sizeof(packet), hello_punch_two, address,
-                     hello_chars[i].c1 + punch, hello_chars[i].c2 + punch);
+    int n = snprintf(packet,
+                     sizeof(packet),
+                     hello_punch_two,
+                     address,
+                     hello_chars[i].c1 + punch,
+                     hello_chars[i].c2 + punch);
     elliott803_send(cmd->proc, packet, n);
     ++address;
   }
@@ -245,7 +253,7 @@ static void command_hello(commands_t *cmd, const wchar_t *name, wchar_t **ptr) {
   for (size_t i = 0; i < SizeOfArray(hello_loop); ++i) {
     memset(packet, 0, sizeof(packet));
     int n =
-        snprintf(packet, sizeof(packet), hello_loop[i], address, loop_address);
+      snprintf(packet, sizeof(packet), hello_loop[i], address, loop_address);
     elliott803_send(cmd->proc, packet, n);
     ++address;
   }
@@ -253,8 +261,8 @@ static void command_hello(commands_t *cmd, const wchar_t *name, wchar_t **ptr) {
 
 // reader unit [mode] file
 // if mode is absent then assume "hex5"
-static void command_reader(commands_t *cmd, const wchar_t *name,
-                           wchar_t **ptr) {
+static void
+command_reader(commands_t *cmd, const wchar_t *name, wchar_t **ptr) {
   long unit = 0;
 
   const wchar_t *w = parser_get_token(ptr);
@@ -373,8 +381,8 @@ static void command_punch(commands_t *cmd, const wchar_t *name, wchar_t **ptr) {
   }
 }
 
-static void command_word_generator(commands_t *cmd, const wchar_t *name,
-                                   wchar_t **ptr) {
+static void
+command_word_generator(commands_t *cmd, const wchar_t *name, wchar_t **ptr) {
 
   if (L'\0' == **ptr) {
     elliott803_send(cmd->proc, "wg", 3);
@@ -411,25 +419,25 @@ static void command_word_generator(commands_t *cmd, const wchar_t *name,
 
 static void command_help(commands_t *cmd, const wchar_t *name, wchar_t **ptr) {
   const wchar_t *m =
-      // clang-format: off
-      L"help                  (?)   this message\n"
-      L"exit                  (x)   exit emulation\n"
-      L"wait                        wait for stop or wg polling\n"
-      L"list [ADDR [COUNT]]   (l)   display memory words\n"
-      L"mw ADDR CODE|±DEC           write memory word\n"
-      L"reset                       reset all regs and stop execution\n"
-      L"reset run                   reset all regs and restart from zero\n"
-      L"run [ADDR]                  run from address or continue after a stop\n"
-      L"stop                        stop execution\n"
-      L"regs                  (r)   display registers and status\n"
-      L"hello [ADDR [1|2|3]]        load hello world [4096 1]\n"
-      L"reader 1|2 [MODE] FILE      attach an existing file to a reader "
-      L"(hex5)\n"
-      L"punch 1|2 [MODE] FILE       create file and attach to a punch (hex5)\n"
-      L"screen 1|2|3|4              select current screen as Fn\n"
-      L"wg [msb|o2l|lsb|CODE|±N]    set or display word generator\n"
-      // clang-format: on
-      ;
+    // clang-format: off
+    L"help                  (?)   this message\n"
+    L"exit                  (x)   exit emulation\n"
+    L"wait                        wait for stop or wg polling\n"
+    L"list [ADDR [COUNT]]   (l)   display memory words\n"
+    L"mw ADDR CODE|±DEC           write memory word\n"
+    L"reset                       reset all regs and stop execution\n"
+    L"reset run                   reset all regs and restart from zero\n"
+    L"run [ADDR]                  run from address or continue after a stop\n"
+    L"stop                        stop execution\n"
+    L"regs                  (r)   display registers and status\n"
+    L"hello [ADDR [1|2|3]]        load hello world [4096 1]\n"
+    L"reader 1|2 [MODE] FILE      attach an existing file to a reader "
+    L"(hex5)\n"
+    L"punch 1|2 [MODE] FILE       create file and attach to a punch (hex5)\n"
+    L"screen 1|2|3|4              select current screen as Fn\n"
+    L"wg [msb|o2l|lsb|CODE|±N]    set or display word generator\n"
+    // clang-format: on
+    ;
 
   cmd->error = wcsdup(m);
 }
@@ -442,18 +450,18 @@ typedef struct {
 } command_t;
 
 const command_t commands[] = {
-    {L"exit", command_exit},       {L"x", command_exit},
-    {L"quit", command_exit},       {L"q", command_exit},
-    {L"wait", command_wait},       {L"screen", command_screen},
+  {L"exit", command_exit},       {L"x", command_exit},
+  {L"quit", command_exit},       {L"q", command_exit},
+  {L"wait", command_wait},       {L"screen", command_screen},
 
-    {L"list", command_list},       {L"l", command_list},
-    {L"mw", command_memory_write}, {L"reset", command_reset},
-    {L"run", command_run},         {L"stop", command_stop},
-    {L"regs", command_registers},  {L"r", command_registers},
-    {L"hello", command_hello},     {L"reader", command_reader},
-    {L"punch", command_punch},     {L"wg", command_word_generator},
+  {L"list", command_list},       {L"l", command_list},
+  {L"mw", command_memory_write}, {L"reset", command_reset},
+  {L"run", command_run},         {L"stop", command_stop},
+  {L"regs", command_registers},  {L"r", command_registers},
+  {L"hello", command_hello},     {L"reader", command_reader},
+  {L"punch", command_punch},     {L"wg", command_word_generator},
 
-    {L"help", command_help},       {L"?", command_help},
+  {L"help", command_help},       {L"?", command_help},
 };
 
 void commands_run(commands_t *cmd, wchar_t *buffer, size_t buffer_size) {

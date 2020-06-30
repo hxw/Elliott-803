@@ -108,8 +108,17 @@ char *to_machine_code(const char *prefix, int64_t word) {
   char *p = NULL;
 
   // this allocates memory for the returned string
-  asprintf(&p, "%s%02o %4d %s %02o %4d   X%010lx  8%013lo  %+13ld", prefix, op1,
-           addr1, b, op2, addr2, value, value, value_signed);
+  asprintf(&p,
+           "%s%02o %4d %s %02o %4d   X%010lx  8%013lo  %+13ld",
+           prefix,
+           op1,
+           addr1,
+           b,
+           op2,
+           addr2,
+           value,
+           value,
+           value_signed);
 
   return p;
 }

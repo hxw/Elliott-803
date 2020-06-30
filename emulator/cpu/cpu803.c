@@ -30,7 +30,7 @@ static void cpu(processor_t *proc, int op, int address) {
     // 07  Negate & add                           n - a     n
     // clang-format: on
     proc->accumulator =
-        alu_add(&proc->overflow, op, proc->accumulator, proc->accumulator, n);
+      alu_add(&proc->overflow, op, proc->accumulator, proc->accumulator, n);
     break;
 
   case 1:
@@ -62,7 +62,7 @@ static void cpu(processor_t *proc, int op, int address) {
     // 27  Subtract from store                    a         n - a
     // clang-format: on
     proc->core_store[address] =
-        alu_add(&proc->overflow, op, proc->accumulator, proc->accumulator, n);
+      alu_add(&proc->overflow, op, proc->accumulator, proc->accumulator, n);
     break;
 
   case 3:
@@ -78,7 +78,7 @@ static void cpu(processor_t *proc, int op, int address) {
     // 37  Replace and subtract from store        n         n - a
     // clang-format: on
     proc->core_store[address] =
-        alu_add(&proc->overflow, op, proc->accumulator, n, n);
+      alu_add(&proc->overflow, op, proc->accumulator, n, n);
     proc->accumulator = n;
     break;
 
@@ -167,8 +167,8 @@ static void cpu(processor_t *proc, int op, int address) {
       proc->auxiliary_register = 0;
       break;
     case 2:
-      alu_multiply(&proc->accumulator, &proc->auxiliary_register,
-                   proc->accumulator, n);
+      alu_multiply(
+        &proc->accumulator, &proc->auxiliary_register, proc->accumulator, n);
       break;
     case 3: {
       int64_t ah = 0;
@@ -212,8 +212,8 @@ static void cpu(processor_t *proc, int op, int address) {
       break;
     }
     case 6:
-      proc->accumulator = alu_divide(&proc->overflow, proc->accumulator,
-                                     proc->auxiliary_register, n);
+      proc->accumulator = alu_divide(
+        &proc->overflow, proc->accumulator, proc->auxiliary_register, n);
       proc->auxiliary_register = 0;
       break;
     case 7:
@@ -268,11 +268,11 @@ static void cpu(processor_t *proc, int op, int address) {
       break;
     case 1:
       proc->accumulator =
-          fpu_add(&proc->overflow, proc->accumulator, fpu_neg(n));
+        fpu_add(&proc->overflow, proc->accumulator, fpu_neg(n));
       break;
     case 2:
       proc->accumulator =
-          fpu_add(&proc->overflow, fpu_neg(proc->accumulator), n);
+        fpu_add(&proc->overflow, fpu_neg(proc->accumulator), n);
       break;
     case 3:
       proc->accumulator = fpu_mpy(&proc->overflow, proc->accumulator, n);
@@ -347,8 +347,8 @@ static void cpu(processor_t *proc, int op, int address) {
       // align integer part of program counter to second address
       // position of memory word
       proc->core_store[address] =
-          ((int64_t)(proc->program_counter) << (second_address_shift - 1)) &
-          thirty_nine_bits;
+        ((int64_t)(proc->program_counter) << (second_address_shift - 1)) &
+        thirty_nine_bits;
       break;
     case 4: {
       int unit = 1;
