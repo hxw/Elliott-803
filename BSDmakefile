@@ -5,6 +5,8 @@ TAPES += Elliott-Programs
 TAPES += H-Code-Compilers
 TAPES += hello
 
+VERSION ?= zero
+
 PREFIX ?= /usr/local
 DATADIR ?= ${PREFIX}/share/Elliott-803
 SHARE_DIR = ${DESTDIR}${DATADIR}
@@ -17,10 +19,10 @@ DEFAULT_TAPE_DIR ?= ${p:S/ /:/gW}
 
 .PHONY: all
 all:
-	${MAKE} -C emulator DEFAULT_TAPE_DIR="${DEFAULT_TAPE_DIR}" all
+	${MAKE} -C emulator DEFAULT_TAPE_DIR="${DEFAULT_TAPE_DIR}" VERSION="${VERSION}" all
 
 .PHONY: test
-test:
+test: all
 	${MAKE} -C emulator test
 
 .PHONY: install
