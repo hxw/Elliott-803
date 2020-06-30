@@ -356,7 +356,7 @@ static bool action_memory_write(elliott803_t *proc, const char *params) {
   proc->core_store[addr & address_bits] = w;
 
   char buffer[256];
-  snprintf(buffer, sizeof(buffer), "mw %4ld: ", addr);
+  snprintf(buffer, sizeof(buffer), "mw %4" PRId64 ": ", addr);
   char *s = to_machine_code(buffer, w);
 
   ssize_t n = reply(proc, s, strlen(s) + 1); // include '\0'
