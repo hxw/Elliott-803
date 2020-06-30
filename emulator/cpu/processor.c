@@ -4,6 +4,7 @@
 #include <ctype.h>
 #include <errno.h> //strerr
 #include <fcntl.h>
+#include <inttypes.h>
 #include <pthread.h>
 #include <stdarg.h>
 #include <stdbool.h>
@@ -315,7 +316,7 @@ static bool action_memory_read(elliott803_t *proc, const char *params) {
   int64_t w = core_read_program(proc, addr & address_bits);
 
   char buffer[256];
-  snprintf(buffer, sizeof(buffer), "mr %4ld: ", addr);
+  snprintf(buffer, sizeof(buffer), "mr %4" PRId64 ": ", addr);
   char *s = to_machine_code(buffer, w);
 
   ssize_t n = reply(proc, s, strlen(s) + 1); // include '\0'
@@ -637,7 +638,7 @@ static void *main_loop(void *arg) {
       uint8_t b = 0;
       if (buffer_get(&proc->punch[i], &b)) {
         char buffer[256];
-        ssize_t n = snprintf(buffer, sizeof(buffer), "p%lu %02x", i + 1, b);
+        ssize_t n = snprintf(buffer, sizeof(buffer), "p%zu %02x", i + 1, b);
         n = reply(proc, buffer, n + 1); // include '\0'
         assert(0 != n);
       }

@@ -1,5 +1,6 @@
 // convert.c
 
+#include <inttypes.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -109,7 +110,8 @@ char *to_machine_code(const char *prefix, int64_t word) {
 
   // this allocates memory for the returned string
   asprintf(&p,
-           "%s%02o %4d %s %02o %4d   X%010lx  8%013lo  %+13ld",
+           "%s%02o %4d %s %02o %4d   X%010" PRIx64 "  8%013" PRIo64
+           "  %+13" PRId64,
            prefix,
            op1,
            addr1,

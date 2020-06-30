@@ -1,5 +1,6 @@
 // alu_test.c
 
+#include <inttypes.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -20,8 +21,8 @@ static void test_add_op(const char *title,
   int64_t actual = alu_add(&actual_overflow, op, acc, a, n);
 
   if (actual != result || actual_overflow != overflow) {
-    printf("%-16s: actual:   %013lo (%s)\n"
-           "%-16s  expected: %013lo (%s)\n",
+    printf("%-16s: actual:   %013" PRIo64 " (%s)\n"
+           "%-16s  expected: %013" PRIo64 " (%s)\n",
            title,
            (actual >> word_shift) & lsb_thirty_nine_bits,
            actual_overflow ? "v" : "_",
@@ -39,8 +40,8 @@ test_mpy(const char *title, int64_t a, int64_t b, int64_t acc, int64_t ar) {
   alu_multiply(&actual_acc, &actual_ar, a, b);
 
   if (actual_acc != acc || actual_ar != ar) {
-    printf("%-16s: actual:   %013lo (%013lo)\n"
-           "%-16s  expected: %013lo (%013lo)\n",
+    printf("%-16s: actual:   %013" PRIo64 " (%013" PRIo64 ")\n"
+           "%-16s  expected: %013" PRIo64 " (%013" PRIo64 ")\n",
            title,
            (actual_acc >> word_shift) & lsb_thirty_nine_bits,
            (actual_ar >> word_shift) & lsb_thirty_nine_bits,
@@ -62,9 +63,8 @@ static void test_div(const char *title,
   //  actual_q <<= word_shift;
 
   if (actual_q != expected_q) {
-
-    printf("%-16s: actual:   %013lo\n"
-           "%-16s  expected: %013lo\n",
+    printf("%-16s: actual:   %013" PRIo64 "\n"
+           "%-16s  expected: %013" PRIo64 "\n",
            title,
            (actual_q >> word_shift) & lsb_thirty_nine_bits,
            "",
