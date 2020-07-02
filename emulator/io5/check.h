@@ -38,9 +38,9 @@ static int check_locale(void) {
   const char *l = setlocale(LC_ALL, "");
 
   // check that UTF-8 is setup
-  char *p = strchrnul(l, '.');
+  char *p = strrchr(l, '.');
 
-  if (0 != strcmp(".UTF-8", p)) {
+  if (NULL == p || 0 != strcmp(".UTF-8", p)) {
     printf("locale: \"%s\"  is not UTF-8\n", l);
     return 1;
   }

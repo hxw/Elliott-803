@@ -69,7 +69,7 @@ static bool handle_key(commands_t *cmd,
                        key_buffer_t *kb,
                        FILE *script);
 
-void set_pad(pads_t *pads, const layout_t *layout, pad_select_t next) {
+static void set_pad(pads_t *pads, const layout_t *layout, pad_select_t next) {
   pads->select = next;
   prefresh(pads->pad[pads->select],
            0,
@@ -161,7 +161,7 @@ int emulator(const char *name,
   memset(&pads, 0, sizeof(pads));
 
   pads.select = pad_console;
-  for (int i = 0; i < SizeOfArray(pads.pad); ++i) {
+  for (size_t i = 0; i < SizeOfArray(pads.pad); ++i) {
     pads.pad[i] = newpad(layout.text_lines, layout.text_cols);
     scrollok(pads.pad[i], true);
   }
@@ -296,7 +296,7 @@ int emulator(const char *name,
 
   for (size_t i = 0; i < commands_io_count; ++i) {
     if (NULL == cmd.file[i]) {
-      io5_file_allocate(cmd.file[i]);
+      cmd.file[i] = io5_file_allocate();
     }
   }
 
@@ -306,7 +306,7 @@ int emulator(const char *name,
     }
   }
 
-  for (int i = 0; i < SizeOfArray(pads.pad); ++i) {
+  for (size_t i = 0; i < SizeOfArray(pads.pad); ++i) {
     delwin(pads.pad[i]);
   }
 
@@ -385,14 +385,14 @@ void handle_proc_fd(commands_t *cmd,
       sscanf(&in_buffer[3], "%02x", &c);
 
       uint8_t b[256];
-      b[0] = c;
+      b[0] = (uint8_t)(c & 0xff);
 
       if (NULL != f) {
         io5_file_write(f, b, 1);
       }
 
       io5_conv_put(conv, b, 1);
-      ssize_t n = io5_conv_get(conv, b, sizeof(b));
+      n = io5_conv_get(conv, b, sizeof(b));
       b[n] = '\0';
 
       if ('\r' == b[0]) {
@@ -421,14 +421,14 @@ void handle_proc_fd(commands_t *cmd,
       }
       if (NULL != f) {
         uint8_t read_buffer[32]; // max bytes is 32
-        ssize_t n = io5_file_read(f, read_buffer, sizeof(read_buffer));
-        if (n >= 1) {
+        ssize_t count = io5_file_read(f, read_buffer, sizeof(read_buffer));
+        if (count >= 1) {
           char packet[256];
           size_t l = sizeof(packet);
           memset(packet, 0, sizeof(packet));
           int i = snprintf(packet, sizeof(packet), "reader %d ", unit);
           l -= i;
-          for (int j = 0; j < n; ++j) {
+          for (ssize_t j = 0; j < count; ++j) {
             int k = snprintf(&packet[i], l, "%02x", read_buffer[j]);
             i += k;
             l -= k;

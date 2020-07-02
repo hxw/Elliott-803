@@ -361,7 +361,7 @@ static void cpu(processor_t *proc, int op, int address) {
         unit = 3;
         punch_busy = busy_punch_3;
       }
-      if (!pts_punch(proc, unit, address)) {
+      if (!pts_punch(proc, unit, (uint8_t)(0xff & address))) {
         proc->io_busy = punch_busy;
         return; // do not update program counter
       }

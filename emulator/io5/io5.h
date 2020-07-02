@@ -25,7 +25,7 @@ typedef struct io5_file_struct io5_file_t;
 
 // allocate an io stream instance not connected to any file
 // returns NULL if cannot allocate memory
-io5_file_t *io5_file_allocate();
+io5_file_t *io5_file_allocate(void);
 
 // deallocate all resources attached to the instance
 io5_error_t io5_file_deallocate(io5_file_t *file);
@@ -75,13 +75,11 @@ io5_error_t io5_conv_deallocate(io5_conv_t *conv);
 // send "characters" encoded as "from" to internal buffer
 // returns:
 //   +N   number of characters consumed (maybe zero)
-//   -1   error
-ssize_t io5_conv_put(io5_conv_t *conv, const uint8_t *buffer, size_t length);
+size_t io5_conv_put(io5_conv_t *conv, const uint8_t *buffer, size_t length);
 
 // read internal buffer and convert as "to" "characters"
 // returns:
 //   +N   number of characters returned (maybe zero)
-//   -1   error
-ssize_t io5_conv_get(io5_conv_t *conv, uint8_t *buffer, size_t length);
+size_t io5_conv_get(io5_conv_t *conv, uint8_t *buffer, size_t length);
 
 #endif

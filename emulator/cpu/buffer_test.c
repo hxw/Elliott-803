@@ -21,22 +21,22 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  for (int i = 0; i < sizeof(values); ++i) {
+  for (size_t i = 0; i < sizeof(values); ++i) {
     uint8_t p = values[i];
     if (!buffer_put(&buffer, p)) {
-      printf("failed to store[%d]: %d  in buffer\n", i, p);
+      printf("failed to store[%zu]: %d  in buffer\n", i, p);
       return 1;
     }
   }
 
-  for (int i = 0; i < sizeof(values); ++i) {
+  for (size_t i = 0; i < sizeof(values); ++i) {
     uint8_t p = values[i];
     if (!buffer_get(&buffer, &b)) {
-      printf("missing value[%d]: %d\n", i, p);
+      printf("missing value[%zu]: %d\n", i, p);
       return 1;
     }
     if (p != b) {
-      printf("value[%d]: %d != actual: %d\n", i, p, b);
+      printf("value[%zu]: %d != actual: %d\n", i, p, b);
       return 1;
     }
   }

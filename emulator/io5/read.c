@@ -23,9 +23,9 @@ ssize_t io5_file_read(io5_file_t *file, uint8_t *buffer, size_t length) {
     return -1;
   }
 
-  ssize_t r = 0;
+  size_t r = 0;
   while (length > 0) {
-    ssize_t gn = io5_conv_get(file->conv, &buffer[r], length);
+    size_t gn = io5_conv_get(file->conv, &buffer[r], length);
     r += gn;
     length -= gn;
     if (0 == gn) {
@@ -38,10 +38,7 @@ ssize_t io5_file_read(io5_file_t *file, uint8_t *buffer, size_t length) {
         file->end = n;
       }
       size_t n = file->end - file->start;
-      ssize_t np = io5_conv_put(file->conv, &file->buffer[file->start], n);
-      if (np < 0) {
-        return -1;
-      }
+      size_t np = io5_conv_put(file->conv, &file->buffer[file->start], n);
       file->start += np;
       if (file->start >= file->end) {
         file->start = 0;
@@ -49,5 +46,5 @@ ssize_t io5_file_read(io5_file_t *file, uint8_t *buffer, size_t length) {
       }
     }
   }
-  return r;
+  return (ssize_t)(r);
 }

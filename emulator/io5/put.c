@@ -36,7 +36,7 @@ static int process_hex_data(io5_conv_t *conv, uint8_t c) {
       conv->from_byte[2] = '\0';
       unsigned int n = 0;
       sscanf((const char *)conv->from_byte, "%x", &n);
-      b = n;
+      b = (int)(n);
     }
     conv->from_state = state_eol;
     break;
@@ -105,7 +105,7 @@ static wint_t process_utf8_data(io5_conv_t *conv, uint8_t c) {
       }
       conv->from_wchar &= mask;
       // select one of the five states (in reverse order)
-      conv->from_state = state_utf8_5 + 5 - i;
+      conv->from_state = (state_t)(state_utf8_5 + 5 - i);
     }
     break;
 
@@ -128,13 +128,12 @@ static wint_t process_utf8_data(io5_conv_t *conv, uint8_t c) {
 
 // send "characters" encoded as "from" to internal buffer
 // returns:
-//   +N   number of characters consumed (maybe zero)
-//   -1   error
-ssize_t io5_conv_put(io5_conv_t *conv, const uint8_t *buffer, size_t length) {
+//   N   number of characters consumed (maybe zero)
+size_t io5_conv_put(io5_conv_t *conv, const uint8_t *buffer, size_t length) {
 
   shift_t current_shift = shift_null;
 
-  ssize_t n = 0;
+  size_t n = 0;
   for (; n < length; ++n, ++buffer) {
 
     int free_bytes = 0;
@@ -149,7 +148,7 @@ ssize_t io5_conv_put(io5_conv_t *conv, const uint8_t *buffer, size_t length) {
     ++free_bytes;
 
     // check if second free byte (for the case of a shift change)
-    int next2 = next + 1;
+    size_t next2 = next + 1;
     if (next2 >= sizeof(conv->buffer)) {
       next2 = 0;
     }
@@ -319,7 +318,7 @@ ssize_t io5_conv_put(io5_conv_t *conv, const uint8_t *buffer, size_t length) {
     }
 
     if (b >= 0) {
-      conv->buffer[conv->put] = b;
+      conv->buffer[conv->put] = (uint8_t)(b & mask);
       conv->put = next;
     }
   }

@@ -33,7 +33,7 @@ static const size_t message_buffer_size = 4096;
 // store values are in int64_t
 typedef struct elliott803_struct {
 
-  const char *name; // name of this processor instance
+  char *name; // name of this processor instance
 
   int64_t core_store[memory_size];
 

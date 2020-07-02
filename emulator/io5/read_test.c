@@ -40,7 +40,11 @@ static ssize_t read_file(const char *file_name,
   }
 
   ssize_t n = io5_file_read(io, data, data_size);
-  if (n > data_size) {
+  if (n < 0) {
+    printf("read failed, I/O error: %zd into: %zd\n", n, data_size);
+    return -1;
+  }
+  if ((size_t)(n) > data_size) {
     printf("read failed, buffer overrun: %zd into: %zd\n", n, data_size);
     return -1;
   }
@@ -59,7 +63,7 @@ static ssize_t read_file(const char *file_name,
   return n;
 }
 
-static size_t
+static ssize_t
 raw_write_file(const char *file_name, const void *buffer, size_t buffer_size) {
 
   // ensure file does not exist
@@ -68,16 +72,16 @@ raw_write_file(const char *file_name, const void *buffer, size_t buffer_size) {
   // create a test file for reader
   FILE *out = fopen(file_name, "wbx");
   if (NULL == out) {
-    return 0;
+    return -1;
   }
 
   size_t count = fwrite(buffer, 1, buffer_size, out);
   fclose(out);
 
-  return count;
+  return (ssize_t)(count);
 }
 
-int do_test(const char *file_name) {
+static int do_test(const char *file_name) {
 
   const uint8_t lines[] =             // string of all possible sets
     "\0\0 \r\n"                       // control chars
@@ -161,21 +165,19 @@ int do_test(const char *file_name) {
 
   // test hex5 encoding
 
-  size_t actual_size = raw_write_file(file_name, hex, sizeof(hex));
-  if (0 == actual_size) {
+  ssize_t actual_size = raw_write_file(file_name, hex, sizeof(hex));
+  if (actual_size <= 0) {
     printf("failed to create temp file\n");
     return 1;
   }
 
-  ssize_t r = read_file(file_name, io5_mode_hex5, actual, sizeof(actual));
-  if (r <= 0) {
+  actual_size = read_file(file_name, io5_mode_hex5, actual, sizeof(actual));
+  if (actual_size <= 0) {
     return 1;
   }
 
-  actual_size = r;
-
   rc = check_data(actual,
-                  actual_size,
+                  (size_t)(actual_size),
                   lines_expected,
                   sizeof(lines_expected)); // exclude trailing NUL
   if (0 != rc) {
@@ -186,20 +188,18 @@ int do_test(const char *file_name) {
   // test Elliott encoding
 
   actual_size = raw_write_file(file_name, lines, sizeof(lines));
-  if (0 == actual_size) {
+  if (actual_size <= 0) {
     printf("failed to create temp file\n");
     return 1;
   }
 
-  r = read_file(file_name, io5_mode_elliott, actual, sizeof(actual));
-  if (r <= 0) {
+  actual_size = read_file(file_name, io5_mode_elliott, actual, sizeof(actual));
+  if (actual_size <= 0) {
     return 1;
   }
 
-  actual_size = r;
-
   rc = check_data(actual,
-                  actual_size,
+                  (size_t)(actual_size),
                   lines_expected,
                   sizeof(lines_expected)); // exclude trailing NUL
   if (0 != rc) {

@@ -26,7 +26,7 @@ ssize_t io5_file_write(io5_file_t *file, const uint8_t *buffer, size_t length) {
   ssize_t n = 0;
   while (length > 0) {
 
-    ssize_t np = io5_conv_put(file->conv, &buffer[n], length);
+    size_t np = io5_conv_put(file->conv, &buffer[n], length);
 
     n += np;
     length -= np;
@@ -36,7 +36,7 @@ ssize_t io5_file_write(io5_file_t *file, const uint8_t *buffer, size_t length) {
     }
 
     uint8_t temp[256];
-    ssize_t ng = io5_conv_get(file->conv, temp, sizeof(temp));
+    size_t ng = io5_conv_get(file->conv, temp, sizeof(temp));
 
     if (0 == ng) {
       break;

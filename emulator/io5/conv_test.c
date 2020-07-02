@@ -11,7 +11,7 @@
 #include "io5.h"
 #include "structs.h"
 
-int do_test(const char *file_name) {
+static int do_test(void) {
 
   const uint8_t binary_data[] = {
     0x00, 0x00, 0x1c, 0x1d, 0x1e, // NUL NUL SP CR LF
@@ -50,14 +50,14 @@ int do_test(const char *file_name) {
     return 1;
   }
 
-  ssize_t n = io5_conv_put(conv, binary_data, sizeof(binary_data));
+  size_t n = io5_conv_put(conv, binary_data, sizeof(binary_data));
   if (sizeof(binary_data) != n) {
     printf("error: consumed: %zu of: %zu\n", n, sizeof(binary_data));
     return 1;
   }
 
   memset(actual, 0, sizeof(actual));
-  ssize_t actual_size = io5_conv_get(conv, actual, sizeof(actual));
+  size_t actual_size = io5_conv_get(conv, actual, sizeof(actual));
 
   rc = check_data(actual, actual_size, binary_data, sizeof(binary_data));
   if (0 != rc) {
@@ -259,16 +259,8 @@ int main(int argc, char *argv[]) {
     return rc;
   }
 
-  const char *file_name = "test.tmp";
-
-  // ensure file does not exist
-  unlink(file_name);
-
   // do all tests
-  rc = do_test(file_name);
-
-  // clean up
-  unlink(file_name);
+  rc = do_test();
 
   // result
   return rc;

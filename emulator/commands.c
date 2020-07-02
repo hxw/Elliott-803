@@ -23,7 +23,7 @@ typedef struct {
   io5_mode_t mode;
 } file_mode_t;
 
-const file_mode_t modes[] = {
+static const file_mode_t modes[] = {
   {L"hex5", io5_mode_hex5},
   {L"h5", io5_mode_hex5},
   {L"hex8", io5_mode_hex8},
@@ -236,7 +236,7 @@ static void command_hello(commands_t *cmd, const wchar_t *name, wchar_t **ptr) {
     ++address;
   }
 
-  int loop_address = address;
+  long loop_address = address;
 
   for (size_t i = 0; i < SizeOfArray(hello_chars); ++i) {
     memset(packet, 0, sizeof(packet));
@@ -326,9 +326,6 @@ command_reader(commands_t *cmd, const wchar_t *name, wchar_t **ptr) {
       break;
     case PS_file_not_found:
       cmd->error = wcsdup(L"error: file not found");
-      break;
-    default:
-      cmd->error = wcsdup(L"error: unexpected path_search error");
       break;
     }
   }
@@ -449,7 +446,7 @@ typedef struct {
   void (*func)(commands_t *cmd, const wchar_t *name, wchar_t **w);
 } command_t;
 
-const command_t commands[] = {
+static const command_t commands[] = {
   {L"exit", command_exit},       {L"x", command_exit},
   {L"quit", command_exit},       {L"q", command_exit},
   {L"wait", command_wait},       {L"screen", command_screen},

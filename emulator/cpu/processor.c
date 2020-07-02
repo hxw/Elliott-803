@@ -186,8 +186,6 @@ static const char *busy_device(elliott803_t *proc) {
     return "punch_2";
   case busy_punch_3:
     return "punch_3";
-  default:
-    return "unknown";
   }
 }
 
@@ -463,7 +461,7 @@ static bool action_reader(elliott803_t *proc, const char *params) {
   }
 
   // must have 1..32 bytes (2..64 chars)
-  int l = strlen(params);
+  size_t l = strlen(params);
   if (l < 2 || (1 == (l & 1)) || l > 64) {
     const_reply(proc, "error invalid data length");
     return true;
@@ -476,11 +474,11 @@ static bool action_reader(elliott803_t *proc, const char *params) {
     for (int j = 0; j < 2; ++j) {
       char c = *params++;
       if (c >= '0' && c <= '9') {
-        b = (b << 4) + c - '0';
+        b = (uint8_t)((b << 4) + c - '0');
       } else if (c >= 'a' && c <= 'f') {
-        b = (b << 4) + c - 'a' + 10;
+        b = (uint8_t)((b << 4) + c - 'a' + 10);
       } else if (c >= 'A' && c <= 'F') {
-        b = (b << 4) + c - 'A' + 10;
+        b = (uint8_t)((b << 4) + c - 'A' + 10);
       } else {
         const_reply(proc, "error invalid hex digit");
         return true;
@@ -532,9 +530,9 @@ static bool action_word_generator(elliott803_t *proc, const char *params) {
         w &= ~(address_bits << second_address_shift);
       }
     } else {
-      // otherwise tread as code or ±N
+      // otherwise treat as code or ±N
       w = from_machine_code(params, strlen(params));
-      if (-1LL == w) {
+      if (-1 == (int64_t)(w)) {
         const_reply(proc, "error invalid machine code");
         return true;
       }
@@ -682,14 +680,14 @@ static void *main_loop(void *arg) {
 
     // locate first space or the '\0'
     char *p = strchrnul(buffer, ' ');
-    int word_length = p - buffer;
+    size_t word_length = p - buffer;
 
     while (isspace(*p)) {
       ++p;
     }
 
     // search for and execute command
-    for (int i = 0; i < SizeOfArray(command_list); ++i) {
+    for (size_t i = 0; i < SizeOfArray(command_list); ++i) {
       if (0 == strncmp(buffer, command_list[i].name, word_length)) {
         run = command_list[i].fn(proc, p);
         // reset busy to in case some I/O buffer was changed by just

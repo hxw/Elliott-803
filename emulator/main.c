@@ -12,7 +12,8 @@
 #include "pathsearch.h"
 
 // display usage message and exit
-static void usage(const char *program, const char *format, ...) {
+__attribute__((noreturn)) static void
+usage(const char *program, const char *format, ...) {
 
   if (NULL != format) {
     fprintf(stderr, "error: ");
@@ -57,19 +58,12 @@ int main(int argc, char *argv[]) {
         break;
       case PS_malloc_failed:
         usage(program, "file: %s  error: %s\n", optarg, "malloc failed");
-        break;
+
       case PS_filename_too_long:
         usage(program, "file: %s  error: %s\n", optarg, "filename too long");
-        break;
+
       case PS_file_not_found:
         usage(program, "file: %s  error: %s\n", optarg, "file not found");
-        break;
-      default:
-        usage(program,
-              "file: %s  error: %s\n",
-              optarg,
-              "unexpected path_search error");
-        break;
       }
       break;
 

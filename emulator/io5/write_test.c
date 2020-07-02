@@ -44,7 +44,11 @@ static int write_file(const char *file_name,
 
   //  n = io5_file_write(io, all_chars, sizeof(all_chars));
   ssize_t n = io5_file_write(file, data, data_size);
-  if (data_size != n) {
+  if (n < 0) {
+    printf("write failed, I/O error\n");
+    return 1;
+  }
+  if (data_size != (size_t)(n)) {
     printf("write failed, only wrote: %zd\n", n);
     return 1;
   }
@@ -80,7 +84,7 @@ raw_read_file(const char *file_name, void *buffer, size_t buffer_size) {
   return count;
 }
 
-int do_test(const char *file_name) {
+static int do_test(const char *file_name) {
 
   const uint8_t lines[] = {
     0x00, 0x00, 0x1c, 0x1d, 0x1e, // CR LF

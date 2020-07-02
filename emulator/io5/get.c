@@ -13,10 +13,9 @@
 // read internal buffer and convert as "to" "characters"
 // returns:
 //   +N   number of characters returned (maybe zero)
-//   -1   error
-ssize_t io5_conv_get(io5_conv_t *conv, uint8_t *buffer, size_t length) {
+size_t io5_conv_get(io5_conv_t *conv, uint8_t *buffer, size_t length) {
 
-  ssize_t n = 0;
+  size_t n = 0;
   while (n < length && conv->put != conv->get) {
 
     int c = conv->buffer[conv->get];
@@ -28,7 +27,7 @@ ssize_t io5_conv_get(io5_conv_t *conv, uint8_t *buffer, size_t length) {
     case io5_mode_hex8:
       c &= 0xff;
       char temp[4]; // "XX\n\0" = 4 bytes
-      size_t k = snprintf(temp, sizeof(temp), "%02x\n", c);
+      size_t k = (size_t)snprintf(temp, sizeof(temp), "%02x\n", c);
 
       if (n + k > length) {
         // insufficient space
@@ -39,7 +38,7 @@ ssize_t io5_conv_get(io5_conv_t *conv, uint8_t *buffer, size_t length) {
       break;
 
     case io5_mode_binary:
-      buffer[n++] = c;
+      buffer[n++] = (uint8_t)(c);
       break;
 
     case io5_mode_elliott: {
@@ -146,7 +145,7 @@ ssize_t io5_conv_get(io5_conv_t *conv, uint8_t *buffer, size_t length) {
         default:
           break;
         }
-        size_t k = strlen(s);
+        k = strlen(s);
         if (n + k > length) {
           // insufficient space
           return n;
@@ -154,7 +153,7 @@ ssize_t io5_conv_get(io5_conv_t *conv, uint8_t *buffer, size_t length) {
         memcpy(&buffer[n], s, k);
         n += k;
       } else {
-        buffer[n++] = c + 'a' - 1;
+        buffer[n++] = (uint8_t)(c + 'a' - 1);
       }
       break;
     }

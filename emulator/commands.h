@@ -27,7 +27,7 @@ typedef struct {
   bool wait;
   int wait_delay;
   int screen;
-  const wchar_t *error;
+  wchar_t *error;
 } commands_t;
 
 void commands_run(commands_t *cmd, wchar_t *buffer, size_t buffer_size);

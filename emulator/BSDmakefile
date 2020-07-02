@@ -9,11 +9,18 @@ BIN_DIR = ${DESTDIR}${PREFIX}/bin
 PROG = emu803
 MAN1 = man1/emu803.1
 
-CFLAGS = -g -Wall -Werror -std=c17
-CFLAGS += -D VERSION_STRING='"${VERSION}"'
-CFLAGS += -D PROGRAM_STRING='"${PROG}"'
+CFLAGS ?= -g -Wall -Werror -std=c17
+
+.ifdef STRICT
+CFLAGS += -Weverything -Wno-padded -Wno-switch-enum -Wno-unused-parameter
+CFLAGS += -Wno-sign-conversion -Wno-vla -Wno-pedantic -Wno-shift-sign-overflow -Wno-format-nonliteral
+.endif
+
+CFLAGS += -I.
+CFLAGS += -D VERSION_STRING=\"${VERSION}\"
+CFLAGS += -D PROGRAM_STRING=\"${PROG}\"
 .ifdef DEFAULT_TAPE_DIR
-CFLAGS += -D DEFAULT_TAPE_DIR='"${DEFAULT_TAPE_DIR}"'
+CFLAGS += -D DEFAULT_TAPE_DIR=\"${DEFAULT_TAPE_DIR}\"
 .endif
 
 LIBS = -lcursesw -lthr -lrt -Lcpu -l803 -Lio5 -lio5 -Lparser -lparser
@@ -39,12 +46,12 @@ install:
 
 .PHONY: libs
 libs:
-	${MAKE} -C parser depend
-	${MAKE} -C parser
-	${MAKE} -C io5 depend
-	${MAKE} -C io5
-	${MAKE} -C cpu depend
-	${MAKE} -C cpu
+	${MAKE} CFLAGS='${CFLAGS}' -C parser depend
+	${MAKE} CFLAGS='${CFLAGS}' -C parser
+	${MAKE} CFLAGS='${CFLAGS}' -C io5 depend
+	${MAKE} CFLAGS='${CFLAGS}' -C io5
+	${MAKE} CFLAGS='${CFLAGS}' -C cpu depend
+	${MAKE} CFLAGS='${CFLAGS}' -C cpu
 
 
 .PHONY: clean

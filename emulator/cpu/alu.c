@@ -88,8 +88,8 @@ void alu_multiply(int64_t *acc, int64_t *ar, int64_t md1, int64_t mr1) {
   // printf("md : %016lx\n", md1);
   // printf("mr : %016lx\n", mr1);
 
-  uint64_t md = md1;
-  uint64_t mr = mr1;
+  uint64_t md = (uint64_t)(md1);
+  uint64_t mr = (uint64_t)(mr1);
 
   bool negative = false;
   if (md1 < 0) {

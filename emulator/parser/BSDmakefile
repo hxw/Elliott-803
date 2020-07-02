@@ -1,6 +1,6 @@
 # BSDmakefile
 
-CFLAGS = -g -I. -Wall -Werror -std=c17
+CFLAGS ?= -g -I. -Wall -Werror -std=c17
 
 LIB = libparser.a
 
