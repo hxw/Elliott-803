@@ -12,6 +12,9 @@ int64_t alu_add(bool *overflow, int op, int64_t acc, int64_t a, int64_t n) {
     return a;
 
   case 1: { // negate: -a
+    if (0 == a) {
+      return 0;
+    }
     int64_t ap = -a;
     if (a == ap) {
       *overflow = true;
@@ -149,8 +152,7 @@ void alu_multiply(int64_t *acc, int64_t *ar, int64_t md1, int64_t mr1) {
 // 128-bit / 64-bit unsigned divide
 // derived from:
 //   https://codereview.stackexchange.com/questions/67962/mostly-portable-128-by-64-bit-division
-static uint64_t internal_divide(uint64_t dividend_high,
-                                uint64_t dividend_low,
+static uint64_t internal_divide(uint64_t dividend_high, uint64_t dividend_low,
                                 uint64_t divisor) {
 
   uint64_t quotient = dividend_low << 1;
