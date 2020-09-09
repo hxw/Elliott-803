@@ -187,6 +187,7 @@ static const char *busy_device(elliott803_t *proc) {
   case busy_punch_3:
     return "punch_3";
   }
+  return "";
 }
 
 // action routines

@@ -8,7 +8,11 @@
 #include <string.h>
 
 // I/O channel buffers
-static const int buffer_capacity = 1023;
+
+enum {
+  buffer_capacity = 1023,
+};
+
 typedef struct {
   uint8_t data[buffer_capacity + 1];
   size_t read_position;

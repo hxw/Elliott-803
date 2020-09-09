@@ -43,13 +43,17 @@ static const int64_t b_mod_bit = 1LL << 44;
 static const int64_t op_bits = 077;
 static const int64_t address_bits = 8191;
 
-static const int64_t memory_size = 8192;
+enum {
+  memory_size = 8192,
+};
 
 // I/O limits
 // reader 1/2, punch 1/2
 // teleprinter 3 (i/o)
-static const int reader_units = 3;
-static const int punch_units = 3;
+enum {
+  reader_units = 3,
+  punch_units = 3,
+};
 
 #define ELLIOTT(OP1, A1, B, OP2, A2)                                           \
   ((OP1##LL << first_op_shift) | (A1##LL << first_address_shift) |             \
