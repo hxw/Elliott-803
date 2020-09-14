@@ -414,30 +414,33 @@ command_word_generator(commands_t *cmd, const wchar_t *name, wchar_t **ptr) {
 
 // help
 
+// clang-format: off
 static void command_help(commands_t *cmd, const wchar_t *name, wchar_t **ptr) {
   const wchar_t *m =
-    // clang-format: off
-    L"help                  (?)   this message\n"
-    L"exit                  (x)   exit emulation\n"
-    L"wait                        wait for stop or wg polling\n"
-    L"list [ADDR [COUNT]]   (l)   display memory words\n"
-    L"mw ADDR CODE|±DEC           write memory word\n"
-    L"reset                       reset all regs and stop execution\n"
-    L"reset run                   reset all regs and restart from zero\n"
-    L"run [ADDR]                  run from address or continue after a stop\n"
-    L"stop                        stop execution\n"
-    L"regs                  (r)   display registers and status\n"
-    L"hello [ADDR [1|2|3]]        load hello world [4096 1]\n"
-    L"reader 1|2 [MODE] FILE      attach an existing file to a reader "
-    L"(hex5)\n"
-    L"punch 1|2 [MODE] FILE       create file and attach to a punch (hex5)\n"
-    L"screen 1|2|3|4              select current screen as Fn\n"
-    L"wg [msb|o2l|lsb|CODE|±N]    set or display word generator\n"
-    // clang-format: on
+    L"help                  (?) this message\n"                             //
+    L"exit                  (x) exit emulation\n"                           //
+    L"wait                      wait for stop or wg polling\n"              //
+    L"list [ADDR [COUNT]]   (l) display memory words\n"                     //
+    L"mw ADDR CODE|±DEC         write memory word\n"                        //
+    L"reset                     reset regs and stop execution\n"            //
+    L"reset run                 reset regs and start from zero\n"           //
+    L"run [ADDR]                run from address or continue after stop\n"  //
+    L"stop                      stop execution\n"                           //
+    L"regs                  (r) display registers and status\n"             //
+    L"hello [ADDR [1|2|3]]      load hello world [4096 1]\n"                //
+    L"reader 1|2 [MODE] FILE    attach existing file to a reader (hex5)\n"  //
+    L"punch 1|2 [MODE] FILE     create file, attach to a punch (hex5)\n"    //
+    L"screen 1|2|3|4            select current screen as Fn\n"              //
+    L"wg                        displays word generator value\n"            //
+    L"wg CODE|±N                set word generator code or signed number\n" //
+    L"wg f1|f2 [F]              clear/or wg function 1/2 bits (octal)\n"    //
+    L"wg n1 [N][/]              clear/or wg address 1 + B bits (decimal)\n" //
+    L"wg n2 [N]                 clear/or wg address 2 bits (decimal)\n"     //
     ;
 
   cmd->error = wcsdup(m);
 }
+// clang-format: on
 
 // lookup command
 

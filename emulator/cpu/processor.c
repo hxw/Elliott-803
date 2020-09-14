@@ -506,29 +506,75 @@ static bool action_word_generator(elliott803_t *proc, const char *params) {
 
   if ('\0' != params[0]) {
     uint64_t w = proc->word_generator;
-    if (0 == strcmp(params, "msb")) {
-      // if sign not set, set it
-      // if sign set clear all op1 bits
-      if (0 == (w & sign_bit)) {
-        w |= sign_bit;
-      } else {
-        w &= ~(op_bits << first_op_shift);
+    if (0 == strcmp(params, "b")) {
+      // set the B-Modifier
+      w |= b_mod_bit;
+    } else if ('f' == params[0] && ('1' == params[1] || '2' == params[1])) {
+      uint64_t shift = '1' == params[1] ? first_op_shift : second_op_shift;
+      uint64_t value = 0;
+      params += 2;
+      for (;;) {
+        char c = *params++;
+        if (c >= '0' && c <= '7') {
+          value = value * 8 + c - '0';
+        } else if (' ' == c) {
+          continue;
+        } else if ('\0' == c) {
+          break;
+        } else {
+          const_reply(proc, "error invalid octal value");
+          return true;
+        }
       }
-    } else if (0 == strcmp(params, "o2l")) {
-      // if op2 LSB not set, set it
-      // if op2 LSB set clear all op2 bits
-      if (0 == (w & (1LL << second_op_shift))) {
-        w |= 1LL << second_op_shift;
-      } else {
-        w &= ~(op_bits << second_op_shift);
+      if (value > op_bits) {
+        const_reply(proc, "error octal value too large");
+        return true;
       }
-    } else if (0 == strcmp(params, "lsb")) {
-      // if LSB not set, set it
-      // if LSB set clear all address2 bits
-      if (0 == (w & one_bit)) {
-        w |= one_bit;
+      if (0 == value) {
+        w &= ~(op_bits << shift);
       } else {
-        w &= ~(address_bits << second_address_shift);
+        w |= value << shift;
+      }
+    } else if ('n' == params[0] && ('1' == params[1] || '2' == params[1])) {
+      uint64_t shift =
+        '1' == params[1] ? first_address_shift : second_address_shift;
+      uint64_t value = 0;
+      bool bmod = false;
+      params += 2;
+      for (;;) {
+        char c = *params++;
+        if (c >= '0' && c <= '9') {
+          value = value * 10 + c - '0';
+        } else if ('b' == c || '/' == c) {
+          if (first_address_shift == shift) {
+            bmod = true;
+          } else {
+            const_reply(proc, "error invalid b-modifier");
+            return true;
+          }
+        } else if (' ' == c) {
+          continue;
+        } else if ('\0' == c) {
+          break;
+        } else {
+          const_reply(proc, "error invalid decimal value");
+          return true;
+        }
+      }
+      if (value >= memory_size) {
+        const_reply(proc, "error decimal value too large");
+        return true;
+      }
+      if (0 == value && !bmod) {
+        w &= ~(address_bits << shift);
+        if (first_address_shift == shift) {
+          w &= ~b_mod_bit;
+        }
+      } else {
+        w |= value << shift;
+        if (bmod) {
+          w |= b_mod_bit;
+        }
       }
     } else {
       // otherwise treat as code or ±N
@@ -573,19 +619,25 @@ static bool action_check(elliott803_t *proc, const char *params) {
 
 static bool action_help(elliott803_t *proc, const char *params) {
 
+  // clang-format: off
   static const char *help[] = {
-    "?? reset [run]              reset CPU and optionally run T1 loader",   //
-    "?? mw ADDRESS CODE|±N       store code or signed number to address",   //
-    "?? mr ADDRESS               display code and numeric for address",     //
-    "?? status                   display registers and flags",              //
-    "?? run ADDRESS[.5]          run from specific address",                //
-    "?? cont                     continue after stop",                      //
-    "?? stop                     halt the CPU",                             //
-    "?? reader UNIT HEX          buffer up to 32 bytes for a reader",       //
-    "?? wg [CODE|±N|msb|o2l|lsb] set word generator code or signed number", //
-    "?? check                    check for stop or word generator polling", //
-    "?? ",                                                                  //
+    "?? reset [run]           reset CPU and optionally run T1 loader",   //
+    "?? mw ADDRESS CODE|±N    store code or signed number to address",   //
+    "?? mr ADDRESS            display code and numeric for address",     //
+    "?? status                display registers and flags",              //
+    "?? run ADDRESS[.5]       run from specific address",                //
+    "?? cont                  continue after stop",                      //
+    "?? stop                  halt the CPU",                             //
+    "?? reader UNIT HEX       buffer up to 32 bytes for a reader",       //
+    "?? wg                    displays word generator value",            //
+    "?? wg CODE|±N            set word generator code or signed number", //
+    "?? wg f1|f2 [F]          clear/or wg function 1/2 bits (octal)",    //
+    "?? wg n1 [N][/]          clear/or wg address 1 + B bits (decimal)", //
+    "?? wg n2 [N]             clear/or wg address 2 bits (decimal)",     //
+    "?? check                 check for stop or word generator polling", //
+    "?? ",                                                               //
   };
+  // clang-format: on
   for (size_t i = 0; i < SizeOfArray(help); ++i) {
     const_reply(proc, help[i]);
   }
@@ -598,6 +650,7 @@ typedef struct {
   bool (*fn)(elliott803_t *proc, const char *params);
 } cmd_t;
 
+// clang-format: off
 static const cmd_t command_list[] = {
   {"reset", action_reset},           //
   {"mw", action_memory_write},       //
@@ -612,6 +665,7 @@ static const cmd_t command_list[] = {
   {"?", action_help},                //
   {"terminate", action_terminate},   // last item (for internal use)
 };
+// clang-format: on
 
 // main processor control loop
 static void *main_loop(void *arg) {

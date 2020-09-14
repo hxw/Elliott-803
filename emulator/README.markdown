@@ -23,7 +23,7 @@ Command                   Abbr.  Description
 help                      (?)    this message
 exit                      (x)    exit emulation
 list [ADDR [COUNT]]       (l)    display memory words
-mw ADDR CODE|±DEC                write memory word
+mw ADDR CODE|±DEC                write memory word (machine code or signed decimal)
 reset                            reset all regs and stop execution
 reset run                        reset all regs and restart from zero
 run [ADDR]                       run from address or continue after a stop
@@ -32,8 +32,29 @@ regs                      (r)    display registers and status
 hello [ADDR [1|2|3]]             load hello world [4096 1]
 reader 1|2 [MODE] FILE           attach an existing file to a reader (hex5)
 punch 1|2 [MODE] FILE            create file and attach to a punch (hex5)
-wg [msb|o2l|lsb|CODE|±N]         set or display word generator
+wg                               display word generator
+wg CODE|±DEC                     set word generator to machine code or signed decimal
+wg f1|n1|f2|n2                   clear a set of bits (Note: n1 also clears B-Modifier)
+wg f1|f2 F                       'or' octal value to function bits
+wg n1|n2 N                       'or' decimal value to address bits (Note: '/' sets B-Modifier)
+wg b                             set the B-Modifier bit
 
+
+Abbreviation   Description
+=============  ============
+lower case     literal command text
+digits         literal command text
+space          literal command text
+[…]            optional parameters
+…|…            choice of parameter value
+COUNT          unsigned decimal value
+ADDR           decimal address 0..8191
+CODE           machine code value (e.g. 74 29:40 123)
+MODE           see table below
+FILE           pathname of a file
+±DEC           signed 39 bit decimal value (must have '+' or '-' sign prefix)
+F              octal value 0…77 for logical or to word generator
+N              decimal value 0…8191 for logical or to word generator
 
 ## File Reading MODE Values
 
