@@ -481,7 +481,8 @@ void commands_run(commands_t *cmd, wchar_t *buffer, size_t buffer_size) {
   for (size_t i = 0; i < SizeOfArray(commands); ++i) {
     if (0 == wcscasecmp(commands[i].name, w)) {
       buffer[0] = L'\0'; // assume no error
-      return commands[i].func(cmd, w, &str);
+      commands[i].func(cmd, w, &str);
+      return;
     }
   }
   cmd->error = wcsdup(L"error: invalid command");
