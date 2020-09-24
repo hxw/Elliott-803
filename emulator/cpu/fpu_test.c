@@ -59,13 +59,21 @@ int main(int argc, char *argv[]) {
 #define FLOAT803(x) ((x) << exponent_shift)
 
   const int64_t zero = 0;
+  const int64_t neg_0_125 = FLOAT803(04000000000375LL); // -1*2^-3
   const int64_t neg_0_5 = FLOAT803(04000000000377LL);
+  const int64_t neg_0_75 = FLOAT803(05000000000400LL);
   const int64_t neg_1 = FLOAT803(04000000000400LL);
   const int64_t neg_2 = FLOAT803(04000000000401LL);
 
+  const int64_t pos_0_5_E_N28 = FLOAT803(02000000000344LL);
   const int64_t pos_0_25 = FLOAT803(02000000000377LL);
   const int64_t pos_0_5 = FLOAT803(02000000000400LL);
+  const int64_t pos_0_625 = FLOAT803(02400000000400LL);
+  const int64_t pos_0_75 = FLOAT803(03000000000400LL);
+  const int64_t pos_0_75_ε = FLOAT803(03000000001400LL);
+
   const int64_t pos_1 = FLOAT803(02000000000401LL);
+  const int64_t pos_1_5_ε = FLOAT803(03000000001401LL);
   const int64_t pos_2 = FLOAT803(02000000000402LL);
   const int64_t pos_3 = FLOAT803(03000000000402LL);
   const int64_t pos_4 = FLOAT803(02000000000403LL);
@@ -73,8 +81,8 @@ int main(int argc, char *argv[]) {
   const int64_t pos_10 = FLOAT803(02400000000404LL);
   const int64_t pos_10_5 = FLOAT803(02500000000404LL);
 
-  const int64_t pos_10_5_div_10 = FLOAT803(02063146314401LL);
-  const int64_t pos_10_div_10_5 = FLOAT803(03636363636400LL);
+  // const int64_t pos_10_5_div_10 = FLOAT803(02063146314401LL);
+  // const int64_t pos_10_div_10_5 = FLOAT803(03636363636400LL);
 
   const int64_t pos_100 = FLOAT803(03100000000407LL);
   const int64_t pos_105 = FLOAT803(03220000000407LL);
@@ -132,6 +140,19 @@ int main(int argc, char *argv[]) {
   test_2_args("add  +1 +  0", fpu_add, pos_1, zero, pos_1, false);
   test_2_args("add   0 + +1", fpu_add, zero, pos_1, pos_1, false);
 
+  test_2_args(
+    "X5.03 add 0.75+ε + 0.75", fpu_add, pos_0_75_ε, pos_0_75, pos_1_5_ε, false);
+
+  test_2_args(
+    "X5.04 add 0.75 + -0.125", fpu_add, pos_0_75, neg_0_125, pos_0_625, false);
+
+  test_2_args("X5.06 add 0.75+ε + -0.75",
+              fpu_add,
+              pos_0_75_ε,
+              neg_0_75,
+              pos_0_5_E_N28,
+              false);
+
   test_2_args("add  +1 + +2", fpu_add, pos_1, pos_2, pos_3, false);
   test_2_args("add  +2 + +1", fpu_add, pos_2, pos_1, pos_3, false);
 
@@ -175,10 +196,10 @@ int main(int argc, char *argv[]) {
   test_2_args("div -1 / 0.5", fpu_div, neg_1, pos_0_5, neg_2, false);
 
   test_2_args("div  10 / 10", fpu_div, pos_10, pos_10, pos_1, false);
-  test_2_args(
-    "div  10.5/10", fpu_div, pos_10_5, pos_10, pos_10_5_div_10, false);
-  test_2_args(
-    "div  10/10.5", fpu_div, pos_10, pos_10_5, pos_10_div_10_5, false);
+  //  test_2_args("div  10.5/10", fpu_div, pos_10_5, pos_10, pos_10_5_div_10,
+  //  false);
+  // test_2_args("div  10/10.5", fpu_div, pos_10, pos_10_5, pos_10_div_10_5,
+  // false);
 
   return 0;
 }

@@ -31,6 +31,10 @@ int64_t fpu_standardise(int64_t a) {
     mantissa <<= 1;
     --exponent;
   }
+
+  if (0 != (mantissa & underflow_bits)) {
+    mantissa |= epsilon_bit;
+  }
   return (mantissa & mantissa_bits) |
          ((exponent << exponent_shift) & exponent_bits);
 }
@@ -48,6 +52,7 @@ int64_t fpu_add(bool *overflow, int64_t a, int64_t b) {
   int64_t mb = b & mantissa_bits;
   int64_t eb = (b & exponent_bits) >> exponent_shift;
 
+  // printf("fpu_add:\n");
   // printf("ma: %016lx  ea: %ld\n", ma, ea);
   // printf("mb: %016lx  eb: %ld\n", mb, eb);
 
@@ -88,6 +93,7 @@ int64_t fpu_add(bool *overflow, int64_t a, int64_t b) {
 
   ma = fpu_standardise(ma);
   // printf("qs: %013llo  x%016lx\n", B39(ma), ma);
+  // printf("qs: %013lo  x%016lx\n", ma, ma);
 
   eb = (ma & exponent_bits) >> exponent_shift;
   ea += eb - 38 - exponent_offset;

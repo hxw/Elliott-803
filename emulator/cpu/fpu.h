@@ -17,6 +17,9 @@ static const int64_t mantissa_bits = 0xfffffffc00000000LL;
 static const int64_t mantissa_shift = word_shift + exponent_size;
 static const int64_t mantissa_sign_extend_bits = 0xffffffffc0000000LL;
 
+static const int64_t epsilon_bit = 0x0000000400000000LL;
+static const int64_t underflow_bits = 0x0000000377777777LL;
+
 static const int64_t exponent_bits = 0x00000003fe000000LL;
 static const int64_t exponent_shift = word_shift;
 static const int64_t exponent_offset = 256;
