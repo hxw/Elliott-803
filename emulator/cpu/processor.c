@@ -200,6 +200,8 @@ static bool action_terminate(elliott803_t *proc, const char *params) {
 static void system_reset(elliott803_t *proc) {
   proc->program_counter = 0;
   proc->accumulator = 0;
+  proc->b_addr = 0; // invalidate B cache
+  proc->b_data = 0;
   proc->auxiliary_register = 0;
   proc->overflow = false;
   proc->io_busy = busy_none;

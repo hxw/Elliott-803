@@ -52,6 +52,10 @@ typedef struct elliott803_struct {
   execution_mode_t mode; // stop/run
   int program_counter;   // LSB is half word indicator
 
+  // Note b_addr will always have the half bit set when valid
+  int b_addr;     // address of data in B
+  int64_t b_data; // B Register data value
+
   // two paper tape readers and one teleprinter
   buffer_t reader[reader_units];
 

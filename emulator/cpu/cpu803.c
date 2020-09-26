@@ -410,10 +410,21 @@ void cpu803_execute(processor_t *proc) {
     // first instruction
     int op = (word >> first_op_shift) & op_bits;
     int address = (word >> first_address_shift) & address_bits;
+
+    // save second instruction
+    proc->b_addr = proc->program_counter | 1; // set the half bit
+    proc->b_data = word;
+
+    // execute first instruction
     cpu(proc, op, address);
 
-  } else {
+  } else { // PC half bit is set
 
+    // use saved data from B Register if possible
+    if (proc->program_counter == proc->b_addr) {
+      word = proc->b_data;
+      proc->b_addr = 0; // invalidate B cache
+    }
     if (0 != (b_mod_bit & word)) {
       int address = (word >> first_address_shift) & address_bits;
       int64_t modifier = core_read(proc, address);
