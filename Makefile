@@ -2,8 +2,10 @@
 
 TAPES += Elliott-Algol60-A104
 TAPES += Elliott-Programs
+TAPES += Elliott-Programs/X5
 TAPES += H-Code-Compilers
 TAPES += hello
+TAPES += Algol60-Samples
 
 VERSION ?= zero
 

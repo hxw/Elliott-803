@@ -1,0 +1,3 @@
+reset
+reader 1 x5.hex5
+reset run
