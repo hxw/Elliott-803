@@ -221,10 +221,7 @@ int emulator(const char *name,
             break;
           }
         }
-        continue;
       }
-
-      // only get here on a timeout
 
       if (cmd.wait) {
         beep();
@@ -241,6 +238,9 @@ int emulator(const char *name,
           wint_t c = fgetwc(script);
           if (WEOF == c) {
             script = NULL;
+            if (!interactive) {
+              cmd.exit_program = true;
+            }
             break;
           } else if (L'\r' == c || L'\n' == c) {
             break;
@@ -437,7 +437,8 @@ void handle_proc_fd(commands_t *cmd,
         }
       }
 
-    } else {
+    } else if (0 != strncmp("ok", in_buffer, 2)) {
+      // only display non-ok messages
       wprintw(pads->pad[pad_console], "%s\n", in_buffer);
     }
     // refresh if current pad is on the screen
@@ -467,6 +468,16 @@ bool handle_key(commands_t *cmd,
       memset(kb->buffer, 0, sizeof(kb->buffer));
       kb->index = 0;
       beep();
+      wprintw(pads->pad[pad_console], "! script is still executing\n");
+      if (pad_console == pads->select) {
+        prefresh(pads->pad[pads->select],
+                 0,
+                 0,
+                 1,
+                 1,
+                 layout->text_lines + 1,
+                 layout->text_cols + 1);
+      }
       return false;
     }
     if ('\n' == c || '\r' == c) {
