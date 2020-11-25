@@ -13,11 +13,11 @@ PREFIX ?= /usr/local
 DATADIR ?= ${PREFIX}/share/Elliott-803
 SHARE_DIR = ${DESTDIR}${DATADIR}
 
-.for d in ${TAPES}
-p += ${DATADIR}/${d}
+.for TD in ${TAPES}
+TP += ${DATADIR}/${TD}
 .endfor
 
-DEFAULT_TAPE_DIR ?= ${p:S/ /:/gW}
+DEFAULT_TAPE_DIR ?= ${TP:S/ /:/gW}
 
 .PHONY: all
 all:
@@ -30,11 +30,15 @@ test: all
 .PHONY: install
 install: all
 	${MAKE} -C emulator DESTDIR="${DESTDIR:tA}" PREFIX="${PREFIX}" DEFAULT_TAPE_DIR="${DEFAULT_TAPE_DIR}" install
-.for d in ${TAPES}
-	install -p -d -m 755 "${SHARE_DIR}/${d}"
-	for f in "${d}"/* ; \
+.for TD in ${TAPES}
+	install -p -d -m 755 '${SHARE_DIR}/${TD}'
+	for f in '${TD}'/* ; \
 	do \
-	  install -m 644 "$${f}" "${SHARE_DIR}/${d}" ; \
+	  printf 'f: %s  d: %s\n' "$${f}" '${SHARE_DIR}/${TD}' ; \
+	  if [ ! -d "$${f}" ] ; \
+	  then \
+	    install -m 644 "$${f}" '${SHARE_DIR}/${TD}' ; \
+	  fi ; \
 	done
 .endfor
 
