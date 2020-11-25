@@ -1,0 +1,230 @@
+
+:SETR(GAME(4),MOVE,SWAP,MAX,KEY)
+:SETS(A59,G1,I3,J,N3,P29)
+
+:DEFI(GAME)
+(0£I)DO(12)
+4£AI
+1:ON(I)REPE
+0£G£G1
+:WAIT
+:KEY£(I)
+:IF(I-6)ZERO:GOTO(2)
+:GOTO(1)
+
+:LOOP
+:LOOP
+:WAIT
+:LOOP
+:KEY£(I)
+:IF(I-6)ZERO:REPE
+1):IF(AI)ZERO:REPE
+:(0,I)MOVE£(N)
+N:ON(G)
+:IF(G-24)POSI:GOTO(3)
+
+2)(0£I£J)DO(6)
+0£P(I+24)
+:IF(A(I+6))ZERO:THEN
+-100£PI
+36:ON(J)
+:ELSE
+:(0,12)SWAP
+:(12,I)MOVE£(N)
+
+(0£I1)DO(6)
+:IF(A(I1+18))ZERO:THEN
+-100£P(I1+6)
+6:ON(J)
+:ELSE
+:(12,24)SWAP
+:(24,I1)MOVE£(N1)
+
+(0£I2)DO(6)
+:IF(A(I2+30))ZERO:THEN
+-100£P(I2+12)
+1:ON(J)
+:ELSE
+:(24,36)SWAP
+:(36,I2)MOVE£(N2)
+
+:IF(J)POSI:THEN
+(0£I3)DO(6)
+:IF(A(I3+42))ZERO:THEN
+-100£P(I3+18)
+:ELSE
+:(36,48)SWAP
+:(48,I3)MOVE£(N3)
+-1:ON(J)
+
+N3£P(I3+18):,
+1:ON(I3)REPE
+:(18)MAX£(I3)
+
+N2-P(I3+18)£P(I2+12)
+:ELSE
+N2£P(I2+12):,:,
+1:ON(I2)REPE
+:(12)MAX£(I2)
+
+N1-P(I2+12)£P(I1+6):,
+1:ON(I1)REPE
+:(6)MAX£(I1)
+
+N-P(I1+6)£PI
+(0£I1)DO(6)
+:IF(A(I1+12))ZERO:THEN
+I1:ON(P(I+24))
+:ELSE
+A(I1+12)*6:ON(P(I+24)):,
+1:ON(I1)REPE:,
+1:ON(I)REPE
+:(24)MAX£(I)
+(0£I1)DO(6)
+P(I+24)+1*PI1+P(I1+24)£PI1
+1:ON(I1)REPE
+:(0)MAX£(I)
+
+:(0,12)SWAP
+:(12,I)MOVE£(N)
+:(12,0)SWAP
+N:ON(G1)
+:IF(G1-24)POSI:GOTO(4)
+
+(0£I1)DO(6)
+:IF(AI1)ZERO:THEN
+1:ON(I1)REPE
+:GOTO(4):,
+(0£I1)DO(6)
+:IF(A(I1+6))ZERO:THEN
+1:ON(I1)REPE
+:GOTO(3):,
+
+'
+COMPUTER TO MOVE'I+1:1'
+'
+(0£I)DO(6)
+AI:2'  '
+1:ON(I)REPE
+'
+'
+(11£I)DO(6)
+AI:2'  '
+-1:ON(I)REPE
+'
+GAINS'G:2'  'G1:2'
+'
+:REPE
+
+3)'
+ALRIGHT YOU WIN'
+:GOTO(0)
+
+4)'
+HARD LUCK I WIN'
+:GOTO(0)
+:CLOS
+
+:DEFI(MOVE)
+$30    O:04   O1
+20   O2/36    A
+21   O3:32   O3
+46   8,:22   O1
+30   O1:05  324
+41   6,:44   4,
+04  324:04    O
+20   O2/22    A
+44   2,:30   O1
+05  324:45  10,
+40   9,:04  324
+24    O:20   O1
+26   O2:30   O1
+05  321:41  22,
+00    O/30    A
+05  301:42  18,
+05  316:42  18,
+40  22,:00    0
+00    O/36    A
+24   O2:30  316
+27    O:27   O1
+44  12,:00    0
+30   O2:20    O)
+:EXIT
+:CLOS
+
+:DEFI(SWAP)
+$30  304:21   O2
+30   O2:04    O
+20   O3:30   O2
+04   O1:20   O4
+00   O3/30   A5
+00   O4/20  A11
+00   O3/30  A11
+00   O4/20   A5
+32   O2:41   1,)
+:EXIT
+:CLOS
+
+:DEFI(MAX)
+$30  304:21   O1
+30  319:21   O2
+30   O1:04    O
+20   O3:30   O2
+04    O:20   O4
+00   O3/30   P5
+00   O4/07   P5
+41   9,:42   9,
+30   O2:20   O1
+32   O2:41   2,
+30  304:24   O1
+30   O1:20    O)
+:EXIT
+:CLOS
+
+:DEFI(KEY)
+:LOOP
+$70    0:20   O6)
+0£O7
+O(6,0)£O:ON(O7)
+O(6,1)£O1:ON(O7)
+O(6,2)£O2:ON(O7)
+O(6,3)£O3:ON(O7)
+O(6,4)£O4:ON(O7)
+O(6,5)£O5:ON(O7)
+:IF(O7-1)POSI:REPE
+(0£O6)DO(6)
+:IF(OO6)ZERO:THEN
+1:ON(O6)REPE:,
+O6£O
+:EXIT
+:CLOS
+
+:STAR(0,GAME)
+
+::
+
+:X(MOVE)
+
+:DEFINE(MOVE)
+$30    O:04   O1
+20   O2/36    A
+21   O3:32   O3
+42   9,:22   O1
+30   O1:05  324
+41   6,:44   4,
+04  324:04    O
+20   O2/22    A
+44   2,:00    0
+00   O2/30    A
+05  301:41  12,
+05  301:41  13,
+26    O:40  19,
+30   O1:05  324
+41  15,:44  13,
+04  324:05  321
+41  12,:40  17,
+00   O2/36    A
+20    O:40  19,)
+:EXIT
+:CLOSE
+::
