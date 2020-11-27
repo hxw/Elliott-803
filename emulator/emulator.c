@@ -214,6 +214,7 @@ int emulator(const char *name,
       if (rc > 0) {
         if (FD_ISSET(proc_fd, &fds)) {
           handle_proc_fd(&cmd, &pads, &layout, conv_punch);
+          continue;
         }
         // only possibility here is keyboard
         if (FD_ISSET(STDIN_FILENO, &fds)) {
@@ -224,7 +225,7 @@ int emulator(const char *name,
       }
 
       if (cmd.wait) {
-        beep();
+        // beep();
         sleep(1);
         elliott803_send(cmd.proc, "check", 5);
       }
