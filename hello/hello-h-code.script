@@ -2,7 +2,7 @@ reset
 reader 1 h-code-compiler.hex5
 reset run
 wait 5
-reader 1 elliott hello.hc
+reader 1 elliott hello.h-code
 run 512
 wait 5
 screen 1
