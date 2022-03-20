@@ -53,7 +53,7 @@ typedef struct {
 } pads_t;
 
 typedef struct {
-  wint_t buffer[100];
+  wchar_t buffer[100];
   int width[100];
   size_t index;
 } key_buffer_t;
@@ -247,7 +247,7 @@ int emulator(const char *name,
             break;
           }
           if (index < sizeof(buffer) - 1) {
-            buffer[index] = c;
+            buffer[index] = (wchar_t)(c);
             ++index;
             buffer[index] = L'\0';
           }
@@ -540,6 +540,7 @@ bool handle_key(commands_t *cmd,
 
         getyx(pads->status, y, x1);
         kb->width[kb->index] = x1 - x;
+        (void)y;
 
         kb->buffer[kb->index] = c;
         ++(kb->index);

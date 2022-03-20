@@ -24,6 +24,7 @@ size_t io5_conv_get(io5_conv_t *conv, uint8_t *buffer, size_t length) {
     default:
     case io5_mode_hex5:
       c &= 0x1f;
+      __attribute__((fallthrough));
     case io5_mode_hex8:
       c &= 0xff;
       char temp[4]; // "XX\n\0" = 4 bytes

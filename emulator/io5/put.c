@@ -86,7 +86,7 @@ static int process_hex_data(io5_conv_t *conv, uint8_t c) {
 //         1111110b, 10bbbbbb, 10bbbbbb, 10bbbbbb, 10bbbbbb, 10bbbbbb
 //
 static wint_t process_utf8_data(io5_conv_t *conv, uint8_t c) {
-  wint_t b = -1; // negative means no data
+  wint_t b = WEOF;
 
   switch (conv->from_state) {
   default:
@@ -165,6 +165,7 @@ size_t io5_conv_put(io5_conv_t *conv, const uint8_t *buffer, size_t length) {
     default:
     case io5_mode_hex5:
       mask = 0x1f; // reset mask to 5 bits and same as hex8
+      __attribute__((fallthrough));
     case io5_mode_hex8:
       b = process_hex_data(conv, c);
       break;
@@ -176,11 +177,12 @@ size_t io5_conv_put(io5_conv_t *conv, const uint8_t *buffer, size_t length) {
     case io5_mode_elliott: {
 
       shift_t shift = shift_figures;
-      wint_t w = process_utf8_data(conv, c);
-      if (w < 0) {
+      wint_t w0 = process_utf8_data(conv, c);
+      if (WEOF == w0) {
         break;
       }
 
+      wchar_t w = (wchar_t)(w0);
       if (w >= L'a' && w <= L'z') {
         b = w - L'a' + 1;
         shift = shift_letters;

@@ -13,7 +13,7 @@ CFLAGS = -g -Wall -Werror -pedantic -std=c17
 
 .ifdef STRICT
 CFLAGS += -Weverything -Wno-padded -Wno-switch-enum -Wno-unused-parameter
-CFLAGS += -Wno-sign-conversion -Wno-vla -Wno-pedantic -Wno-shift-sign-overflow -Wno-format-nonliteral
+CFLAGS += -Wno-sign-conversion -Wno-vla -Wno-shift-sign-overflow -Wno-format-nonliteral
 .endif
 
 CFLAGS += -I.

@@ -39,6 +39,7 @@ int64_t from_machine_code(const char *s, size_t length) {
         decimal = true;
         break;
       }
+      __attribute__((fallthrough));
     case 1: // op 1
     case 3: // op 2
     case 4: // op 2
