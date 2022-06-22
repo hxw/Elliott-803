@@ -534,6 +534,7 @@ bool handle_key(commands_t *cmd,
         wch[1] = L'\0';
 
         int x, x1, y;
+        (void)y;
         getyx(pads->status, y, x);
 
         waddwstr(pads->status, wch);
