@@ -109,3 +109,8 @@ Code  Letter  Figure  Control
 29                    Carriage Return
 30                    Line Feed
 31                    Letter Shift
+
+## Bugs
+
+- data read from initial instructions (0-3) must return zero, only
+  execution and B-Line modification return bootloader values

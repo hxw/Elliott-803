@@ -11,7 +11,7 @@ so that programs starting at location 5 can be created.
 
 ## com-208  Memory Test
 
-This is a binary program to chek if first memory bank is working.
+This is a binary program to check if first memory bank is working.
 It tests locations 4 to 4095 (0 to 3 are the built-in boot loader T1.
 
 
@@ -30,10 +30,15 @@ How I remember the first few locations of memory
 7:  Algol60 compiler start location
 ~~~
 
-The frst 4 loactions had specific logic circuits to override any value
-read from core. 
+The first 4 locations had specific logic circuits to override any value
+read from core.
 
-An auto-starting seconstage faster boot loader can be auto started by
+**NOTE** Recently I found out that this is only true for execution and
+    B-Line Modification. A data read fom 0-3 returns zero and a write
+    does change the underlying core, but no way for a program to see
+    these values.
+
+An auto-starting second stage faster boot loader can be auto started by
 having T1 wrap round and write a value to location 4. Such that a jump
 `40` opcode is created.
 
@@ -42,4 +47,3 @@ having T1 wrap round and write a value to location 4. Such that a jump
 22 4093    value stored in location 4  (e.g. jump to 4096)
 40 4096    the resulting addition and executed code
 ~~~
-
