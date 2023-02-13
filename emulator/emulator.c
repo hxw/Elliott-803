@@ -533,15 +533,13 @@ bool handle_key(commands_t *cmd,
         wch[0] = c;
         wch[1] = L'\0';
 
-        int x, x1, y;
-        (void)y;
-        getyx(pads->status, y, x);
+        int x, x1, y __unused;     // y gets set, by getyx, but is never read
+        getyx(pads->status, y, x); // dummy y, only want x value
 
         waddwstr(pads->status, wch);
 
-        getyx(pads->status, y, x1);
+        getyx(pads->status, y, x1); // dummy y, only want x value
         kb->width[kb->index] = x1 - x;
-        (void)y;
 
         kb->buffer[kb->index] = c;
         ++(kb->index);

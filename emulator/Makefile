@@ -14,6 +14,8 @@ CFLAGS = -g -Wall -Werror -pedantic -std=c17 -Wstrict-prototypes
 .ifdef STRICT
 CFLAGS += -Weverything -Wno-padded -Wno-switch-enum -Wno-unused-parameter
 CFLAGS += -Wno-sign-conversion -Wno-vla -Wno-shift-sign-overflow -Wno-format-nonliteral
+CFLAGS += -Wno-declaration-after-statement
+CFLAGS += -Wno-used-but-marked-unused
 .endif
 
 CFLAGS += -I.
