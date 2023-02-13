@@ -9,7 +9,7 @@ BIN_DIR = ${DESTDIR}${PREFIX}/bin
 PROG = emu803
 MAN1 = man1/emu803.1
 
-CFLAGS = -g -Wall -Werror -pedantic -std=c17
+CFLAGS = -g -Wall -Werror -pedantic -std=c17 -Wstrict-prototypes
 
 .ifdef STRICT
 CFLAGS += -Weverything -Wno-padded -Wno-switch-enum -Wno-unused-parameter

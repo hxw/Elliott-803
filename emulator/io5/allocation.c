@@ -9,7 +9,7 @@
 
 // allocate an io stream instance not connected to any file
 // returns NULL if cannot allocate memory
-io5_file_t *io5_file_allocate() {
+io5_file_t *io5_file_allocate(void) {
   io5_file_t *f = malloc(sizeof(io5_file_t));
   if (NULL == f) {
     return NULL;
