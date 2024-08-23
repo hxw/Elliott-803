@@ -414,7 +414,7 @@ command_word_generator(commands_t *cmd, const wchar_t *name, wchar_t **ptr) {
 
 // help
 
-// clang-format: off
+// clang-format off
 static void command_help(commands_t *cmd, const wchar_t *name, wchar_t **ptr) {
   const wchar_t *m =
     L"help                  (?) this message\n"                             //
@@ -440,7 +440,7 @@ static void command_help(commands_t *cmd, const wchar_t *name, wchar_t **ptr) {
 
   cmd->error = wcsdup(m);
 }
-// clang-format: on
+// clang-format on
 
 // lookup command
 

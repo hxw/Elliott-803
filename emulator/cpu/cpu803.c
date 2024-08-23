@@ -18,7 +18,7 @@ static void cpu(processor_t *proc, int op, int address) {
   switch ((op >> 3) & 7) {
 
   case 0:
-    // clang-format: off
+    // clang-format off
     // Op  Operation                              a'        n'
     // 00  Do nothing                             a         n
     // 01  Negate                                 -a        n
@@ -28,13 +28,13 @@ static void cpu(processor_t *proc, int op, int address) {
     // 05  Subtract                               a - n     n
     // 06  Clear                                  zero      n
     // 07  Negate & add                           n - a     n
-    // clang-format: on
+    // clang-format on
     proc->accumulator =
       alu_add(&proc->overflow, op, proc->accumulator, proc->accumulator, n);
     break;
 
   case 1:
-    // clang-format: off
+    // clang-format off
     // Op  Operation                              a'        n'
     // 10  Exchange                               n         a
     // 11  Exchange and negate                    -n        a
@@ -44,13 +44,13 @@ static void cpu(processor_t *proc, int op, int address) {
     // 15  Write and subtract                     a - n     a
     // 16  Write and clear                        zero      a
     // 17  Write, negate and add                  n - a     a
-    // clang-format: on
+    // clang-format on
     proc->core_store[address] = proc->accumulator;
     proc->accumulator = alu_add(&proc->overflow, op, proc->accumulator, n, n);
     break;
 
   case 2:
-    // clang-format: off
+    // clang-format off
     // Op  Operation                              a'        n'
     // 20  Write                                  a         a
     // 21  Write negatively                       a         -a
@@ -60,13 +60,13 @@ static void cpu(processor_t *proc, int op, int address) {
     // 25  Negate store and add                   a         a - n
     // 26  Clear store                            a         zero
     // 27  Subtract from store                    a         n - a
-    // clang-format: on
+    // clang-format on
     proc->core_store[address] =
       alu_add(&proc->overflow, op, proc->accumulator, proc->accumulator, n);
     break;
 
   case 3:
-    // clang-format: off
+    // clang-format off
     // Op  Operation                              a'        n'
     // 30  Replace                                n         n
     // 31  Replace and negate store               n         -n
@@ -76,14 +76,14 @@ static void cpu(processor_t *proc, int op, int address) {
     // 35  Replace, negate store and add          n         a - n
     // 36  Replace and clear store                n         zero
     // 37  Replace and subtract from store        n         n - a
-    // clang-format: on
+    // clang-format on
     proc->core_store[address] =
       alu_add(&proc->overflow, op, proc->accumulator, n, n);
     proc->accumulator = n;
     break;
 
   case 4:
-    // clang-format: off
+    // clang-format off
     // 40  Transfer to 1st instruction unconditionally
     // 41  Transfer to 1st instruction if a is negative
     // 42  Transfer to 1st instruction if a is zero
@@ -92,7 +92,7 @@ static void cpu(processor_t *proc, int op, int address) {
     // 45  Transfer to 2nd instruction if a is negative
     // 46  Transfer to 2nd instruction if a is zero
     // 47  Transfer to 2nd instruction if overflow set, and clear it
-    // clang-format: on
+    // clang-format on
     switch (op & 7) {
     case 0:
       next_pc = address << 1;
@@ -136,7 +136,7 @@ static void cpu(processor_t *proc, int op, int address) {
     break;
 
   case 5:
-    // clang-format: off
+    // clang-format off
     // 50  Arithmetic right shift a/ar N times
     // 51  Logical right shift a N times, clear ar (do not retain sign)
     // 52  Multiply a by n, result to a/ar
@@ -145,7 +145,7 @@ static void cpu(processor_t *proc, int op, int address) {
     // 55  Logical left shift a N times, clear ar
     // 56  Divide a/ar by n, single length quotient to a, clear ar
     // 57  Copy ar to a, set sign bit zero, do NOT clear the ar
-    // clang-format: on
+    // clang-format on
     switch (op & 7) {
     case 0: {
       for (int i = 0; i < address; ++i) {
@@ -233,7 +233,7 @@ static void cpu(processor_t *proc, int op, int address) {
     // const int64_t exponent_shift = word_shift;
     // const int64_t exponent_offset = 256;
 
-    // clang-format: off
+    // clang-format off
     // 30 bit 2's complement signed mantissa:
     // range ½ ≤ m < 1 or -1 ≤ m < -½
 
@@ -261,7 +261,7 @@ static void cpu(processor_t *proc, int op, int address) {
     // 65  N < 4096: Fast left (end round) shift N mod 64 places
     // 66  (Spare)                                a         n
     // 67  (Spare)                                a         n
-    // clang-format: on
+    // clang-format on
     switch (op & 7) {
     case 0:
       proc->accumulator = fpu_add(&proc->overflow, proc->accumulator, n);
@@ -303,7 +303,7 @@ static void cpu(processor_t *proc, int op, int address) {
     }
     break;
   case 7:
-    // clang-format: off
+    // clang-format off
     // 70  Read the keyboard number generator to the accumulator
     // 71  Read one char from the tape reader "or" it into A (ls 5..8 bits)
     //     0 = channel 1,  2048 = channel 2,  4096 = tty input
@@ -314,7 +314,7 @@ static void cpu(processor_t *proc, int op, int address) {
     // 75  Film handler
     // 76  Film handler
     // 77  Block transfer
-    // clang-format: on
+    // clang-format on
     switch (op & 7) {
     case 0:
       proc->accumulator = proc->word_generator;

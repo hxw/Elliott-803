@@ -5,7 +5,7 @@
 #include "fpu.h"
 #include "processor.h"
 
-// clang-format: off
+// clang-format off
 // 30 bit 2's complement signed mantissa:
 // range ½ ≤ m < 1 or -1 ≤ m < -½
 

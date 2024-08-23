@@ -621,7 +621,7 @@ static bool action_check(elliott803_t *proc, const char *params) {
 
 static bool action_help(elliott803_t *proc, const char *params) {
 
-  // clang-format: off
+  // clang-format off
   static const char *help[] = {
     "?? reset [run]           reset CPU and optionally run T1 loader",   //
     "?? mw ADDRESS CODE|±N    store code or signed number to address",   //
@@ -639,7 +639,7 @@ static bool action_help(elliott803_t *proc, const char *params) {
     "?? check                 check for stop or word generator polling", //
     "?? ",                                                               //
   };
-  // clang-format: on
+  // clang-format on
   for (size_t i = 0; i < SizeOfArray(help); ++i) {
     const_reply(proc, help[i]);
   }
@@ -652,7 +652,7 @@ typedef struct {
   bool (*fn)(elliott803_t *proc, const char *params);
 } cmd_t;
 
-// clang-format: off
+// clang-format off
 static const cmd_t command_list[] = {
   {"reset", action_reset},           //
   {"mw", action_memory_write},       //
@@ -667,7 +667,7 @@ static const cmd_t command_list[] = {
   {"?", action_help},                //
   {"terminate", action_terminate},   // last item (for internal use)
 };
-// clang-format: on
+// clang-format on
 
 // main processor control loop
 static void *main_loop(void *arg) {
