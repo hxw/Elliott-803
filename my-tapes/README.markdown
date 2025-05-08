@@ -37,4 +37,4 @@ that.
 
 # tpso (T2 source tape)
 
-A program to dump memory and printthe machine code on the teleprinter.
+A program to dump memory and print the machine code on the teleprinter.
