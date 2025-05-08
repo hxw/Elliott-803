@@ -1,0 +1,12 @@
+reset
+reader 1 h-code-compiler.hex5
+reset run
+wait 10
+reader 1 elliott ex1.h-code
+run 512
+wait 10
+stop
+reset
+reader 1 elliott ex1.data
+screen 1
+run 513

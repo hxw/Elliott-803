@@ -1,0 +1,31 @@
+# BSDmakefile
+
+DIRS = H-Code_Intro
+DIRS += H-Code_Manual
+
+# items which need to be redone in single column
+DIRS_SINGLE = H-Code_Manual
+
+
+.PHONY: all
+all:
+.for d in ${DIRS}
+	${MAKE} -C "${d}" DESTDIR="${PWD}" TWO_COLUMN=yes all install
+	${MAKE} -C "${d}" complete-clean
+.endfor
+.for d in ${DIRS_SINGLE}
+	${MAKE} -C "${d}" DESTDIR="${PWD}" TWO_COLUMN=no all install
+	${MAKE} -C "${d}" complete-clean
+.endfor
+
+.PHONY: clean
+clean:
+.for d in ${DIRS}}
+	${MAKE} -C "${d}" clean
+.endfor
+
+.PHONY: complete-clean
+complete-clean:
+.for d in ${DIRS}
+	${MAKE} -C "${d}" complete-clean
+.endfor

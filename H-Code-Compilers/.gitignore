@@ -1,0 +1,7 @@
+# .gitignore
+
+*.aux
+*.lof
+*.log
+*.toc
+*.pdf

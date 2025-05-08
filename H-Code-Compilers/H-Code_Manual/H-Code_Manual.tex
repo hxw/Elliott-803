@@ -1,0 +1,3956 @@
+\documentclass[10pt, a4paper, oneside]{article}
+
+%\usepackage[utf8]{inputenc}
+\usepackage{comment}
+\usepackage{multicol}
+\usepackage[left=2cm, right=2cm, top=2cm, bottom=2cm]{geometry}
+\usepackage{fancyhdr}
+\usepackage{listings}
+\usepackage{titlesec}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{capt-of} %% to get the caption
+\usepackage{framed}  %% framed multi-line text
+\usepackage{scrextend} %% addmargin
+\usepackage{soul} %% strikeout: \st{}
+
+\usepackage[xetex]{pict2e}
+
+\usepackage{array}
+\newcolumntype{C}{>{\centering\arraybackslash}p{2.2em}}
+
+
+% ==================================================
+
+% this changes between a two column mode, like the original
+% document structure or a larger font single column version
+\newif\ifTwoColumn
+\ifdefined\TwoColumn
+\TwoColumntrue
+\else
+\TwoColumnfalse
+\fi
+
+% ==================================================
+
+
+\setlength{\unitlength}{1mm}
+\setlength{\fboxsep}{0pt}
+
+\usepackage{fontspec}
+\setmainfont{Linux Libertine O}
+
+\setlength{\columnsep}{10mm}
+
+\fancyhf{}
+
+\pagestyle{fancy}
+
+% empty footer
+\cfoot{   }
+
+\titleformat{\section}[hang]
+{\small\bfseries}
+{\thesection.}{0.5em}{}
+
+\titleformat{\subsection}[hang]
+{\small\bfseries}
+{\thesubsection.}{0.5em}{}
+
+% better underline
+%\usepackage{contour}
+\usepackage{ulem}
+
+\setlength{\ULdepth}{1.0pt}
+\newcommand{\myuline}[1]{\uline{#1}}
+
+\renewcommand{\ULdepth}{1.8pt}
+%\contourlength{0.8pt}
+
+%\newcommand{\myuline}[1]{%
+%  \uline{\phantom{#1}}%
+%  \llap{\contour{white}{#1}}%
+%}
+
+% to be able top span columns
+\newcounter{tempcolnum}
+
+\makeatletter
+\ifTwoColumn
+
+\newcommand{\multicolinterrupt}[1]{% Stuff to span both rows
+\setcounter{tempcolnum}{\col@number}
+\end{multicols}
+#1%
+\begin{multicols}{\value{tempcolnum}}
+}
+\else
+\newcommand{\multicolinterrupt}[1]{#1}
+\fi
+\makeatother
+
+% listing font
+\lstset{basicstyle=\ttfamily\scriptsize,breaklines=false}
+
+% tt font sizes
+\ifTwoColumn
+\newcommand{\mytt}[1]{\texttt{\scriptsize #1}}
+\else
+\newcommand{\mytt}[1]{\texttt{\small #1}}
+\fi
+\newcommand{\myfntt}[1]{\texttt{\footnotesize #1}}
+\newcommand{\mytinytt}[1]{\texttt{\tiny #1}}
+\newcommand{\mysctt}[1]{\texttt{\scriptsize #1}}
+\newcommand{\mysmalltt}[1]{\texttt{\small #1}}
+
+% roman counter for table rows
+\newcounter{RowCounter}
+\setcounter{RowCounter}{0}
+\newcommand{\nextRow}{\addtocounter{RowCounter}{1}(\roman{RowCounter})}
+
+% user defined functions
+\usepackage{amsmath}
+\DeclareMathOperator{\Int}{int\ }
+\DeclareMathOperator{\Frac}{frac\ }
+\DeclareMathOperator{\Modulo}{modulo\ }
+
+%==================================================
+
+\begin{document}
+
+\begin{flushleft}
+\textbf{\Huge \fbox{BRUSH} \Large RESEARCH DIVISION} \hfill \normalsize Report No.RDR/102.
+\end{flushleft}
+
+\vspace{3cm}
+
+\begin{center}
+\myuline{\textbf{H-CODE MANUAL}} \\
+\textbf{by} \\
+\textbf{D. C. Hogg} \\
+\end{center}
+
+\vspace{3cm}
+
+% a horizontal rule
+\par\noindent\rule{\textwidth}{0.4pt}\relax
+
+\vspace{3cm}
+
+\begin{center}
+\parbox{0.55\textwidth}{%
+SUMMARY:- This manual is a description of the facilities
+available in the programming system in use on the Brush 803
+computer.  It will be supplemented from time to time by additional
+sections.  The manual does not attempt to teach programming; it
+is a sequel to RDR/100, which introduces H-Code.}
+\end{center}
+
+\vspace{3cm}
+\par\noindent\rule{\textwidth}{0.4pt}\relax\vspace{1mm}
+\noindent\rule{\textwidth}{0.4pt}\relax
+
+\vspace{1cm}
+
+\begin{center}
+September, 1963
+\end{center}
+
+\vfill
+
+\begin{center}
+\large BRUSH ELECTRICAL ENGINEERING CO., LTD. \\
+\small A MEMBER OF THE HAWKER SIDDELEY GROUP \\
+\large LOUGHBOROUGH, ENGLAND \\
+\end{center}
+
+
+% ===== End Page ==================================================
+\newpage
+
+% use builtins
+\ifTwoColumn
+\begin{multicols}{2}
+\small
+\fi
+\tableofcontents
+\listoffigures
+\listoftables
+
+%\vfill
+
+\begin{flushleft}
+\textbf{Notation} \\
+\vspace{1ex}
+\begin{tabular}{llll}
+$\xi$       & \multicolumn{3}{l}{any arithmetic expression} \\
+$\xi_{v}$    & \multicolumn{3}{l}{any arithmetic expression with final mode floating point} \\
+$\xi_{s}$    & \multicolumn{3}{l}{any arithmetic expression with final mode fixed point} \\
+\mytt{ABC}  & floating point variables & ) & unless otherwise \\
+\mytt{ILMN} & fixed point variables & ) & specified or implied \\
+ & \multicolumn{3}{l}{Other notation explained in context} \\
+\end{tabular}
+\end{flushleft}
+\ifTwoColumn
+\end{multicols}
+\fi
+
+\vfill
+
+% a horizontal rule
+\par\noindent\rule{\textwidth}{0.4pt}\relax
+
+% replicate the distribution list
+\vspace{5mm}
+\noindent
+\begin{tabular}{p{0.5\textwidth}p{0.5\textwidth}}
+\myuline{DISTRIBUTION} & \\
+Dr. L.R. Blake & \\
+Dr. D.A. Jones & Research Division Library \\
+Central Reference Library & and as required \\
+\end{tabular}
+
+
+% ===== End Page ==================================================
+\newpage
+
+\setcounter{page}{1}
+\cfoot{\thepage}
+
+\begin{center}
+\myuline{H-CODE MANUAL} \\
+by D.C. Hogg \\
+\end{center}
+
+
+\ifTwoColumn
+\small
+\begin{multicols}{2}
+\fi
+
+\section{\myuline{A PROGRAMME}}
+
+An H-Code programme (in the sense of a whole job)
+consists of a number of \myuline{procedures} (or \myuline{subroutines})
+which perform arithmetic and logic on fixed and
+floating point variables represented by letters of the
+alphabet.
+
+There are two distinct parts of a programme (as
+opposed to a procedure).
+
+\renewcommand{\labelenumi}{(\roman{enumi})}
+\begin{enumerate}
+\def\theenumi{\roman{enumi}}
+
+\item\label{it:BODY} \myuline{The body of a procedure} — that is the mnemonic
+algebraic and logical instructions which are obeyed
+dynamically performing the particular job for which
+the programme has been composed.
+
+\item\label{it:ORG} \myuline{The organisational instructions} which occur
+outside the body of the procedures and are concerned
+with the organisation and setting of the machine ready
+to receive the procedures.
+
+\end{enumerate}
+
+Purely organisational instructions can occur inside
+procedures but these are of a different type of those
+under sect. (\ref{it:ORG}) being more concerned with the
+particular procedure than with overall setting,
+
+There are a different set of rules for (\ref{it:BODY}) and
+(\ref{it:ORG}) and anything which is true for (\ref{it:BODY}) is not
+necessarily true for (\ref{it:ORG}) and vice—versa,
+
+\section{\myuline{"SETTING" THE MACHINE}}
+
+In a statement such as "setting the machine" it
+should be understood that it refers not to the machine
+as such which is unchangeable in form, but to the
+state of the store of the machine and more particularly
+to the state of the H-Code translator which in normal
+circumstances is permanently in (the store of) the
+machine.  Once a programme is in the machine any
+further procedures or data etc are understood to
+be part of that programme as the machine, so to-speak,
+is "conditioned" for that particular programme.
+Therefore to get out of this state of affairs all
+programmes should be headed by the instruction
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:SET
+\end{lstlisting}
+\end{addmargin}
+
+which cancels all reference
+to previous programmes held in the machine leaving the
+whole of the available space free for the new programme.
+
+The machine is now set up for the particular
+programme it is to receive.  It has to be prepared
+for the procedures of the programme, the variables
+and integers.  These settings are introduced by
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:SETR :SETV :SETS
+\end{lstlisting}
+\end{addmargin}
+
+In fact when a programme has one of
+these three settings the \mytt{SET} is not needed as the
+\myuline{first}
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:SETR :SETV :SETS
+\end{lstlisting}
+\end{addmargin}
+
+implies
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:SET
+\end{lstlisting}
+\end{addmargin}
+
+itself.  Therefore
+in the great majority of programmes the instruction
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:SET
+\end{lstlisting}
+\end{addmargin}
+
+need never be used.  Its practical use is limited
+to introducing machine order programmes and special
+programmes which can occur under
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:LIST
+\end{lstlisting}
+\end{addmargin}
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:SETR :SETV :SETS
+\end{lstlisting}
+\end{addmargin}
+
+can occur in any order and more than
+once but when the first "non-SET" organisational
+instruction
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:DEFINE :LIST :LV :START :Z ...
+\end{lstlisting}
+\end{addmargin}
+
+is encountered the setting instructions are understood
+to have finished and the machine is finally set up
+for that programme.  Any subsequent
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:SETR :SETV :SETS
+\end{lstlisting}
+\end{addmargin}
+
+will cancel the programme.
+
+\subsection{SETTING PROCEDURES}
+
+Procedures are identified by words of \myuline{up to 4
+letters}.  The programmer can choose any word with
+which to identify a procedure as long as it does
+not clash with any standard word which occurs in the
+body of the procedure.  (see WORDS).  A word of 4
+letters can have extra letters added to give it
+meaning if necessary, but these extra letters have no
+significance as far as the translator is concerned.
+For example, we can \myuline{not} name two routines
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+DESIGN A
+DESIGN B
+\end{lstlisting}
+\end{addmargin}
+
+\begin{flushleft}
+as they are the same in the first 4 letters.
+\end{flushleft}
+
+In order that the machine is ready to input
+procedures as they are given to it and so that a
+procedure may refer to a procedure which is not yet
+in the machine, we have to announce as part of the
+setting instructions the names of all the procedures
+that will go to make up the whole programme.
+
+Reference numbers (q.v) are the basic framework on
+which a procedure is built and referred to in
+the machine.  In order that enough space be left for
+this frame work each procedure name has, as a suffix
+the \myuline{maximum} reference number which will occur in that
+procedure.
+
+A typical setting procedure would be:
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:SETR(ABC13,:XYZ(2),LMN)
+\end{lstlisting}
+\end{addmargin}
+
+
+\renewcommand{\labelenumi}{\ifnum\value{enumi}=1 \myuline{Notes} (\roman{enumi})\else (\roman{enumi})\fi}
+\begin{enumerate}
+
+\item CR,LF,spsp\footnote{spsp = 2 consecutive spaces} are ignored before the words.
+
+\item If there are no reference numbers no
+suffix is needed.
+
+\item Each word can be preceeded by \mytt{:} but this
+is not necessary.
+
+\end{enumerate}
+
+\subsection{SETTING OF VARIABLES}
+
+When a letter representing a variable (fixed or
+floating point) is encountered in a procedure
+reference is made to the corresponding entry in a
+table which gives information on the variable
+represented by that letter of the alphabet
+(including special variable $\alpha$) e.g. whether the
+variable is set, its mode (i.e. fixed - or floating
+- point) and its absolute location (i.e. the storage
+location in the machine which has been allocated to
+$A_{0}$).
+
+There are in fact two such tables:- that are
+called the \myuline{local alphabet} and the \myuline{permanent alphabet}.
+The local alphabet is the table which is referred to
+in a procedure as explained above.  A copy is kept
+of the initial settings in the permanent alphabet so
+that after the local alphabet is altered by the use
+of local variables (q.v.) the local alphabet can be
+restored to its original state.  This and other uses
+are explained in more detail below.
+
+
+\subsection{SETV, SETS}
+
+Any of the alphabet can be used to represent
+a variable.  The programmer mast decide which letters
+shall represent floating-point numbers and which shall
+represent integer variables.  This does not restrict
+to the use of 27 variables as a letter can have a
+numerical suffix e.g. $A_{3}$, $N_{20}$, $\alpha _{10}$ giving us any
+range of variables we need.
+
+Before the procedures of a programme can be
+input the machine must reserve space in the store
+for the variables which are to be used.  This is done
+using (organisational) instructions such as:
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:SETV(A23,N5,B)
+:SETS(I10,J(3),K,L,M2)
+\end{lstlisting}
+\end{addmargin}
+
+Those letters under \mytt{SETV} will represent floating—point
+variables, those under \mytt{SETS} integer variables,
+Letters can not occur under both \mytt{SETV} and \mytt{SETS}.  The
+number is the highest suffix which the letter will need
+throughout the programme.  If a letter occurs under
+\mytt{SETV} or \mytt{SETS} more than once then the greatest suffix
+is taken.
+
+The word \mytt{SETV} or \mytt{SETS} can occur more than once
+so that
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:SETV(A3,B10,C20)
+:SETR(ABC3,XYZ)
+:SETV(B10,A20,C30)
+\end{lstlisting}
+\end{addmargin}
+
+Will be equivalent to:—
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:SETR(ABC3,XYZ)
+:SETV(A20,B10,C30)
+\end{lstlisting}
+\end{addmargin}
+
+\mytt{SET} (or the first \mytt{SETV}, \mytt{SETS} or \mytt{SETR} which
+implies \mytt{SET}) automatically sets the orders
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:SETV(@9)
+:SETS(O9)
+\end{lstlisting}
+\end{addmargin}
+
+This means that $\alpha,\theta$ can only be SET as variable
+and integer respectively. In fact $\alpha,\theta$ should not
+(by convention) be used for any other purpose other
+than in $\alpha$ — $\theta$ stores ( q.v. ) i.e. In transferring
+data from one procedure to another.
+
+When the first non-SET instruction is encountered
+copies are made in both the local and permanent
+alphabets of SET-tings as specified by
+the \mytt{SETV} and \mytt{SETS} Instructions.
+
+
+\begin{flushleft}
+\myuline{Notes.}
+\end{flushleft}
+
+\renewcommand{\labelenumi}{(\roman{enumi})}
+\begin{enumerate}
+
+\item No check is made either in translation or in
+running that the "SET" value of the suffix to a letter
+has been exceeded, i.e. a variable has "gone too high".
+In fact, it is true to say that 90\% of programme errors
+not detected by the translator are due to this fault.
+
+\item Throughout this manual "variables" will mean
+floating-point variables and "integers" fixed—point
+variables - where there is no ambiguity.
+
+\item A can be used instead of $A_{0}$.
+
+\item CR, LF spsp, are ignored before the letters on
+the RHS of the \mytt{SETV}, \mytt{SETS} instructions.
+
+\end{enumerate}
+
+\section{\myuline{LOCAL VARIABLES}}
+
+It is very convenient, for example, in writing
+a procedure (Particularly of a mathematical or other
+independent nature) which is to be used as a
+subroutine (q.v.) by other procedures to be able to
+use any letters to represent the variables and
+integers in the subroutine without reference to
+the meanings of the letters as \mytt{SET} in the master
+programme.
+
+To do this we use what are called \myuline{local variables}
+(and \myuline{integers}).  When these variables are used
+only the local alphabet is affected.  Setting of local
+variables is done with orders such as
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:LV(A30,B10,X)
+:LS(N2,L13)
+:LR
+\end{lstlisting}
+\end{addmargin}
+
+Those letters under \mytt{LV} will represent floating
+point variables and those under \mytt{LS} integers.  When
+this instruction is read the machine will, for
+example, reserve 31 locations for $A_{0} \rightarrow A_{30}$ etc., and
+make a note in the local alphabet of the new
+definition of \mytt{A}.  As settings merely cancel any
+previous setting of a particular letter then
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:LV(A30,A3)
+\end{lstlisting}
+\end{addmargin}
+
+will reserve locations for $A_{30}$ then for $A_{3}$, the $A_{3}$,
+superseding the $A_{30}$ The maximum suffix is \myuline{not} taken
+as it is in \mytt{SETV}, \mytt{SETS}.
+
+Inside \mytt{LV} or \mytt{LS} we can have a setting such as
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+A →B30
+\end{lstlisting}
+\end{addmargin}
+
+This means that \mytt{A} in the \myuline{local alphabet}, takes the
+properties equivalent to \mytt{B30} in the \myuline{permanent alphabet}.
+In effect this means that whenever \mytt{A} is met the
+machine reads it as if it were $B_{30}$, $A_{1}$ as $B_{31}$ etc.
+
+\st{Whether this transfer occurs under LV or LS is
+irrelevant as the mode of the letter A for example,
+takes its mode from B, The A can not have a suffix.}
+
+\begin{framed}
+\vspace{-1em}
+\begin{flushleft}
+\myuline{\textit{Hand written notes:}}
+\end{flushleft}
+
+\begin{addmargin}[1em]{1em}%
+\begin{tabular}{lp{0.5cm}l}
+\mytt{:L(A →B30)}  & &  Will have mode of \mytt{B30} \\
+\mytt{:LS(A →B30)} & & Will be INTEGER regardless   \\
+                   & & \hspace{2em} of mode of \mytt{B30} \\
+\mytt{:LV(A →B30)} & & Will be FLOATING-POINT       \\
+\end{tabular}
+\end{addmargin}
+\end{framed}
+
+A setting such as
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+A →A
+\end{lstlisting}
+\end{addmargin}
+
+will replace the local meaning of \mytt{A} by the permanent
+definition of \mytt{A}.
+
+Inside a \mytt{LV} or \mytt{LS} we can also have a setting such
+as
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+A:3050
+\end{lstlisting}
+\end{addmargin}
+
+This means that $A_{0}$ in the local alphabet is to be the
+absolute location 3050 in the machine.  The mode is
+determined by \mytt{LV} or \mytt{LS}.  This use of absolute locations
+should only be used with great care as a knowledge of
+the H-Code translator is needed.  It can be used to
+overwrite parts of the translator which are not needed
+by that particular programme in order to get more
+working space.  No indication is made in this kind of
+setting as to the maximum suffix of the letter.
+
+The setting
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+A:0
+\end{lstlisting}
+\end{addmargin}
+
+irrespective of the mode of \mytt{A}, cancels the setting of
+\mytt{A} in the local alphabet.  Thereafter \mytt{A}, for example,
+will be rejected.  This means that a variable or integer
+can not be set to absolute machine location 0.
+
+These various settings can all occur under the same
+\mytt{LV} or \mytt{LS} e.g.
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:LV(A30,B →C21,X:2000,W:0)
+\end{lstlisting}
+\end{addmargin}
+
+Associated with the setting and manipulation of
+local and permanent alphabets are the instructions:—
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:PL
+:PR
+\end{lstlisting}
+\end{addmargin}
+
+which transfers the permanent alphabet to the local
+alphabet en masse, and
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:LP
+\end{lstlisting}
+\end{addmargin}
+
+which transfers the local alphabet to the permanent
+alphabet en masse.  Individual items can not be
+transferred from the local alphabet to the permanent
+alphabet.
+
+A procedure or group of procedures which have their
+own local variables should in general (although not
+necessarily) be followed by \mytt{PL} so that the variables
+then take on their permanent definition. e.g.
+
+\begingroup
+\centering
+\makebox{%
+\begin{picture}(70,60)
+\thicklines
+
+\put(10,52){\hbox{\kern3pt\mytt{:LV(A20,B10)}}}
+\put(10,48){\hbox{\kern3pt\mytt{:LS(X,N2)}}}
+
+\put(10,30){\polygon(0,0)(40,0)(40,15)(0,15)}
+\put(15,37){\hbox{\kern3pt\small{Procedure}}}
+
+\multiput(30,25)(0,2){3}{\line(0,1){1}}
+
+\put(10,10){\polygon(0,0)(40,0)(40,15)(0,15)}
+\put(15,17){\hbox{\kern3pt\small{Procedure}}}
+
+\multiput(30,7)(0,2){2}{\line(0,1){1}}
+
+\put(10,2){\hbox{\kern3pt\mytt{:PL}}}
+
+\end{picture}}
+\endgroup
+
+
+\section{\myuline{LIST (DATA)}}
+
+After reading the initial instruction \mytt{LIST} the
+machine is in a position to accept.
+
+\renewcommand{\labelenumi}{(\roman{enumi})}
+\begin{enumerate}
+
+\item Lists of variables in fixed-or floating-point
+form or blocks of machine code introduced by the
+address at which they are to be stored.
+
+\item Blocks of H-Code programme which is translated,
+obeyed "there and then", and then over written.
+
+\end{enumerate}
+
+\renewcommand{\labelenumi}{(\roman{enumi})}
+\begin{enumerate}
+
+\item It is very convenient to be able to set lists of
+constants (which are unaltered throughout the running
+of the programme) as the programme is translated
+rather than as the programme is obeyed dynamically.  For
+example:-
+
+\noindent\begin{minipage}{\columnwidth}
+\begin{lstlisting}
+:LIST
+
+A
++265 300.42
+-22.6
+C10=0 1 10
+5 -6 2
+@=3.6
+N<
+\end{lstlisting}
+\hspace{1.5cm}\begin{math}
+\Biggl\}{ \\
+Machine-code \\
+Block \\
+}
+\end{math}
+\begin{lstlisting}
+)
+\end{lstlisting}
+$\rightarrow 3000$
+\begin{lstlisting}
+<23A:04A2)
+*
+\end{lstlisting}
+\end{minipage}
+
+A number is not accepted unless the address is set.  The
+address is the variable to which the first number is
+to be sent.  As each number is read in the address is
+updated by 1.  In the above example \mytt{A = 265, A1=300.42,
+A2 = -22.6}.  If the variable is an integer, for example,
+only integers can be listed under that address,
+\mytt{< ... )} contains a machine code block which is stored
+beginning at the current address. see \myuline{MACHINE CODE BLOCKS}.
+
+Numbers and machine code orders can be mixed under
+the same initial address, $\rightarrow 3000$ sets the absolute
+location 3000 as the initial address.  Only integers or
+machine code blocks can be under this address.
+
+\item Under \mytt{LIST} between brackets \mytt{(} \hspace{2cm} \mytt{)} we can write
+orders as if it were a procedure.  All
+can be used other than reference numbers.
+The order:
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:GOTO(26)
+\end{lstlisting}
+\end{addmargin}
+
+would refer to absolute location 26.
+
+\end{enumerate}
+
+
+This facility is useful for setting up constant
+data in translation which is too complicated to set as
+constants, for example, to set up the series $1^{3}$,
+$2^{3}$, ...... $100^{3}$ in $A_{1} \rightarrow A_{100}$ in translation we would
+have:-
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:LIST
+((0 →N)DO(100)
+N:STAND →@*@*@ →AN
+1ON(N)REPEAT)
+*
+\end{lstlisting}
+\end{addmargin}
+
+The above\footnote{should N start at 1 or just loop 101 times} would appear on the programme tape, and
+the listing of $1^{3} \rightarrow 100^{3}$ would occur as part of the
+translation process.  However, it is also very convenient
+to be able to extract information from the machine once
+a programme has run and, perhaps, got lost. This can be
+done; For Example:
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:LIST('
+'A:/'
+'B:/'
+N:1)
+*
+\end{lstlisting}
+\end{addmargin}
+
+Instead of using the \mytt{START} instruction e.g.
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:START(1,ABC)
+\end{lstlisting}
+\end{addmargin}
+
+\begin{flushleft}
+we could use
+\end{flushleft}
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:LIST(:GOTO(1,ABC))
+\end{lstlisting}
+\end{addmargin}
+
+when the programme would be obeyed at \mytt{(1,ABC)}
+immediately.
+
+In these "temporary" programmes the orders are
+translated into the machine in the normal way and when
+the closing bracket is encountered the orders are obeyed.
+After the final order is obeyed control passes back
+to the \mytt{LIST} input, and any further programme or local
+variables will overwrite the "temporary" programme
+hence no space is wasted.
+
+A \mytt{LIST} is terminated by \hspace{1cm} \mytt{*} \hspace{1cm}, control
+then passing back to the initial instruction input.
+
+Various other characters occurring under LIST
+effects of a trivial nature; these and the previous
+facilities are summarised in the following table:- (Table \ref{tbl:LIST})
+
+\multicolinterrupt{
+\noindent\begin{minipage}{\textwidth}
+\captionof{table}{Effect of characters occurring under \mytt{LIST}}\label{tbl:LIST}
+\begin{tabular}{|l|l|}
+\hline
+$A\rightarrow Z$ \mytt{@} & with numerical suffix is address of variable or integer or machine orders. \\
+\hline
+$\rightarrow$ & with numerical suffix is address of integers or machine orders in absolute machine location. \\
+\hline
+\mytt{. + -} $0\rightarrow9$ & introduce integer or variable.  \myuline{Wrong} if address not set. \\
+\hline
+\mytt{<} & introduces machine code block.  \myuline{Wrong} if address not set. \\
+\hline
+\mytt{(\ \ \ )} & Contains H-Code orders to be obeyed “there and then". \\
+\hline
+\mytt{'\ \ \ '} & Contains characters which are to be copied directly onto output tape. \\
+\hline
+\mytt{)} & Computer STOPS. \\
+\hline
+\mytt{::} &  Computer WAITS.  Carries on when button 1 on Address 2 on the keyboard is changed. \\
+\hline
+\mytt{=} CR LF SpSp & are ignored. \\
+\hline
+\mytt{/ > ,} & are \myuline{Wrong}. \\
+\hline
+\mytt{*} & closes \mytt{LIST} \\
+\hline
+\end{tabular}
+\end{minipage}}
+
+
+\subsection{DATA}
+
+The instruction \mytt{DATA} occurs in the body of a
+procedure and is obeyed dynamically,  It has \myuline{exactly}
+the same effect as \mytt{LIST} except that it reads off data
+tape in running.  The final \mytt{*} will pass control back
+to the running programme.
+
+N.B. \mytt{LIST} can occur in the body of a procedure
+(except for H-Code orders in ()) but this is to be
+discouraged.  It is a relic of an early edition of the
+translator.
+
+
+\section{\myuline{THE BODY OF A PROCEDURE} \myuline{OBEYING A PROCEDURE}}
+
+\subsection{THE BODY OF A PROCEDURE}
+
+Procedures are introduced by an instruction such
+as
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:DEFINE(ABC)
+\end{lstlisting}
+\end{addmargin}
+
+\begin{flushleft}
+where \mytt{ABC} is the name (which has been SET under \mytt{SETR})
+\end{flushleft}
+
+The procedure itself is terminated by the
+instruction
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:CLOSE
+\end{lstlisting}
+\end{addmargin}
+
+In translation control then passes back to that
+part of the translator which deals with the
+organisational instructions whence more procedures or
+organisational instructions will be expected.
+
+\subsection{OBEYING PROCEDURE}
+
+The instruction, such as
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:START(3,ABC)
+\end{lstlisting}
+\end{addmargin}
+
+\begin{flushleft}
+\myuline{stores} the first order at which the programme is to be
+obeyed.  When the computer is entered at 513 the
+computer will start obeying the programme at this
+point.
+\end{flushleft}
+
+\mytt{(3,ABC)} refers to REFERENCE 3 (q.v.) of procedure
+\mytt{ABC}.  Note that we can only start obeying a programme
+at a reference number.  The first order of a procedure
+is reference 0 although it can not be labelled as such.
+i.e. \mytt{(0,ABC)}
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:START(3000)
+\end{lstlisting}
+\end{addmargin}
+
+or
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:START3000
+\end{lstlisting}
+\end{addmargin}
+
+will start at absolute machine location 3000.
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:START(N3)
+\end{lstlisting}
+\end{addmargin}
+
+will start at the order indicated by the value of $N_{3}$
+when it is obeyed.  ($N_{3}$ is a SUFFIX (q.v.)).
+
+Similarly
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:START(M,ABC)
+\end{lstlisting}
+\end{addmargin}
+
+\begin{flushleft}
+but this will be rarely used.
+\end{flushleft}
+
+The \mytt{START} instruction can occur anywhere in the
+programme outside the procedure.
+
+\section{\myuline{BINARY}}
+
+This will cause a binary copy of the H-Code
+programme in the computer to be output.
+
+To input the binary tape the translator should be
+in the machine and the normal entry to translate used.
+
+If the 40 button on F1 is not depressed the
+binary tape is compared on input with the programme
+currently in the machine.  This serves as a check that
+the programme has been correctly binarized.
+
+As \mytt{BINARY} only outputs non-zero locations it is
+advisable to use the instruction \mytt{Z} to clear the whole
+of the programme store before translating a programme
+which is to be binarized.
+
+When the binary tape is re-input then the machine
+is left in exactly the same state as when it was
+output.  Hence new procedures and data can be input,
+corrections can be made etc.
+
+As the translator is not output by \mytt{BINARY} any
+variables which overwrite parts of the translator with
+such an order as
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:LS(N:200)
+\end{lstlisting}
+\end{addmargin}
+
+can \myuline{not} be output by \mytt{BINARY}.  Therefore if these
+variables are set by a \mytt{LIST} instruction then they will not
+be binarized, therefore the \mytt{LIST} will have to be
+input separately.
+
+\section{\myuline{SUNDRY ORGANISATIONAL INSTRUCTIONS}}
+
+\hspace{\parindent}\myuline{\mytt{STORE}}
+
+The machine will print out (preceeded by LF) the
+number of unused locations.  (terminated by \mytt{*}).
+
+\myuline{\mytt{Z}}
+
+All the locations in the machine, except those
+occupied by the translator, will be cleared (i.e.
+put equal to zero).
+
+\myuline{\mytt{::}}
+
+The computer will \myuline{wait} - until the last button on
+the keyboard (1 on Address 2) is \myuline{changed} from its
+current position.
+
+\myuline{\mytt{'}\hspace{0.5cm}\mytt{'}}
+
+All characters between the inverted commas will be
+copied directly onto the output punch.
+
+
+\section{\myuline{ERRORS IN PROCEDURE}}
+
+If a coding error is detected by the translator
+in the body of a procedure i.e. between the \mytt{DEFINE ( )}
+and the final \mytt{CLOSE}, then that part of the procedure
+already translated will be, in effect, erased
+automatically and the corrected version of the
+procedure can then be translated without any wastage
+of space.
+
+If an error in a procedure is discovered by the
+programmer after the procedure has been fully translated,
+he must take steps himself to erase the previous
+version of the procedure before attempting to
+translate the new one. This he does with an order such
+as
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:X(ABC)
+\end{lstlisting}
+\end{addmargin}
+
+which will erase reference to the previous version of
+\mytt{ABC}. Then follows the new version of \mytt{ABC} beginning with,
+as normal
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:DEFINE(ABC)
+\end{lstlisting}
+\end{addmargin}
+
+The \mytt{X} cancellation does not allow re-use of the
+space used by the original version of \mytt{ABC} therefore
+the "re-defining" of procedures is conditional on there
+being sufficient store left in the machine.
+
+\section{\myuline{SUMMARY OF INITIAL (OR ORGANISATIONAL) INSTRUCTIONS}}
+
+See: Table \ref{tbl:ORG}
+
+
+\multicolinterrupt{
+\noindent\begin{minipage}{\textwidth}
+\captionof{table}{Summary of initial (organisational) instructions}\label{tbl:ORG}
+\begin{tabular}{|l|l|l|}
+\hline
+Group A & \mytt{SET}       & Sets up machine to receive new programme \\
+\hline
+Group B & \mytt{SETV( , )} & Sets variables in permanent and local alphabets \\
+        & \mytt{SETS( , )} & Sets integers in permanent and local alphabets \\
+        & \mytt{SETR( , )} & Sets procedures with given names and given references \\
+\hline
+Group C & \mytt{DEFINE( )} & Introduces the body of a procedure \\
+        & \mytt{LIST}      & Lists of variables and blocks of H-Code \\
+        & \mytt{LV( , )}   & variables and integers respectively:- \\
+        & \mytt{LS( , )}   & $A$, sets variable in local alphabet \\
+        &                  & $A\rightarrow B_{20}$, $A$ in local alphabet takes properties of $B_{20}$ in permanent \\
+        &                  & $A:3000$, $A$ in local alphabet becomes absolute location 3000 \\
+        & \mytt{PL}        & Permanent alphabet to local alphabet \\
+        & \mytt{LP}        & Local alphabet to permanent alphabet \\
+        & \mytt{STORE}     & Prints store left \\
+        & \mytt{START( )}  & Stores reference and procedure for starting at 513 \\
+        & \mytt{BINARY}    & Binarizes the programme in store \\
+\hline
+Group D & \mytt{X( )}      & Cancels the given procedure \\
+        & \mytt{Z}         & Clears that part of store used by programme and data \\
+\hline
+Group E & \mytt{::}        & Wait \\
+        & \mytt{'}\hspace{0.5cm}\mytt{'} & Title between is copied \\
+\hline
+\end{tabular}
+
+\vspace{0.2cm}
+\myuline{Notes} \\
+The first word of Group B which occurs before a word of Group C has also the effect of Group A i.e. \mytt{SET}.
+\end{minipage}}
+
+
+\section{\myuline{FLOATING POINT FORM OF NUMBERS}}
+
+\subsection{FLOATING POINT FORM}
+
+A common way of writing very large or very small
+numbers in scientific work is to associate a power
+of 10 with each of them; for example:
+
+\begin{tabular}{lrl}
+   & - & $35,742,000,000,000,000$ may be written: \\
+   & - & $3.5742 \times 10^{16}$ \\
+or &   & $0.000,000,000,000,123,4$ may be written: \\
+   &   & $.1234 \times 10^{-12}$ \\
+\end{tabular}
+
+That is to say the numerical part, or \myuline{argument}, or
+mantissa is written with the decimal point in a
+convenient position and the \myuline{exponent} of 10 is an integer
+adjusted to make the overall value of the number
+correct.  This way of representing numbers is generally
+called \myuline{floating-point form}, as opposed to \myuline{fixed-point
+form} of numbers written without an exponent.  Thus
+within a computer a number can be represented in this
+form by 2 quantities, the argument (a fraction) and
+the exponent (an integer) \myuline{packed} into one \uline{computer
+word} — or \myuline{zero}.
+
+When a number is printed out by methods (\ref{it:PRMS}) and
+(\ref{it:PRS}) in PRINT STATEMENT it is printed out in what is
+called \myuline{Standardised Floating-point form}.  In this if
+$A10^{b}$ is the number then A and b are adjusted so that
+
+if $A \neq 0$ then $.1 \leqslant A < 1$ when b is positive or
+negative integer.
+
+if $A = 0$ then $A = 0$ and $b = -78$ (b is irrelevant
+in fact).
+\vspace{2pt}
+
+Users need not be conscious of the form of
+floating-point except when they are printing variables
+in floating point form — and to a lesser extent when
+preparing data in this form.
+
+
+\subsection{FORM OF NUMBERS}
+
+\renewcommand{\labelenumi}{(\alph{enumi})}
+\begin{enumerate}
+\def\theenumi{\alph{enumi}}
+
+\item\label{it:IAO} \myuline{In Arithmetic Orders}
+
+In arithmetical statements a variable can be
+replaced by an \myuline{unsigned} constant (except, of course
+that we cannot write $\rightarrow 23$)
+
+\myuline{Integers} must not have decimal points, and they must
+be less than $2^{38}$ i.e. 274,877,906,944
+
+\myuline{Floating point} numbers should, in general, have a
+decimal point, however if the mode of the part of the
+expression has been determined the decimal point may
+be omitted. The integral part of the number must be less
+than $2^{38}$ and the 'integer value' of the fractional part
+(i.e. the fraction treated as an integer e.g. .0001234
+would be 1234) also less than $2^{38}$.  An exponent is not
+allowed.
+
+A number in arithmetic is terminated by the first
+non-numeric character.
+
+\item \myuline{In data for \mytt{READ}, \mytt{LIST}, \mytt{DATA}}
+
+In data a negative number must be signed, a
+positive sign is optional.
+
+\myuline{Integers} as in (\ref{it:IAO})
+
+\myuline{Floating point numbers} as in (\ref{it:IAO}), but decimal point is
+not necessary in integral numbers.  A decimal exponent
+is allowed — the argument is followed by a / followed
+by the decimal exponent which is a signed or unsigned
+integer $\leqslant 77$ in absolute magnitude (the maximum number
+allowed in the machine is approximately ($\pm 1.16 \times 10^{77}$)
+
+e.g. -13/-2 or 2.63/7
+
+A number in data must be terminated by CR, spsp or
+LF.
+
+\item \myuline{In machine code blocks}
+
+In machine code the number \myuline{must} be signed.
+
+\myuline{Integers} as in (\ref{it:IAO})
+
+\myuline{Floating point} numbers as in (\ref{it:IAO}), but the decimal
+point must be used.  An exponent is \myuline{not} allowed.
+
+A number in machine code must be terminated by LF
+or, in the case of integers, by \mytt{<}
+\end{enumerate}
+
+
+\section{\myuline{MACHINE CODE BLOCKS}}
+
+Blocks of machine code orders occur in the body
+of a procedure amongst the ordinary mnemonic statements
+where they are translated and obeyed in sequence with
+the other statements.
+
+They also occur under \mytt{LIST} outside (or inside) a
+procedure where they are stored in the address as
+specified by \mytt{LIST}.
+
+Although the full T102 (Elliott machine code input.
+routine) facilities are not available enough are
+provided for the vast majority of uses of machine code.
+The main difference is that \myuline{fixed point fractions are
+not allowed}.  We are restricted to integer and floating-point working.
+
+A block of machine code is introduced by \mytt{<}
+and closed by \mytt{)}
+
+In the block we are allowed the following types
+of words:—
+
+\noindent\myuline{Normal orders}
+
+\begin{tabular}{l}
+$p_{1}q_{1}N_{1}/p_{2}q_{2}N_{2}$ \\
+$/p_{2}q_{2}N_{2}$ \\
+$p_{1}q_{1}N_{1}/$ \\
+$/$ \\
+\end{tabular}
+
+where \mytt{/} can be replaced by \mytt{:}.
+
+p and q are the integers 0 — 7
+and N is of the forms
+
+\begin{tabular}{ll}
+\mytt{123}   & i.e. (integer) \\
+\mytt{123,}  & \mytt{,} is relative to first order of \\
+\mytt{-123,} & block \\
+\mytt{-123}  & \\
+\mytt{A12} or \mytt{@12} & \\
+\mytt{(3)} or \mytt{(3,ABC)} & i.e. the jump suffix (use with \\
+               & 40 — 43 instructions)
+\end{tabular}
+
+\noindent\myuline{Octal}
+
+8 followed by the 13 octal (0-7) elements of the
+word.
+
+\noindent\myuline{Numbers}
+
+Introduced by $\pm$.
+The presence, and only the presence, of a decimal
+point will make the number into a floating point
+number - otherwise it will be an integer.
+
+In floating point number \mytt{/} followed by decimal
+exponent is not allowed.
+
+Fixed point fractions are not allowed.
+An order such as
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+A12
+\end{lstlisting}
+\end{addmargin}
+
+will represent the address of $A_{12}$ as an integer.
+
+- An integer followed by \mytt{,} will give the integer
+plus the address of 1st order of block
+
+\begin{tabular}{ll}
+e.g. & \mytt{+13,} \\
+     & \mytt{~1,} \\
+\end{tabular}
+
+\noindent\myuline{New address} (Allowed \myuline{only under \mytt{LIST}})
+
+An integer followed by \mytt{<} will alter the address
+for subsequent, orders — but \mytt{,} will \myuline{still be relative
+to the beginning of the block.} e.g.
+
+\begin{tabular}{ll}
+\mytt{A12<} \\
+\mytt{+13<} \\
+\mytt{-1,<} \\
+\end{tabular}
+
+\noindent\myuline{An order must be closed} by LF or \mytt{)}
+
+\noindent\myuline{Systems of Blocks} of machine code are not the same as
+T102.  Each block is 'put into a letter' and reference
+made from one block to another with an order such as
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+73A:40A1
+\end{lstlisting}
+\end{addmargin}
+
+which would use the block in \mytt{A} as a subroutine. An
+order such as
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+730,2:401,2
+\end{lstlisting}
+\end{addmargin}
+
+\begin{flushleft}
+has no meaning as Block 2 is not defined.
+\end{flushleft}
+
+This system will not effect the use of library
+routines as blocks of programme as they generally only
+refer to themselves and not to other blocks.  The only
+stumbling block to full use of Elliott machine code
+library routines is probably the lack of fixed point
+fractions and these appear to be rarely used - if at
+all.
+
+\section{\myuline{USE OF PROCEDURES}}
+
+A programme is made up, in general, of a group of
+procedures each of which does its own job using the other
+procedures as subroutines or passing control to them in
+turn.
+
+\vspace{1ex}
+\noindent\myuline{By direct entry}
+
+In this method control is passed from the current
+procedure to another by 'jumping into' it with an order
+such as
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:IF(X)ZERO:GOTO(3,ABC)
+\end{lstlisting}
+\end{addmargin}
+
+Here control passes to beyond reference 3 of
+procedure \mytt{:ABC}.  No \myuline{link} is set - i.e. no marker is
+kept of the position or the procedure from which control
+was passed.
+
+\vspace{1ex}
+\noindent\myuline{As a Subroutine}
+
+In this method control is passed to the \myuline{Subroutine}
+but a \myuline{link} is set and when the statement
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:EXIT
+\end{lstlisting}
+\end{addmargin}
+
+occurs in the subroutine control is passed back to the
+order after the statement which calls on the subroutine,
+which is typified by
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:ABC(N3+1)
+\end{lstlisting}
+\end{addmargin}
+
+i.e. the name of the subroutine procedure together with
+a \myuline{simple suffix} referring to the reference number at
+which entry is to be made. Diagrammatically:—
+
+\vspace{0.5cm}
+\begingroup
+\centering
+\fbox{%
+\begin{picture}(70,60)
+\thicklines
+
+\put(3,55){\hbox{\kern3pt\mytt{Master Program}}}
+\put(40,55){\hbox{\kern3pt\mytt{Subroutine XYZ}}}
+
+\put(5,7){\line(0,1){40}}
+\put(30,7){\line(0,1){40}}
+\qbezier(5,7)(11,1)(17,7)
+\qbezier(17,7)(23,13)(30,7)
+\qbezier(5,47)(11,41)(17,47)
+\qbezier(17,47)(23,53)(30,47)
+
+\put(40,7){\line(0,1){40}}
+\put(65,7){\line(0,1){40}}
+\qbezier(40,7)(46,1)(52,7)
+\qbezier(52,7)(58,13)(65,7)
+\qbezier(40,47)(46,41)(52,47)
+\qbezier(52,47)(58,53)(65,47)
+
+
+\put(5,26){\hbox{\kern3pt\mytt{:XYZ3}}}
+
+\put(40,35){\hbox{\kern3pt\mytt{3)}}}
+\put(40,15){\hbox{\kern3pt\mytt{:EXIT}}}
+
+% MP
+\put(10,43){\vector(0,-1){15}}
+\put(10,25){\vector(0,-1){15}}
+
+% Call
+\Vector(15,28)(40,37)
+\Vector(41,16)(14,25)
+
+% XYZ
+\put(50,35){\vector(0,-1){18}}
+
+\end{picture}}
+
+\captionof{figure}{The use of a subroutine}\label{fig:scall}
+\endgroup
+\vspace{0.5cm}
+
+
+As there is only one link associated with each
+procedure a procedure can not be entered as a subroutine
+from itself or from any sub-sub..-routine etc., of that
+procedure.  Although there is no objection: to using a
+part of the same procedure as a subroutine if exit from
+the 'master part' of the procedure is not by obeying
+link (i.e. by \mytt{EXIT}). (i.e. no \myuline{recursive} use of
+procedures).  Apart from the above restriction there
+is no limit to the depth of subroutine.  Although in
+practice it is, of course, limited by the number of
+procedures which make-up the programme as a whole.
+
+
+\section{\myuline{STRUCTURE OF A PROCEDURE}}
+
+The basic structure of a procedure (\mytt{ABC} say) is
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:DEFINE(ABC) , , , , , , :CLOSE
+\end{lstlisting}
+\end{addmargin}
+
+Between the commas are statements — such as
+
+\begin{tabular}{l}
+Arithmetical statements \\
+Conditional statements \\
+Machine Code Blocks \\
+Read Statements \\
+Defined Functions \\
+etc \\
+etc \\
+\end{tabular}
+
+However, many statements themselves imply comma,
+so that we can string such statements together without
+actually using a comma.  Similarly line-feed implies
+comma hence statements can be put on separate lines without commas.
+
+The omitting of commas can make the print-out look
+tidier, but care should be taken to ensure that when a
+word implies a comma and the new statement begins with
+a letter then there should be some non-alphabet
+character between the two statements — e.g. comma itself
+or spsp. e.g. we can write
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:IF(A=B)THEN 1.0 →C:,
+\end{lstlisting}
+\end{addmargin}
+
+but we \myuline{cannot} write
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:IF(A=B)THEN X →C:,
+\end{lstlisting}
+\end{addmargin}
+
+as the \mytt{X} would be taken to be part of \mytt{THEN} (see
+WORDS).  We can get over this in many ways.  e.g.
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:IF(A=B)THEN,X →C:,
+:IF(A=B)THEN(X →C):,
+:IF(A=B)THEN  X →C:,
+\end{lstlisting}
+\end{addmargin}
+
+or
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:IF(A=B)THEN
+X →C:,
+\end{lstlisting}
+\end{addmargin}
+
+Details of those statements which imply comma are
+given in the summary of facilities.
+
+\section{\myuline{LOOP AND DO INSTRUCTIONS}}
+
+\newcommand{\myloopcount}{$\xi_{s}$}
+
+The Instructions:—
+
+\renewcommand{\labelenumi}{(\roman{enumi})}
+\begin{enumerate}
+\def\theenumi{\roman{enumi}}
+
+\item\label{it:LOOPU}\ \\ \vspace{-5pt}
+
+\begin{addmargin}[1cm]{1em}%
+\makebox{%
+\begin{picture}(50,14)
+\thicklines
+
+\put(3,12){\hbox{\kern3pt\mytt{:LOOP}}}
+\put(3,1){\hbox{\kern3pt\mytt{:REPEAT}}}
+
+\put(1,11){\vector(1,0){3}}
+\put(1,11){\line(0,-1){9}}
+\put(1,2){\line(1,0){3}}
+
+\thinlines
+\put(8,5){\line(0,1){1}}
+\put(8,7){\line(0,1){1}}
+\put(8,9){\line(0,1){1}}
+
+\end{picture}}
+\end{addmargin}
+
+which must always occur as a pair facilitate the
+programming of repetitive processes.  The programme
+between the \mytt{LOOP} and \mytt{REPEAT} is obeyed repetitively,
+the \mytt{REPEAT} instruction sending control back to the
+instruction immediately following the \mytt{LOOP} instruction.
+\mytt{LOOP} has no effect other than introducing a loop.
+
+\item\label{it:LOOPCOND}\ \\ \vspace{-5pt}
+
+\begin{addmargin}[1cm]{1em}%
+\makebox{%
+\begin{picture}(50,14)
+\thicklines
+
+\put(3,12){\hbox{\kern3pt\mytt{:LOOP}}}
+\put(3,1){\hbox{\kern3pt\mytt{:IF - - - - - - :REPEAT}}}
+
+\put(1,11){\vector(1,0){3}}
+\put(1,11){\line(0,-1){9}}
+\put(1,2){\line(1,0){3}}
+
+\thinlines
+\put(8,5){\line(0,1){1}}
+\put(8,7){\line(0,1){1}}
+\put(8,9){\line(0,1){1}}
+
+\end{picture}}
+\end{addmargin}
+
+This is similar to (\ref{it:LOOPU}) except that the \mytt{REPEAT} is
+conditional.  The \mytt{IF} can introduce any kind or
+complexity of conditional statement.
+
+\item\label{it:DOLOOP}\ \\ \vspace{-5pt}
+
+\begin{addmargin}[1cm]{1em}%
+\makebox{%
+\begin{picture}(50,14)
+\thicklines
+
+\put(3,12){\hbox{\kern3pt\mytt{:DO(}$\xi_{s}$\mytt{)}}}
+\put(3,1){\hbox{\kern3pt\mytt{:REPEAT}}}
+
+\put(1,11){\vector(1,0){3}}
+\put(1,11){\line(0,-1){9}}
+\put(1,2){\line(1,0){3}}
+
+\thinlines
+\put(8,5){\line(0,1){1}}
+\put(8,7){\line(0,1){1}}
+\put(8,9){\line(0,1){1}}
+
+\end{picture}}
+\end{addmargin}
+
+The programme between the \mytt{DO} and the \mytt{REPEAT} is
+obeyed \myloopcount, times — i.e. the value of \myloopcount, when the
+programme is obeyed, The \mytt{REPEAT} associated with a \mytt{DO}
+must be unconditional.
+
+\mytt{LOOP} loops and \mytt{DO} loops can occur 'inside' other
+loops to a depth of 9. A \mytt{REPEAT} is paired with the last
+impaired \mytt{LOOP} or \mytt{DO}. e.g.
+
+\begingroup
+\centering
+\makebox{%
+\begin{picture}(70,50)
+\thicklines
+
+\put(15,46){\hbox{\kern3pt\mytt{:DO(...)}}}
+\put(15,38){\hbox{\kern3pt\mytt{:LOOP}}}
+\put(15,35){\hbox{\kern3pt\mytt{:LOOP}}}
+\put(15,26){\hbox{\kern3pt\mytt{:REPEAT}}}
+\put(15,23){\hbox{\kern3pt\mytt{:DO(...)}}}
+\put(15,13){\hbox{\kern3pt\mytt{:REPEAT}}}
+\put(15,10){\hbox{\kern3pt\mytt{:IF (...) REPEAT}}}
+\put(15,1){\hbox{\kern3pt\mytt{:REPEAT}}}
+
+\put(6,46){\vector(1,0){10}}
+\put(6,46){\line(0,-1){44}}
+\put(6,2){\line(1,0){10}}
+
+\put(8,38){\vector(1,0){8}}
+\put(8,38){\line(0,-1){27}}
+\put(8,11){\line(1,0){8}}
+
+\put(10,35){\vector(1,0){6}}
+\put(10,35){\line(0,-1){8}}
+\put(10,27){\line(1,0){6}}
+
+\put(10,23){\vector(1,0){6}}
+\put(10,23){\line(0,-1){9}}
+\put(10,14){\line(1,0){6}}
+
+\end{picture}}
+\endgroup
+
+
+Other programme can occur anywhere between the
+\mytt{LOOP}s \mytt{DO}s and \mytt{REPEAT}s.
+
+\end{enumerate}
+
+\renewcommand{\labelenumi}{\ifnum\value{enumi}=1 \myuline{Note} (\roman{enumi})\else (\roman{enumi})\fi}
+\begin{enumerate}
+
+\item If \myloopcount, in \mytt{DO(}\myloopcount\mytt{)} is negative then there will
+be error signal.
+
+If \myloopcount  is zero then it will be equivalent to \mytt{DO(1)}\footnote{handwritten note: \mytt{"ERROR"} here}.
+However if we want literally to \mytt{DO} a loop zero times
+i.e. by-pass the loop we would write something like:
+
+\begin{addmargin}[1cm]{1em}%
+\makebox{%
+\begin{picture}(50,14)
+\thicklines
+
+\put(3,12){\hbox{\kern3pt\mytt{:IF(N)NOT ZERO:THEN:DO(N)}}}
+\put(3,1){\hbox{\kern3pt\mytt{:REPEAT:,}}}
+
+\put(1,11){\vector(1,0){3}}
+\put(1,11){\line(0,-1){9}}
+\put(1,2){\line(1,0){3}}
+
+\thinlines
+\put(8,5){\line(0,1){1}}
+\put(8,7){\line(0,1){1}}
+\put(8,9){\line(0,1){1}}
+
+\end{picture}}
+\end{addmargin}
+
+\item \myuline{Example}
+
+Calculate
+
+\begin{addmargin}[1cm]{1em}%
+\begin{math}
+C = \displaystyle\sum_{I=0}^{9}{A_{I}B_{2I}}
+\end{math}
+\end{addmargin}
+
+This can be done in various ways:
+
+\renewcommand{\labelenumii}{\ifnum\value{enumii}=1 e.g. (\alph{enumii})\else or (\alph{enumii})\fi}
+\begin{enumerate}
+
+\item
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+0.0 →C
+(0 →I →I1)DO(10)
+(AI+BI1)ON(C)
+1ON(I,I1,I1)REPEAT
+\end{lstlisting}
+\end{addmargin}
+
+\item
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+0.0 →C
+(0 →I)DO(10)
+(AI+B'(I+I))+C →C
+1ON(I)REPEAT
+\end{lstlisting}
+\end{addmargin}
+
+\end{enumerate}
+\end{enumerate}
+
+
+\section{\myuline{ON STATEMENT}}
+
+The statement:—
+
+\begin{addmargin}[1cm]{1em}%
+\vspace{0.2cm}
+$\xi$:\mytt{ON(P,Q,R,...)}
+\end{addmargin}
+
+where:
+
+$\xi$ is fixed or floating point expression
+
+$\xi$, \mytt{P}, \mytt{Q}, \mytt{R...} are all same mode where \mytt{P}, \mytt{Q}, \mytt{R...}
+are any number and can have simple or complex suffixes.
+
+Is such that the function \mytt{ON} adds the value of the
+accumulator onto each of the variables specified on
+the right hand side.
+
+\begin{flushleft}
+e.g.
+\end{flushleft}
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+(N+M)ON(A3,B'(P+Q))
+\end{lstlisting}
+\end{addmargin}
+
+\begin{flushleft}
+will perform the operations
+\end{flushleft}
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+N+M+A3 →A3
+N+M+B'(P+Q) →B'(P+Q)
+\end{lstlisting}
+\end{addmargin}
+
+\begin{flushleft}
+and
+\end{flushleft}
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+1:ON(L,M,N)
+\end{lstlisting}
+\end{addmargin}
+
+\begin{flushleft}
+is equivalent to
+\end{flushleft}
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+L+1 →L
+M+1 →M
+N+1 →N
+\end{lstlisting}
+\end{addmargin}
+
+
+\begin{flushleft}
+\myuline{Notes}
+\end{flushleft}
+
+\renewcommand{\labelenumi}{(\roman{enumi})}
+\begin{enumerate}
+
+\item With integers \mytt{ON} is always more efficient than the
+appropriate arithmetic.  But with floating point
+variables its use, as far as efficiency is concerned,
+becomes debatable except when $\xi$ is complicated or if
+any of the RHS have complex suffices.
+
+\item \mytt{ON} implies comma except that after final \mytt{)} a
+letter-introduces a word.  This is to allow the
+statement such as
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+1:ON(N)REPEAT
+\end{lstlisting}
+\end{addmargin}
+
+which is the most common use of \mytt{ON}.
+
+\item After \mytt{,} or \mytt{(} CR,LF, spsp are ignored.
+
+\end{enumerate}
+
+
+\section{\myuline{SUFFICES}}
+
+Integers or integer expressions can be used as suffices
+to floating- or fixed-point variables.
+
+\subsection{SIMPLE SUFFICES}
+
+The following examples cover all the allowable
+types of SIMPLE SUFFICES.
+
+\begin{addmargin}[1cm]{1em}%
+\begin{tabular}{lrl}
+\mytt{A13}  & or & \mytt{A(13)}  \\
+\mytt{AN}   & or & \mytt{A(N)}   \\
+\mytt{AN15} & or & \mytt{A(N15)} \\
+\multicolumn{2}{r}{\mytt{A(N+20)}} & \\
+\multicolumn{2}{r}{\mytt{A(N5-6)}} & \\
+\end{tabular}
+\end{addmargin}
+
+Simple suffices can be written in \myuline{this} and \myuline{only this}
+form. e.g.
+
+\begin{addmargin}[1cm]{1em}%
+\begin{math}
+A_{(n_{1}+20)}
+\end{math}
+\end{addmargin}
+
+\begin{flushleft}
+must be written as:
+\end{flushleft}
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+A(N1+20)
+\end{lstlisting}
+\end{addmargin}
+
+\begin{flushleft}
+\mytt{A(20+N1)} will not be accepted.
+\end{flushleft}
+
+\begin{addmargin}[1cm]{1em}%
+\begin{math}
+A_{N_{15}}
+\end{math}
+\end{addmargin}
+
+\begin{flushleft}
+must be written as:
+\end{flushleft}
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+AN15   or   A(N15)
+\end{lstlisting}
+\end{addmargin}
+
+\begin{flushleft}
+\mytt{A(N(15))} will not be accepted.
+\end{flushleft}
+
+\subsection{COMPLEX SUFFICES}
+
+These are written
+
+\begin{addmargin}[1cm]{1em}%
+\begin{flushleft}
+\mytt{A'(}$\xi_{s}$\mytt{)}
+\end{flushleft}
+\end{addmargin}
+
+$\xi_{s}$ itself can contain integers or variables which
+have simple suffices themselves, \myuline{but not complex suffices}
+
+\begin{flushleft}
+Examples:
+\end{flushleft}
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+A'(P1+Q2)
+A'(B:INT)
+A'(NM3+N(M4+1)-5)
+I'((N+M)*(N-M))
+I'((N+M)SQ)
+\end{lstlisting}
+\end{addmargin}
+
+\begin{flushleft}
+\myuline{Notes}
+\end{flushleft}
+
+\renewcommand{\labelenumi}{(\roman{enumi})}
+\begin{enumerate}
+
+\item It is important that the value of a suffix is $\geqslant 0$
+and $\leqslant 8191$ as values outside this range cause the arithmetic order to be destroyed.
+
+\item A suffix should be represented as a simple suffix
+where possible as complex suffices are less efficient
+in time and space.
+
+\item Complex suffices can be used in all types of
+arithmetic except division by an integer.  For details
+see Arithmetic.
+
+\item As teleprinters have no multi-level printing
+facilities suffices are printed on the same level as
+the variable which they qualify but it should be
+remembered that \mytt{A4} means $A_{4}$
+
+\end{enumerate}
+
+
+\section{\myuline{JUMP SUFFICES,} \myuline{UNCONDITIONAL JUMPS}}
+
+\subsection{JUMP SUFFICES}
+
+The jump suffix \mytt{(\rlap{/}S)} can be of the following forms
+
+\renewcommand{\labelenumi}{(\roman{enumi})}
+\begin{enumerate}
+\def\theenumi{\roman{enumi}}
+\item\label{it:JMPSM} as an ordinary SIMPLE SUFFIX
+\item\label{it:JMPCX} \begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+(3,ABC)
+(N4+5,ABC)
+\end{lstlisting}
+\end{addmargin}
+\end{enumerate}
+
+Jump suffices are used to qualify the \mytt{START} and
+\mytt{GOTO} statements.
+
+Type (\ref{it:JMPSM}) will refer to reference numbers within the
+current procedure, or if used outside a procedure, to
+the absolute machine location.
+
+Type (\ref{it:JMPCX}) will refer to reference numbers in the
+specified procedure.
+
+\subsection{UNCONDITIONAL JUMPS}
+
+The statement
+\begin{addmargin}[1cm]{1em}%
+\begin{flushleft}
+\mytt{:GOTO(\rlap{/}S)}
+\end{flushleft}
+\end{addmargin}
+
+\begin{flushleft}
+will cause control to pass to the order immediately
+following the reference number specified by \mytt{(\rlap{/}S)} (see
+JUMP SUFFIX above).
+\end{flushleft}
+
+\begin{flushleft}
+e.g.
+\end{flushleft}
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:GOTO3
+:GOTO(N,ABC)
+:GOTO(N)
+\end{lstlisting}
+\end{addmargin}
+
+\begin{flushleft}
+(note that: \mytt{GOTO N} would be wrong as \mytt{N} would be taken
+as part of the word \mytt{GOTO}).
+\end{flushleft}
+
+
+\section{\myuline{CONDITIONAL STATEMENTS}}
+
+There are two methods of writing conditions, one
+of which is more efficient than the other (in so far
+as it uses less space and is dynamically faster).  The
+less efficient method is used because it is rather
+easier to use when a programme is being written
+quickly - say for a one-off job, or when mathematical
+clarity is needed.
+
+\renewcommand{\labelenumi}{\myuline{Type \theenumi}}
+\begin{enumerate}
+
+\item\label{it:EFF} (Efficient)
+
+\begin{tabular}{ll}
+($\xi$)\mytt{NEGATIVE}     & \mytt{<0} \\
+($\xi$)\mytt{ZERO}         & \mytt{=0} \\
+($\xi$)\mytt{POSITIVE}     & \mytt{>0} \\
+($\xi$)\mytt{NOT NEGATIVE} & \mytt{=0 >0} \\
+($\xi$)\mytt{NOT ZERO}     & \mytt{<0 >0} \\
+($\xi$)\mytt{NOT POSITIVE} & \mytt{<0 =0} \\
+\end{tabular}
+
+\item\label{it:LEF} (Less efficient than type \ref{it:EFF})
+
+\begin{tabular}{ll}
+($\xi$ \mytt{<}  $\xi'$) & \\
+($\xi$ \mytt{=}  $\xi'$) & \\
+($\xi$ \mytt{>}  $\xi'$) & \\
+($\xi$ \mytt{:<}  $\xi'$) & \mytt{= or >} \\
+($\xi$ \mytt{:=}  $\xi'$) & \mytt{< or >} \\
+($\xi$ \mytt{:>}  $\xi'$) & \mytt{< or =} \\
+\end{tabular}
+
+\end{enumerate}
+
+\begin{flushleft}
+where $\xi$ and $\xi'$ are the same modes
+
+$\nless$ is punched \mytt{:<}, $\ne$ \mytt{:=}, $\ngtr$ \mytt{:>}
+\end{flushleft}
+
+\subsection{GENERAL CONDITIONAL STATEMENT}
+
+If we write \mytt{(\rlap{/}C)} for the general condition (any of
+above) the general conditional statement is:-
+
+\begingroup
+\centering
+\makebox{%
+\begin{picture}(70,25)
+\thicklines
+
+\put(15,17){\hbox{\kern3pt\mytt{:IF(\rlap{/}C)\ AND\ \ (\rlap{/}C') }}}
+\put(15,13){\hbox{\kern3pt\mytt{\ \ \ \ \ \ \ \ OR}}}
+\put(15,9){\hbox{\kern3pt\mytt{\ \ \ \ \ \ \ \ REPEAT}}}
+\put(15,5){\hbox{\kern3pt\mytt{\ \ \ \ \ \ \ \ GOTO(\rlap{/}S)}}}
+\put(15,1){\hbox{\kern3pt\mytt{\ \ \ \ \ \ \ \ THEN}}}
+
+\ifTwoColumn
+\put(28,22){\vector(0,-1){3}}
+\put(28,22){\line(1,0){13}}
+\put(41,22){\line(0,-1){4}}
+\put(41,18){\line(-1,0){2}}
+
+\put(25,19){\line(1,1){1}}
+\put(25,1){\line(0,1){8}}
+\put(25,11){\line(0,1){8}}
+\put(24,10){\line(1,1){1}}
+\put(24,10){\line(1,-1){1}}
+\put(25,1){\line(1,-1){1}}
+
+\put(32,13){\line(-1,-1){1}}
+\put(32,13){\line(0,1){2}}
+\put(32,15){\line(1,1){1}}
+\put(32,17){\line(1,-1){1}}
+\put(32,17){\line(0,1){2}}
+\put(32,19){\line(-1,1){1}}
+
+\else
+
+\put(31,22){\vector(0,-1){3}}
+\put(31,22){\line(1,0){16}}
+\put(47,22){\line(0,-1){4}}
+\put(47,18){\line(-1,0){2}}
+
+\put(27,19){\line(1,1){1}}
+\put(27,1){\line(0,1){8}}
+\put(27,11){\line(0,1){8}}
+\put(26,10){\line(1,1){1}}
+\put(26,10){\line(1,-1){1}}
+\put(27,1){\line(1,-1){1}}
+
+\put(35,13){\line(-1,-1){1}}
+\put(35,13){\line(0,1){2}}
+\put(35,15){\line(1,1){1}}
+\put(35,17){\line(1,-1){1}}
+\put(35,17){\line(0,1){2}}
+\put(35,19){\line(-1,1){1}}
+
+\fi
+
+\end{picture}}
+\endgroup
+
+
+
+This means that a conditional statement is always
+opened with an \mytt{:IF}. After the \mytt{IF} follows the
+condition on which the statement acts.  After the
+condition follows the instruction which is obeyed if
+the condition is true.  It can be one of five words.
+
+\renewcommand{\labelenumi}{(\roman{enumi})}
+\begin{enumerate}
+\def\theenumi{\roman{enumi}}
+
+\item\myuline{\mytt{AND}}
+\item\myuline{\mytt{OR}}
+
+These allow us to have statements which depend on
+the truth of two or more conditions.  After the \mytt{AND} or
+\mytt{OR} the statement behaves as if there had just been an
+\mytt{IF}.  This is indicated by the arrow in the statement
+of the general conditional statement above.
+
+Examples:-
+
+\begin{addmargin}[0.1cm]{1em}%
+\begin{lstlisting}
+:IF(X<A+B)AND(Y)ZERO:AND(Z)ZERO:GOTO3
+:IF(X<A:SIN)AND(Y)ZERO:OR(X)POSITIVE:REPEAT
+:IF(X=Y:MOD(4))OR(Z:MOD<Y:MOD)THEN ... :,
+\end{lstlisting}
+\end{addmargin}
+
+It is important to attach the correct meaning to
+these multiple condition statements.  If the statement
+consists of all \myuline{ORs} then the statement is true if any
+\myuline{one} of the conditions is true.  Similarly if the
+statement consists of all \myuline{ANDs} then the statement is
+true only if \myuline{all} the conditions are true.  But the
+statement (e.g.)
+
+\begin{addmargin}[1cm]{1em}%
+\begin{flushleft}
+\mytt{:IF(\rlap{/}C)OR(\rlap{/}C')AND(\rlap{/}C'')OR(\rlap{/}C''')....GOTO(\rlap{/}S)}
+\end{flushleft}
+\end{addmargin}
+
+\begin{flushleft}
+would be interpreted as meaning
+\end{flushleft}
+
+\begin{addmargin}[0.3cm]{1em}%
+\begin{math}
+:IF(\mathrlap{/}C)OR\Bigl[(\mathrlap{/}C')AND
+\Bigl\{(\mathrlap{/}C'')OR\Bigl((\mathrlap{/}C''')....
+\Bigr)\Bigr\}\Bigr]GOTO(\mathrlap{/}S)
+\end{math}
+\end{addmargin}
+
+The conditions can not be grouped in any other
+way.  If possible, the combination of \mytt{AND}s and \mytt{OR}s
+should be avoided, or at least, kept very simple.
+
+\item\myuline{\mytt{REPEAT}}
+
+If the statement is true obey next the instruction
+immediately following the last unpaired \mytt{LOOP} instruction
+(see LOOPS OF INSTRUCTIONS).
+
+\begin{flushleft}
+Example:—
+\end{flushleft}
+
+\begingroup
+\centering
+\makebox{%
+\begin{picture}(70,35)
+\thicklines
+
+\put(15,28){\hbox{\kern3pt\mytt{:LOOP}}}
+\put(15,19){\hbox{\kern3pt\mytt{:LOOP}}}
+\put(15,9){\hbox{\kern3pt\mytt{:IF(X:=Y)REPEAT}}}
+\put(15,1){\hbox{\kern3pt\mytt{:IF(X)ZERO:AND(Y)ZERO:REPEAT}}}
+
+\put(16,2){\line(-1,0){5}}
+\put(11,2){\line(0,1){27}}
+\put(11,29){\vector(1,0){5}}
+
+\put(16,10){\line(-1,0){3}}
+\put(13,10){\line(0,1){10}}
+\put(13,20){\vector(1,0){3}}
+
+\end{picture}}
+\endgroup
+
+\item\myuline{\mytt{GOTO(\rlap{/}S)}}
+
+If the statement is true obey next the instruction
+immediately following the reference number with current
+value \mytt{(\rlap{/}S)} (see JUMP SUFFIX).
+
+Example:-
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:IF(X=3)GOTO6
+:IF(Y<B:SQRT)AND(Y)NOT POSITIVE:GOTO(N1+4,ABC)
+\end{lstlisting}
+\end{addmargin}
+
+
+\item\myuline{\mytt{THEN}}
+
+\mytt{THEN} is always associated with a \mytt{;} (punched \mytt{:,})
+or an \mytt{ELSE} and a \mytt{;} in the following manner:
+
+\begin{enumerate}
+
+\item
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:THEN , , , , :,
+\end{lstlisting}
+\end{addmargin}
+
+\item
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:THEN , , , , :ELSE , , , , :,
+\end{lstlisting}
+\end{addmargin}
+
+\end{enumerate}
+
+The commas (,) indicate that there can be statements
+between \mytt{THEN}, \mytt{ELSE} and \mytt{;}
+
+\begin{enumerate}
+
+\item If the statement is true then those statements
+which occur between the \mytt{THEN} and the \mytt{;} are obeyed.  If
+the statement is not true then control passes to the
+statement immediately after the \mytt{;.} e.g.
+
+\begin{addmargin}[0.1cm]{1em}%
+\begin{lstlisting}
+:IF(A<B*D)AND(C)ZERO:THEN , , , :,
+\end{lstlisting}
+\end{addmargin}
+
+\item If the statement is true then those statements
+which occur between the \mytt{THEN} and the \mytt{ELSE} are obeyed.
+If the statement is not true then those statements
+between the \mytt{ELSE} and the \mytt{;} are obeyed. e.g.
+
+\begin{addmargin}[0.1cm]{1em}%
+\begin{lstlisting}
+:IF((A+B)*(A-B)-8)NEGA:THEN , , :ELSE , , :,
+\end{lstlisting}
+\end{addmargin}
+
+\end{enumerate}
+
+Any of the statements between \mytt{THEN}, \mytt{ELSE} and \mytt{;} can
+themselves be \mytt{THEN} statements.  \myuline{This can occur to a
+depth of 9}.
+
+An \mytt{ELSE} is paired with the last impaired \mytt{THEN}.
+A \mytt{;} is paired with the last unpaired \mytt{THEN} or \mytt{ELSE}.
+
+Example:-
+
+\begin{addmargin}[0.1cm]{1em}%
+\begin{lstlisting}
+:IF(A*A-(B*C) →P)NEGATIVE:THEN
+-P:SQRT →Q,-1 →U
+:ELSE
+:IF(P)ZERO:THEN,0 →U:ELSE,P:SQRT →P,1 →U,:,
+\end{lstlisting}
+\end{addmargin}
+
+\mytt{LOOP} or \mytt{DO} ..... \mytt{REPEAT} loops are quite distinct
+from \mytt{THEN} statements and their parings are independent
+so that we could have the following:
+
+\begin{addmargin}[0.1cm]{1em}%
+\begin{lstlisting}
+(0 →N)LOOP:IF(A<BN)THEN, 1ON(N)REPEAT:,
+\end{lstlisting}
+\end{addmargin}
+
+where the parings of \mytt{LOOP} ... \mytt{REPEAT} and \mytt{THEN} ... \mytt{;}
+cross each other.  The above "compound" statement is
+in fact a most useful table search.
+
+\end{enumerate}
+
+\begin{flushleft}
+\myuline{Note}
+\end{flushleft}
+
+\begin{enumerate}
+\item Before words \mytt{NEGATIVE} etc. and \mytt{AND} etc. CR, LF, Sp$^{2}$
+are ignored.
+\item In obeying a "compound" conditional statement as
+soon as the truth or falsity of a statement is determined
+then the rest of the conditions are "skipped" e.g. in
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:IF(A<B)OR(C<D)OR(X>Y:MOD)GOTO(6)
+\end{lstlisting}
+\end{addmargin}
+
+If \mytt{(A<B)} is true then the whole statement is true and
+the other conditions are not examined but e.g. in
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:IF(A<B)AND(C<D).....
+\end{lstlisting}
+\end{addmargin}
+
+If \mytt{(A<B)} is true then because it is followed by \mytt{AND}
+the other conditions must be examined.  However if
+\mytt{(A<B)} is false then the statement is not true and the
+other conditions are not examined.
+
+\end{enumerate}
+
+%\clearpage
+
+\section{\myuline{\mytt{BRANCH}}}
+
+\mytt{BRANCH} is a function of the accumulator and a
+jump instruction which has up to 3 jump suffices.  It
+transfers control according to the sign of the
+accumulator. In general it is written:-
+
+\begin{addmargin}[1cm]{1em}%
+\vspace{0.2cm}
+$\xi$\mytt{:BRANCH(R1,R2,R3)}
+\end{addmargin}
+
+\begin{flushleft}
+where R = (\rlap{/}S) the general jump suffix (qv)
+\end{flushleft}
+
+It has the effect:— \\
+
+\begin{tabular}{clcl}
+If value of & $\xi <0$ & then control passes to & $R_{1}$ \\
+.. & $\xi =0$ & .. & $R_{2}$ \\
+.. & $\xi >0$ & .. & $R_{3}$ \\
+\end{tabular}
+\vspace{1ex}
+
+The general case can be reduced to \\
+
+\begin{addmargin}[1cm]{1em}%
+%\vspace{0.2cm}
+\begin{tabular}{ll}
+   & $\xi$\mytt{:BRANCH(R1,R2)} \\
+or & $\xi$\mytt{:BRANCH(R1)} \\
+\end{tabular}
+\end{addmargin}
+\vspace{1em}
+
+In these cases if the first one or two conditions
+are not satisfied then no action is taken.
+\vspace{1ex}
+
+Examples:-
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+(N-M)BRANCH(3, (N4+3), (N+1, ROUTINE))
+\end{lstlisting}
+\end{addmargin}
+
+\begin{flushleft}
+\myuline{Notes}
+\end{flushleft}
+
+\renewcommand{\labelenumi}{(\theenumi)}
+\begin{enumerate}
+
+\item If R consists of more than one "item" the brackets
+\myuline{must} be included.  e.g. in the above example we must
+have $(N_{4}+3)$.
+
+In particular, in the reduced case we must write
+(e.g.):-
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+A:FRAC-W:BRANCH((N5-6))
+\end{lstlisting}
+\end{addmargin}
+
+Note the two sets of brackets.
+\end{enumerate}
+
+
+\section{\myuline{\mytt{READ STATEMENTS}}}
+
+On obeying an instruction such as:
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:READ(A,B,N,C)
+\end{lstlisting}
+\end{addmargin}
+
+the first number is read off tape and sent to \mytt{A}, the
+second to \mytt{B}, etc.
+
+\mytt{A}, \mytt{B}, \mytt{N}, \mytt{C} can be variables or integers in any
+order and there can any number of them.  They can
+have simple or complex suffices
+
+For form of punching of numbers to be input by the
+\mytt{READ} see \myuline{FORM OF NUMBERS IN DATA}.
+
+For effect of characters in searching for numbers
+see table \ref{tbl:READ}
+
+\begin{flushleft}
+\myuline{Notes}
+\end{flushleft}
+
+\renewcommand{\labelenumi}{(\roman{enumi})}
+\begin{enumerate}
+\def\theenumi{\roman{enumi}}
+
+\item\label{it:READARITH} In writing the \mytt{READ} instruction after the variable
+which is to be read we can carry on with normal
+arithmetic, with the restriction that the variable to
+be read follows immediately after the \mytt{(} or \mytt{,} e.g. we
+can write: (see (\ref{it:READAFT})).
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:READ(A,B3+C →X,Y'(P+Q))
+\end{lstlisting}
+\end{addmargin}
+
+After the first comma; the number will be read,
+sent to \mytt{B3}, \mytt{C} will be added and result sent to \mytt{X}.  We
+can \myuline{not} write:
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:READ(A,(B+C)*X →Y)
+\end{lstlisting}
+\end{addmargin}
+
+because the \mytt{B} does not
+immediately follow the comma.
+
+\item\label{it:READAFT} after \mytt{,} or \mytt{(} CR LF SpSp are ignored.
+This is so that a \mytt{READ} instruction which is very long can be broken
+at the end of a line of teleprinter page.
+
+\end{enumerate}
+
+\multicolinterrupt{
+\noindent\begin{minipage}{\textwidth}
+\captionof{table}{Effect of characters met in obeying \mytt{READ} instruction}\label{tbl:READ}
+\begin{tabular}{|p{8cm}|p{8cm}|}
+\hline
+letter shift, figure shift    & \\
+blank tape                    & are ignored \\
+CR.\hspace{1em}  Sp Sp.\hspace{1em}  Sp.\hspace{1em}  LF\hspace{1em}  \mytt{=}  & \\
+\hline
+\mytt{. + -} digits           & introduces a number \\
+\hline
+\mytt{'}                      & introduces a title (terminated by \mytt{'}) which is copied \\
+                              & onto the output tape directly. \\
+\hline
+\mytt{::}                     & Computer waits.  Continues after the last button of \\
+                              & keyboard word is changed from its current position. \\
+\hline
+\mytt{)}                      & Computer stops. \\
+\hline
+All other characters          & Wrong.  Computer gives error signal. \\
+\hline
+\end{tabular}
+\end{minipage}}
+
+\clearpage
+
+\section{\myuline{PRINT STATEMENTS}}
+
+if m and n are integer constants there exist the
+following print statements:-
+
+\renewcommand{\labelenumi}{(\roman{enumi})}
+\begin{enumerate}
+\def\theenumi{\roman{enumi}}
+
+\item\label{it:PRMN} $\xi_{v}$\mytt{:m.n} will print out the value of $\xi_{v}$ with
+m digits before the decimal point
+and n digits after.
+
+\item\label{it:PRMS} $\xi_{v}$\mytt{:m/} ...... in floating point form with
+m significant figures.
+
+\item\label{it:PRS} $\xi_{v}$\mytt{:/} equivalent to \mytt{:8/}
+
+\item\label{it:PRM} $\xi_{s}$\mytt{:m} ...... with m digits
+
+\end{enumerate}
+
+All numbers are preceded by a negate sign if
+negative but by a space if not negative.  No terminating
+symbol is punched after the number.  If the numbers
+are to be re-input then it is necessary to punch the
+terminating symbol by use of the title instruction
+(q.v.).  All numbers are preceded by a figure shift.
+
+Non-significant leading zeroes are replaced by
+spaces.
+
+\begin{flushleft}
+In
+\end{flushleft}
+
+\begin{tabular}{llcclcc}
+(\ref{it:PRMN}) & If m>12 or n>11 & then & method & (\ref{it:PRS}) & is & used. \\
+(\ref{it:PRMS}) & If m>8 & .. & .. & (\ref{it:PRS}) & .. & .. \\
+(\ref{it:PRM})  & \multicolumn{6}{l}{then print with m = 12.} \\
+\end{tabular}
+
+In (\ref{it:PRMN}) (\ref{it:PRMS}) (\ref{it:PRM})
+if m is not large enough then an attempt is made
+with m = m+1 until new m is big
+enough or until the above restrictions apply.  The
+number is \myuline{always} printed somehow.
+
+Fractions are rounded off by the addition of
+$-5 \times 10^{-n}$ to the number in (\ref{it:PRMN}) and $.5 \times 10^{-m}$ to the
+mantissa in (\ref{it:PRMS}) (\ref{it:PRS}).
+
+\begin{flushleft}
+In
+\end{flushleft}
+
+\begin{tabular}{ll}
+(\ref{it:PRMN}) m + n + 2 & characters are printed (+ shift) \\
+(\ref{it:PRMS}) m + 6     & \hspace{3em} .. \\
+(\ref{it:PRS}) 14         & \hspace{3em} .. \\
+(\ref{it:PRM}) m + 2      & \hspace{3em} .. \\
+\end{tabular}
+
+\begin{flushleft}
+\myuline{Note}
+\end{flushleft}
+
+\renewcommand{\labelenumi}{(\roman{enumi})}
+\begin{enumerate}
+\def\theenumi{\roman{enumi}}
+
+\item The print instruction does \myuline{not} preserve the
+accumulator and therefore can not occur in the middle
+of an expression.
+
+\item m and n \myuline{must} be integer constants e.g. \mytt{:6.3}
+We can not write \mytt{:P.Q}.
+\end{enumerate}
+
+\
+\section{\myuline{REFERENCE NUMBERS}}
+
+It is desirable to be able to start obeying a
+procedure or to break sequence in a procedure at a
+point other than the first order.  For this reason we
+\myuline{label} statements in the following manner, e.g.
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+12) X+Y →Z
+\end{lstlisting}
+\end{addmargin}
+
+That is, a label is an integer constant written with
+a bracket before a statement. To avoid confusion there
+is a restriction that the label can occur only at \myuline{the
+beginning of a new line} on the teleprinter page.  A
+label is also known as a reference number.
+
+Control passes to the above instruction, say,
+(which occurs e.g. in procedure \mytt{:ABC}) by orders of the
+following types:
+
+\setcounter{RowCounter}{0}
+\begin{tabular}{rl}
+\nextRow & \mytt{:IF(A)ZERO:GOTO(12)} \\
+\nextRow & \mytt{:GOTO(12,ABC)} \\
+\nextRow & \mytt{:ABC(12)} \\
+\nextRow & \mytt{:START(12,ABC)} \\
+\end{tabular}
+
+\renewcommand{\labelenumi}{(\roman{enumi})}\begin{enumerate}
+\def\theenumi{\roman{enumi}}
+
+\item is a jump from a statement within the same
+procedure (see CONDITIONAL STATEMENT)
+
+\item is a jump from a statement within another
+procedure (see UNCONDITIONAL JUMPS)
+
+\item calls on \mytt{ABC} as a subroutine entering at 12
+(see SUBROUTINE)
+
+\item the whole programme is started at this point
+(see START)
+\end{enumerate}
+
+A reference number can also be used in conjunction
+with TRACE to give indication of the path of the
+programme.
+
+\begin{flushleft}
+\myuline{Notes}
+\end{flushleft}
+
+\renewcommand{\labelenumi}{(\roman{enumi})}\begin{enumerate}
+\def\theenumi{\roman{enumi}}
+
+\item All instructions in the same procedure to which
+reference is to be made must be given different
+reference numbers.
+
+\item Any reference numbers may occur, they need not
+occur in sequence, and the numerical sequence of
+references need not be complete.
+
+\item The first order of a procedure is automatically
+taken to be reference 0 (i.e. zero) but we must \myuline{not}
+actually label it \mytt{0)}.
+
+\item The highest reference number must be SET when the
+procedure is SET at the beginning of the programme
+(see SETTING OF PROCEDURES).
+\end{enumerate}
+
+
+\section{\myuline{BRACKETS OR DEPTH OF EXPRESSIONS}}
+
+A pair of brackets \mytt{(\ \ )} in an expression or
+statement gives the expression a \myuline{depth} of 1.  If there
+is a pair of brackets within this pair then the
+expression is of depth 2 ...etc.  There is a \myuline{maximum
+allowable depth of 9}.
+
+All brackets except those
+
+\renewcommand{\labelenumi}{(\roman{enumi})}
+\begin{enumerate}
+\def\theenumi{\roman{enumi}}
+\item around simple suffices
+\item in \mytt{ON( )} instructions, and
+\item in \mytt{BRANCH( )} instructions,
+increase the depth of expression by 1
+\end{enumerate}
+
+\begin{flushleft}
+Note that
+\end{flushleft}
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:IF(A/(C*D+(E*F)))ZERO:GOTO1
+\end{lstlisting}
+\end{addmargin}
+
+\begin{flushleft}
+is of depth 3 but that
+\end{flushleft}
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+A/(B'(N+M)+C'(N-M)
+\end{lstlisting}
+\end{addmargin}
+
+\begin{flushleft}
+is of depth 2.
+\end{flushleft}
+
+That is, as the expression is read from the left
+a \mytt{(} will increase the depth by 1 but the corresponding
+\mytt{)} will decrease it accordingly.
+
+\begin{flushleft}
+\myuline{Notes}
+\end{flushleft}
+
+\renewcommand{\labelenumi}{(\theenumi)}
+\begin{enumerate}
+
+\item In arithmetic expressions the depth should be
+kept to a minimum, disregarding for this purpose depths
+due to brackets used merely for decoration.
+
+\end{enumerate}
+
+\begin{flushleft}
+e.g. $y = d(a + bc)$ is more efficiently written
+\end{flushleft}
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+(B*C+A)*D →Y
+\end{lstlisting}
+\end{addmargin}
+
+\begin{flushleft}
+than
+\end{flushleft}
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+D*(A+(B*C)) →Y
+\end{lstlisting}
+\end{addmargin}
+
+It can be seen in the first case all the
+arithmetic is done directly in the accumulator but in
+the second the accumulator has to be stored away twice
+in order to perform the arithmetic.
+
+It should be noted that what is defined as depth
+in RDR/100/3.4 is not strictly what is defined as
+depth here.
+
+
+\section{\myuline{CONSTANT SEARCHING}}
+
+In translation, copies of constants which occur in
+arithmetic (but not \mytt{DATA} or \mytt{LIST}) are kept in a list.
+If the same constant appears many times it is obviously
+wasteful in space to have numerous copies of that
+constant.  For this reason a facility is provided
+for "constant searching".  In this a search is made
+of constants already in the list before a new constant
+is added.  Against this there is the fact that
+searching can slow down translation considerably.
+For this reason it is optional
+
+If the \myuline{40} button in F1 on the number generator
+is depressed constant searching will \myuline{not} take place
+and vice versa.
+
+As this button will normally be depressed constant
+searching will not take place unless required.
+
+Only the positive value of a constant is put in
+the list.  Integers 1-27 inclusive are treated
+separately and appear in a separate list in which
+constant searching always takes place.
+
+
+\section{\myuline{CHECK}}
+
+The function of the accumulator known as CHECK
+and written
+
+\begin{addmargin}[1cm]{1em}%
+\vspace{0.2cm}
+\hspace{0.4cm}$\xi$\mytt{:*} \\
+\end{addmargin}
+
+is available in both fixed and floating point modes.
+It provides optional print-out of intermediate results.
+It is often very useful if CHECKS are included at
+suitable points of programmes, to assist in detecting
+programming errors, etc.
+
+If B = 1 is set on the keyboard during the running
+of a programme, CHECK will cause the contents of the
+accumulator to be printed out on a new line preceded
+by \mytt{*} and with the following print specifications:
+
+variable as
+
+\begin{addmargin}[1cm]{1em}%
+\vspace{0.2cm}
+\hspace{0.4cm}\mytt{:/} \\
+\end{addmargin}
+
+integer as
+
+\begin{addmargin}[1cm]{1em}%
+\vspace{0.2cm}
+\hspace{0.4cm}\mytt{:1} \\
+\end{addmargin}
+
+
+CHECKS are only translated if B = 1 is set on
+the keyboard during translation.  If B = 0, \mytt{:*} is
+ignored.  Therefore we have two opportunities of
+ignoring \mytt{:*}.  In translation and in running.  Obviously
+if it is ignored in translation it can not he used at
+all in running.  As a programme is run or translated
+each \mytt{:*} is treated on its own merits, i.e. some may
+be ignored, others assembled or used, depending on the
+state of B at that moment.
+
+\mytt{:*} does not affect the accumulator therefore it
+can be used in the middle of arithmetic expressions.
+e.g.
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+((A+B):*:SQRT)*C →X
+\end{lstlisting}
+\end{addmargin}
+
+
+\section{\myuline{TITLE AND OPTIONAL TITLE}}
+
+\subsection{TITLE}
+
+The statement which consists of a string of
+characters enclosed by two inverted commas, is known
+as a TITLE statement.  When obeyed the characters
+between the inverted commas (dashes) will be printed
+out on the output tape.
+
+\begin{flushleft}
+e.g.
+\end{flushleft}
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+'LBS/FT3'
+\end{lstlisting}
+\end{addmargin}
+
+All characters are copied \myuline{except blank tape} which
+is ignored.  \myuline{All} figure shifts or letter shifts whether
+redundant or not are copied.  Every TITLE output is
+preceded by figure shift.
+
+It is important to note that a TITLE statement
+is the only method (other than machine orders) by
+which \myuline{any} characters can be output.  In particular, if
+we want a number to be printed on a new line we mist
+include a TITLE which consists of CRLF, i.e.
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+'
+'
+\end{lstlisting}
+\end{addmargin}
+
+\begin{flushleft}
+\myuline{Notes}
+\end{flushleft}
+
+\renewcommand{\labelenumi}{(\theenumi)}
+\begin{enumerate}
+
+\item If say n blanks are to be punched, this must be
+done with the order
+\end{enumerate}
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:DO(N)<740:):REPEAT
+\end{lstlisting}
+\end{addmargin}
+
+\subsection{OPTIONAL TITLE}
+
+This statement is similar to above except that
+they are punched (e.g.)
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:'CONVERGE'
+\end{lstlisting}
+\end{addmargin}
+
+i.e. with a colon before the normal title instruction.
+These titles will only be output if the F2 40 button on
+the keyboard is depressed in running.  They are always
+input on translating.
+
+
+\section{\myuline{TRACE}}
+
+The TRACE is used to indicate which course a
+programme is running.  This is useful if, for example,
+the programme "gets lost”.  This it does by printing
+out, on a new line, the value of a reference number
+as control "passes through" it.  As reference numbers
+are meaningless unless qualified by the procedure
+which they are in the form of printing is (e.g.)
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+13,ABC
+\end{lstlisting}
+\end{addmargin}
+
+\begin{flushleft}
+i.e. reference \mytt{13} of procedure \mytt{ABC}, As a procedure is
+identified by the first 4 (or less) letters of a word
+no mere than 4 letters are printed out.  The reference
+number itself has the print specification
+\end{flushleft}
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:4
+\end{lstlisting}
+\end{addmargin}
+
+Similar to CHECK, the TRACE facility is accepted
+in translation by depressing the F2 01 button on the
+keyboard, and the TRACE is printed out on running by
+depressing the same button.  As the TRACE facility
+works in conjunction with reference numbers no extra
+characters have to be punched on the programme tape.
+
+\begin{flushleft}
+\myuline{Note}
+\end{flushleft}
+
+Since the first order of a procedure is understood
+to be reference 0 automatically, then on entering a
+- procedure at the 1st order the TRACE would be e.g.
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+0,ABC
+\end{lstlisting}
+\end{addmargin}
+
+
+\section{\myuline{ARITHMETIC STATEMENT}}
+
+Arithmetic is left \myuline{associative}, i.e. if we write
+(in H-Code):~
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+A+B*C →Y
+\end{lstlisting}
+\end{addmargin}
+
+this is interpreted as meaning $y = (a+b)c$ and \myuline{not}
+$y = a+(bc)$.  This is because the expression is
+- interpreted as each operator is encountered - reading
+from left to right.  No reference being made to the
+next operator the normal convention of multiplication
+and division being "stronger" than addition and
+subtraction does not apply.
+
+The standard functions of analysis (sin, sqrt,
+etc.), are also left associative in the sense that they
+are a function of the quantity on their left rather
+than the right, e.g, the equation $y = sin(a+b)$ would
+be written:-
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+A+B:SIN →Y
+\end{lstlisting}
+\end{addmargin}
+
+The \myuline{general arithmetic statement} is:—
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+(-)A1:FCT£A2:FCT£A3:FCT...£AN:FCT
+\end{lstlisting}
+\end{addmargin}
+
+where \mytt{A} is any variable or constant or \myuline{is itself an
+arithmetic statement enclosed in brackets}
+
+\myuline{FCT} is any standard algebraic function.
+
+£ is any one of the operators \mytt{+ — * /} $\rightarrow$ but
+$\rightarrow$A is not allowed if \mytt{A} is an expression in brackets
+or a constant.
+(see DEPTH OF EXPRESSIONS).
+
+\begin{flushleft}
+\myuline{Example}:—
+\end{flushleft}
+
+\begin{addmargin}[1cm]{1em}%
+\begin{math}
+i = ae^{-\frac{Rt}{2L}}\cos(wt+f)
+\end{math}
+\end{addmargin}
+can be written:
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+(W*T+F)COS*(-R*T*.5/L:EXP)*A →I
+\end{lstlisting}
+\end{addmargin}
+
+
+\section{\myuline{ARITHMETIC OPERATIONS}}
+
+The arithmetic operations
+
+\begin{addmargin}[1cm]{1em}%
+\mytt{+ - * /}
+\end{addmargin}
+
+\begin{flushleft}
+are available in both fixed floating point
+\end{flushleft}
+
+\myuline{Integer multiplication} will give an incorrect
+result if the result is greater than $2^{37}$ in absolute
+value.  The error will not be detected if overflow
+(see below) does \myuline{not} occur.
+
+\myuline{Integer division} will give the correct answer if
+the division has an exact result, if not, it will give
+the largest integer not greater than the correct
+answer.
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+e.g. 6/2  =  3
+    -6/2  = -3
+     2/3  =  0
+    15/4  =  3
+  15/(-4) = -4
+\end{lstlisting}
+\end{addmargin}
+
+\begin{flushleft}
+\myuline{OVERFLOW} is said to take place if the result of an
+arithmetic operation is outside the range of the machine
+(see Form of Numbers)
+
+\myuline{Floating-point overflow} causes the computer to stop
+automatically.
+
+\myuline{Fixed—point overflow} causes the computer to carry on
+using the wrong result.
+
+\myuline{Notes}
+\end{flushleft}
+
+\renewcommand{\labelenumi}{(\theenumi)}
+\begin{enumerate}
+
+\item Because of the nature of the translator direct
+\myuline{division} by an integer which has a complex suffix
+(q.v.) is not acceptable.
+
+e.g. the term, where \mytt{N} \& \mytt{M} are integers
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+N/M'(P+Q)
+\end{lstlisting}
+\end{addmargin}
+
+will \myuline{not} be accepted.
+If necessary, however, we
+can write
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+N/(M'(P+Q))
+\end{lstlisting}
+\end{addmargin}
+
+\end{enumerate}
+
+
+\section{\myuline{ALGEBRAIC FUNCTIONS}}
+
+These functions occur anywhere inside arithmetic
+statements.  The operand is in the accumulator and the
+result is left in the accumulator.
+
+\renewcommand{\labelenumi}{\alph{enumi})}
+\begin{enumerate}
+\def\theenumi{\alph{enumi}}
+
+\newcounter{teMOD} % to hold a reference for later as nextRow does not support \label{}
+\begin{minipage}{\columnwidth}
+\item\label{it:AFBOTH} \myuline{Functions valid for both variables and integers}
+
+\setcounter{RowCounter}{0}
+\begin{tabular}{rll}
+\nextRow & $\xi$\mytt{:SQ}  & Forms the square of $\xi$ \\
+\nextRow & $\xi$\mytt{:NEG} & Negates $\xi$ \\
+\nextRow\setcounter{teMOD}{\theRowCounter} & $\xi$\mytt{:MOD} & Forms $|\xi|$ i.e. the \\
+  & & numerical value of $\xi$ \\
+  & & e.g.  $|-3|=3, |0| = 0, |3|=3$. \\
+\end{tabular}
+\end{minipage}
+
+\begin{minipage}{\columnwidth}
+\item \myuline{Functions valid for floating-point variables only}
+
+\setcounter{RowCounter}{0}
+\begin{tabular}{rll}
+\nextRow & $\xi_{v}$\mytt{:SQRT} & Forms $\sqrt{\xi}$ where $\xi \geqslant 0$ \\
+\nextRow & $\xi_{v}$\mytt{:SIN}  & \multicolumn{1}{|l}{Form the trigonometrical} \\
+\nextRow & $\xi_{v}$\mytt{:COS}  & \multicolumn{1}{|l}{functions of $\xi$ where $\xi$ is in} \\
+\nextRow & $\xi_{v}$\mytt{:TAN}  & \multicolumn{1}{|l}{radians and $|\frac{\xi}{\pi}| < 2^{28}$} \\
+\nextRow & $\xi_{v}$\mytt{:ARCTAN} & Forms the angle, in radians, \\
+  & & whose tangent is $\xi$ such that it \\
+  & & lies between $\pm\frac{\pi}{2}$ \\
+\nextRow & $\xi_{v}$\mytt{:EXP}  & Forms the exponential of $\xi$, $e^{\xi}$, \\
+  & & where $\xi \leqslant 254 \log_{e}2$ \\
+\nextRow & $\xi_{v}$\mytt{:LOG}  & Forms the natural logarithm, \\
+  & & $\log_{e}\xi$,  where $\xi > 0$ \\
+\nextRow & $\xi_{v}$\mytt{:FRAC} & Forms the fractional part of \\
+  & & such that $\Frac (\xi) + \Int (\xi) = \xi$ \\
+  & & therefore e.g. $\Frac (3.4) = .4$, \\
+  & & $\Frac (-5.4) = .6$, \\
+\nextRow & $\xi_{v}$\mytt{:INT}  & Forms the integral part of $\xi$ and \\
+  & & leaves it in integer form.  The \\
+  & & integral part is the largest \\
+  & & integer not greater than $\xi$. \\
+  & & e.g. $\Int (3) = 3$, $\Int (3.4) = 3$, \\
+  & & $\Int (-3.4) = -4$. \\
+  & & \\
+  & & \mytt{INT} is the only way of changing \\
+  & & the mode of an expression from \\
+  & & floating point to fixing point. \\
+\end{tabular}
+\end{minipage}
+
+\begin{minipage}{\columnwidth}
+\item \myuline{Functions valid for fixed-point variables only}
+
+\setcounter{RowCounter}{0}
+\begin{tabular}{rll}
+\nextRow & $\xi_{s}$\mytt{:STAND} & Converts the integer value $\xi$ to \\
+  or & $\xi_{s}$\mytt{:V} & to the floating-point variable of \\
+  & & the same value, \mytt{STAND} is the only \\
+  & & way of changing the mode of an \\
+  & & expression from fixed point to \\
+  & & floating-point. \\
+\nextRow & $\xi_{s}$\mytt{:MOD(}$\xi_{s}'$\mytt{)} & Forms $\xi(\Modulo \xi')$ i.e. gives \\
+  & & the remainder when $\xi$ is divided \\
+  & & by $\xi'$.  $\xi' > 0$ and result $\geqslant 0$. \\
+  & & e.g. 7(modulo 3) = 1, -7(modulo 3) = 2, \\
+  & & $8(\Modulo 2) = 0$.  In fact, \\
+  & & it performs the fixed-point \\
+  & & operation $\xi-(\frac{\xi}{\xi'}*\xi')$.  As \mytt{MOD( )} \\
+  & & is a subtraction rather than \\
+  & & a division process the function \\
+  & & should be used with care because \\
+  & & if $\frac{\xi}{\xi'}$ is very large then the \\
+  & & time of operation will become \\
+  & & very long.  This function is \\
+  & & distinguished from MOD in \ref{it:AFBOTH}) (\roman{teMOD}) \\
+  & & above, with which it has no \\
+  & & connection, by the following \\
+  & & brackets. \\
+\end{tabular}
+\end{minipage}
+
+\end{enumerate}
+
+\begin{flushleft}
+\myuline{Notes and Examples}
+\end{flushleft}
+
+\renewcommand{\labelenumi}{(\roman{enumi})}
+\begin{enumerate}
+\def\theenumi{\roman{enumi}}
+
+\item the argument of \mytt{SIN}, \mytt{COS}, and \mytt{TAN} can be any angle
+(subject to $|\frac{\xi}{\pi}| < 2^{28}$).  The \mytt{SIN} for example, is
+taken as the angle modulo $2\pi$.
+
+\item to find y say, the integral part of A, where y
+is floating point we have to write
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+A:INT:STAND →Y
+\end{lstlisting}
+\end{addmargin}
+
+\begin{flushright}
+(see (\ref{it:EIGHT}) below)
+\end{flushright}
+
+\item In order to raise a quantity to a power which is
+not a whole number, e.g. to form
+
+\begin{flushright}
+$x = a^{b}$ we would write \hspace{5em}
+\end{flushright}
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+A:LOG*B:EXP →X
+\end{lstlisting}
+\end{addmargin}
+
+\item In order to save time in computing, it is often
+possible to avoid calculating a function more times
+than necessary, for example, to programme the equation:-
+
+\begin{addmargin}[1cm]{1em}%
+\begin{math}
+y = \frac{e^{x}+e^{-x}}{2}
+\end{math}
+\end{addmargin}
+
+\begin{flushleft}
+it is very easy to write:-
+\end{flushleft}
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+((X:EXP)+(-X:EXP))/2 →Y
+\end{lstlisting}
+\end{addmargin}
+
+\begin{flushleft}
+but more economical to write:
+\end{flushleft}
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+((X:EXP →Y)*(1.0/Y))/2 →Y
+\end{lstlisting}
+\end{addmargin}
+
+\begin{flushleft}
+Note the use of $y$ as an intermediate store for $e^{x}$, which
+which avoids calculating an exponential more often than necessary.
+\end{flushleft}
+
+\item The equation $y=e^{-(x-a)^{2}}$ can be written either
+
+\begin{addmargin}[1em]{1em}%
+\begin{lstlisting}
+     (-((X-A)SQ))EXP →Y
+or   (X-A)SQ:NEG:EXP →Y
+\end{lstlisting}
+\end{addmargin}
+
+\begin{flushleft}
+It is generally better to use \mytt{NEG} when negating an
+expression \mytt{-(....)} involves increasing the depth
+of the arithmetic which is to be avoided if possible.
+\end{flushleft}
+
+\item it is useful to remember that $\Int (A) + \Frac (A) = A$.
+In fact finding $\Frac (A)$ the computer finds $A - \Int (A)$.
+Therefore if both frac and int are needed it is better to calculate only int.
+
+\item Functions to calculate arcsin and arccos are not provided
+but:-
+
+\begin{addmargin}[1cm]{1em}%
+\begin{math}
+\arcsin x = \arctan(\frac{x}{\sqrt{1-x^{2}}} \\
+\arccos x = \arctan(\frac{\sqrt{1-x^{2}}}{x}
+\end{math}
+\end{addmargin}
+
+e.g. for the arcsin of A we could write:-
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+A/(1.0-(A*A):SQRT):ARCTAN
+\end{lstlisting}
+\end{addmargin}
+
+\item\label{it:EIGHT} If we want to form $y = n + x$ when $x$ and $y$ are in
+floating point form and $n$ is an integer we would write:-
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+N:STAND+X →Y
+\end{lstlisting}
+\end{addmargin}
+
+\item \mytt{MOD( )} can be used to depth.  e.g. we could write:-
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+N:MOD(M:MOD(L)+2)
+\end{lstlisting}
+\end{addmargin}
+
+\end{enumerate}
+
+
+\section{\myuline{$\alpha$-$\theta$ STORES}}
+
+$\alpha$ is a floating point variable which, as well as
+possessing all the properties of other floating point
+variables, has the special property that if we write:-
+
+\begin{addmargin}[1cm]{1em}%
+\begin{math}
+\{\xi_{v}, \xi_{v}^{(i)}, \xi_{v}^{(ii)}, \xi_{v}^{(iii)}, \ldots \}
+\end{math}
+\end{addmargin}
+
+then this is equivalent to writing
+
+\begin{addmargin}[1cm]{1em}%
+\begin{tabular}{ll}
+   & $\xi_{v} \rightarrow \alpha$ \\
+   & $\xi_{v}^{(i)} \rightarrow \alpha_{1}$ \\
+   & $\xi_{v}^{(ii)} \rightarrow \alpha_{2}$ \\
+   & $\xi_{v}^{(iii)} \rightarrow \alpha_{3}$ \\
+   & $\vdots$ \\
+or in general \hspace{4em}  & $\xi_{v}^{(n)} \rightarrow \alpha_{n}$ \\
+for n = 0, 1, 2..... & \\
+\end{tabular}
+\end{addmargin}
+
+Similarly $\theta$ is a fixed point variable such that
+
+\begin{addmargin}[1cm]{1em}%
+\begin{math}
+[\xi_{s}, \xi_{s}^{(i)}, \xi_{s}^{(ii)}, \xi_{s}^{(iii)}, \ldots ]
+\end{math}
+\end{addmargin}
+
+is equivalent to $\xi_{s}^{(n)} \rightarrow \theta_{n}$, for n = 0, 1, 2...
+
+In general we can write (e.g.)
+
+\begin{addmargin}[1cm]{1em}%
+\begin{math}
+\{\xi_{v}, \xi_{v}^{(i)}; \xi_{s}; \xi_{v}^{(ii)}, \xi_{v}^{(iii)}; \xi_{s}^{(i)}, \ldots ]
+\end{math}
+\end{addmargin}
+
+or
+
+\begin{addmargin}[1cm]{1em}%
+\begin{math}
+[\xi_{s}; \xi_{v}, \xi_{v}^{(i)}; \xi_{s}^{(i)}, \xi_{s}^{(ii)}, \ldots ]
+\end{math}
+\end{addmargin}
+
+which are equivalent to
+
+\begin{addmargin}[1cm]{1em}%
+$\xi_{v}^{(n)} \rightarrow \alpha_{n}$ for n = 0, 1, 2 .... \\
+$\xi_{s}^{(m)} \rightarrow \theta_{m}$ for m = 0, 1, 2 .... \\
+\end{addmargin}
+
+That is, the type of bracket determines the mode of the
+first expression, thereafter the mode is changed by \mytt{;}
+(Although this indication of mode by type of bracket
+is not strictly necessary, it is required as a safeguard
+against careless programming, in particular against
+writing an integer in floating point without the
+decimal point).
+
+The reverse procedure is (e.g.)
+
+\begin{addmargin}[1cm]{1em}%
+\begin{math}
+\rightarrow(A,A^{(i)},N,A^{(ii)},N^{(i)}, \ldots)
+\end{math}
+\end{addmargin}
+
+where A are floating and N are fixed-point variables
+with simple or complex suffices is equivalent to:—
+
+\begin{addmargin}[1cm]{1em}%
+$\alpha_{n} \rightarrow A^{n}$ for n = 0, 1, 2 .... \\
+$\theta_{m} \rightarrow N^{m}$ for m = 0, 1, 2 .... \\
+\end{addmargin}
+
+Variables and integers can be mixed in any order
+and semi-colons between them are not necessary although
+they can be used if desired.
+
+\begin{flushleft}
+\myuline{Notes}
+\end{flushleft}
+
+\renewcommand{\labelenumi}{(\roman{enumi})}
+\begin{enumerate}
+\def\theenumi{\roman{enumi}}
+
+\item In the $\rightarrow( )$ instruction as in the \mytt{READ}
+instruction (Note (\ref{it:READARITH})) after the variable we can carry
+on with normal arithmetic.
+
+\item $\alpha$, $\theta$ are set automatically by \mytt{SETV}, \mytt{SETS} to be
+$\alpha_{9}$, $\theta_{9}$.  But if more used these must be set.
+
+\item These $\alpha$-$\theta$ statements ("nests") imply comma, \myuline{except}
+that after the final \mytt{)} a letter introduces a word.
+this is so we can write (e.g.)
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+{A,B+C;N}ABC
+\end{lstlisting}
+\end{addmargin}
+
+where \mytt{ABC} is a word statement (usually a defined
+function).  This is the most common use of a nesting
+store.
+
+\begin{addmargin}[1cm]{1em}%
+\begin{tabular}{lcl}
+\mytt{\{\ \ \ \}} & is punched & \mytt{*(\ \ \ )} \\
+\mytt{[\ \ \ ]} & .. & \mytt{:(\ \ \ )} \\
+\mytt{;} & .. & \mytt{:,} \\
+  & & \\
+\multicolumn{3}{l}{$\alpha$ if the teleprinter character \mytt{@}} \\
+\multicolumn{3}{l}{$\theta$ is letter O.} \\
+\end{tabular}
+\end{addmargin}
+
+\item \myuline{Example} If there was a defined procedure \mytt{QUAD}
+which gave the two roots of a quadratic given the three
+coefficients the order to do this might look:—
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+*(1.6,3.6,-4.53)QUAD →(X1,X2)
+\end{lstlisting}
+\end{addmargin}
+
+\end{enumerate}
+
+
+\section{\myuline{BAR A $\bar{A}$}}
+
+$\bar{A}$, called BAR A, punched \mytt{=A}, is an \myuline{integer} which
+has the value
+
+Absolute Address (A) -1
+
+where A is any variable or integer.
+
+If B, for example, has been set as
+
+\begin{addmargin}[1cm]{1em}%
+\mytt{:LV(B:1)} or \mytt{:LS(B:1)}
+\end{addmargin}
+
+then if $\bar{A}$ has been sent to \mytt{N} then
+
+\mytt{BN}  will be equivalent to \mytt{A}
+
+This means that subroutines can be written in
+terms of any variables irrespective of what variables a
+master procedure will use.  Part of the input data to
+a subroutine would be say, $\bar{A}$, telling the subroutine
+that such and such a parameter was A.
+
+Arithmetic can be performed with $\bar{A}$ etc. but we
+\myuline{cannot} write:—
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+=A-=B
+\end{lstlisting}
+\end{addmargin}
+
+\begin{flushleft}
+it must be
+\end{flushleft}
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+=A-(=B)
+\end{lstlisting}
+\end{addmargin}
+
+$\bar{A}$ cannot have a suffix, but if we wanted the
+address of $A_{3}$ we would write
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+=A+3
+\end{lstlisting}
+\end{addmargin}
+
+
+\section{\myuline{SUNDRY INSTRUCTIONS IN BODY OF PROCEDURE}}
+
+\hspace{\parindent}\myuline{\mytt{STOP}}
+
+On obeying this order dynamically, the machine
+will STOP.  There is no way of carrying on from that
+point.
+
+\myuline{\mytt{WAIT}}
+
+On obeying this order dynamically the machine will
+WAIT, until the Address 2: 1 button is changed (see
+KEYBOARD).  The machine will then obey the next order
+etc.
+
+\myuline{\mytt{CLOSE}}
+
+Signifies that the procedure is closed.
+
+\myuline{\mytt{EXIT}}
+
+On obeying this order dynamically control will
+pass back to the master procedure which is using the
+current procedure as a subroutine (see USE OF
+PROCEDURES)
+
+\myuline{Line-feed}
+
+In translation \myuline{line-feed} has the same significance
+as comma which closes a statement.  After a line-feed
+all subsequent lf, cr, $sp^{2}$ are ignored until the next
+significant character.
+
+\myuline{Comma} \mytt{,}
+
+In translation, closes a statement (see STRUCTURE
+OF PROCEDURE).
+
+\myuline{\mytt{DATA}}
+
+Accepts a data tape in the form of \mytt{LIST}.
+
+\myuline{\mytt{:} CR LF}
+
+Ignored in position of \mytt{+} in arithmetic statement
+
+\myuline{\mytt{::}}
+
+In translation the computer will \myuline{wait} - until the
+address 2:1 button is changed (see KEYBOARD).  The
+machine will then carry on translating.
+
+
+\section{\myuline{TELEPRINTER CHARACTER: LAYOUT OF PROGRAMME ON TELEPRINTER SHEETS}}
+
+Generally speaking except for misuse of carriage
+return without line-feed, if a programme 'looks right'
+on the teleprinter print-out then the tape which
+produced it will be correct also-and vice-versa.  The
+following notes on the characters are true for all parts
+of the programme-procedures, data etc. expect\footnote{maybe should be ``except''} those
+character appearing between \mytt{'\ \ \ '} in title sequences.
+
+\myuline{blank-tape} is always ignored.
+
+\myuline{Figure-shift} \\
+\indent\myuline{Letter-shift} have no significance other than as
+shift characters.  The use of more shift characters
+than necessary is allowed.  Hence letter shift (ls) can
+be used as an erase character, by backspacing and over-punching
+the incorrect character with ls - then figure-shift (fs) if necessary.
+
+\myuline{?} is never used
+
+\myuline{single space} (Sp) is ignored everywhere but ...
+
+\myuline{double space} (Spsp or $Sp^{2}$) has significance as a
+terminating character to numbers, words etc.  It has the
+same properties as carriage return (cr)
+
+\myuline{@} is understood to be $\alpha$
+
+\myuline{letter O} when used as an integer variable is
+taken to be theta ($\theta$).
+
+\myuline{Title characters} - i.e. those between \mytt{'\ \ \ '} are
+treated independently. Notes:—
+
+\myuline{blank-tape} In a straight copy from input to
+output is copied but when a title is stored and output
+in running bl is ignored.
+
+\myuline{Shifts} Are copied \myuline{exactly} as they appear on the
+input tape.
+
+\myuline{\mytt{'}} Cannot be used in a title sequence.
+
+\begin{tabular}{ll|l|l}
+Elliott Characters & \mytt{£}  &               & $\rightarrow$ \\
+                   & \mytt{\$} & correspond to & \mytt{<} \\
+                   & \mytt{\%} &               & \mytt{>} \\
+\end{tabular}
+
+
+\section{\myuline{WORDS}}
+
+A word can consist of 1, 2, 3, or 4 letters.  If
+a word has 4 letters then extra letters can be added to
+the end if required - e.g. The word for repeat is
+\mytt{REPE} but we write this as \mytt{REPEAT} to make the printout
+more readable.  These extra letters have no significance
+whatsoever.  The translator in reading a word will take
+note of up to the first 4 letters and keep on reading,
+but ignoring, letter until the first non-alphabet
+character, which is taken to belong to the next
+operation.
+
+To distinguish words from variables, all words are
+preceded by colon e.g.
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:WORD
+\end{lstlisting}
+\end{addmargin}
+
+\begin{flushleft}
+\myuline{but} where there is \myuline{no ambiguity} i.e. in a position
+where a letter can only introduce a word, this colon
+can be omitted e.g.
+
+\begin{tabular}{lccl}
+\mytt{:GOTO(1,ABC)} & instead & of & \mytt{:GOTO(1,:ABC)} \\
+\mytt{(A+B)SIN} & .. & .. & \mytt{(A+B):SIN} \\
+but we must have & \multicolumn{2}{r}{\mytt{A:SIN}} & \\[1ex]
+\mytt{:DEFINE(ABC)} & .. & .. & \mytt{:DEFINE(:ABC)} \\[1ex]
+\multicolumn{4}{l}{or \myuline{any initial word}} \\[1ex]
+\mytt{SET} & .. & .. & \mytt{:SET} \\[1ex]
+\end{tabular}
+
+But \myuline{if in doubt always put in the colon}
+\end{flushleft}
+
+Throughout this manual the colon has been omitted
+where there is no ambiguity both in the English and in
+the examples of the coding.
+
+
+\section{\myuline{SUMMARY OF FACILITIES WITHIN PROCEDURE}}
+See Table \ref{tbl:PROCFAC}
+
+
+\section{\myuline{USE OF COMPUTER KEYBOARD}}
+See Table \ref{tbl:WORDGEN}
+
+%\clearpage
+
+\multicolinterrupt{
+\noindent\begin{minipage}{\textwidth}
+\captionof{table}{Summary of facilities within procedure}\label{tbl:PROCFAC}
+\begin{tabular}{|l|lr|}
+\hline
+\mytt{DEFINE( )........CLOSE}    & Defines body of procedure & \\
+\hline
+\mytt{SQ NEG MOD ON(...)}$\star$ & Algebraic function of variable or integer \hspace{2cm} & \\
+\hline
+\mytt{SQRT SIN COS TAN EXP ARCTAN LOG FRAC INT} \hspace{2cm} & Algebraic function of variable only. & \\
+\hline
+\mytt{STAND MOD (..)}            & Algebraic function of integer only. & \\
+\hline
+\mytt{BRANCH( , , )}             & Jump on sign of LHS    & $\star$ \\
+\hline
+\mytt{:n.m :m/ :m :/}            & Prints    & $\star$ \\
+\hline
+\mytt{:*}                        & Check    & \\
+\hline
+Any defined function \mytt{ABC}  & Defined function    & $\star$ \\
+\hline
+\mytt{LOOP....REPEAT} \hspace{2em} \mytt{DO( )....REPEAT} & LOOPS    & $\star$ \\
+\hline
+\mytt{GOTO}                      &    & $\star$ \\
+\hline
+\mytt{\ \ \ \ \ \ \ \ GOTO}      &    & $\star$ \\
+\mytt{IF\ ....\ REPEAT}          & Conditional statement    & \\
+\mytt{\ \ \ \ \ \ \ \ AND OR}    &    &  \\
+\hline
+\mytt{GOTO EXIT}                 & Unconditional jumps    & $\star$ \\
+\hline
+\mytt{IF .... THEN .... ELSE ... ;} & Then Clause    & $\star$ \\
+\hline
+\mytt{READ DATA}                 & Input of numbers    & $\star$ \\
+\hline
+\mytt{STOP WATT}                 & Running stops    & $\star$ \\
+\hline
+\mytt{[\ \ ]\ \ \ \{\ \ \}\ \ \ →(\ \ )}  & $\alpha$,$\theta$ stores    & $\star$ \\
+\hline
+\mytt{3)}                        & Reference number    & $\star$ \\
+\hline
+\mytt{'\ \ \ '}\hspace{4em}\mytt{:'\ \ \ '} & Titles    & $\star$ \\
+\hline
+\mytt{<\ \ \ )}                   & Machine-code block    & $\star$ \\
+\hline
+LF \mytt{,}                      & Close statement    & \\
+\hline
+\end{tabular}
+
+\vspace{0.3cm}
+$\star$ Those instructions imply comma.
+
+\vspace{0.3cm}
+\begin{flushleft}
+\myuline{Note}
+\end{flushleft}
+
+Although a defined function implies a comma, if it is immediately followed by a title statement
+without a comma to split them then this will be an error as the translator takes the
+\mytt{'} as the introduction to a complex suffix, even though this is not allowed.
+
+\end{minipage}}%multicolinterrupt
+
+\vfill
+\ \\
+\pagebreak[4]
+
+% Elliott 803 Word Generator (Keyboard)
+\multicolinterrupt{
+\noindent\begin{minipage}{\textwidth}
+\captionof{table}{Use of Computer Keyboard}\label{tbl:WORDGEN}
+
+\newcommand{\button}[1]{\parbox{1.3em}{\centering O \\ #1}}
+\newcommand{\fbutton}[1]{\fbox{\parbox{1.3em}{\centering O \\ #1}}}
+\setlength{\fboxsep}{2pt}
+
+\begin{tabular}{|*{14}C|}
+\hline
+\multicolumn{14}{|l|}{FUNCTION 1} \\
+\multicolumn{14}{|l|}{ } \\
+\fbutton{$4_{1}$} & \button{$2_{1}$} & \button{$1_{1}$} & \button{$4_{2}$} & \button{$2_{2}$} & \button{$1_{2}$} &
+\multicolumn{8}{r|}{\parbox{3cm}{Buttons and number \\ in square are used}} \\
+\multicolumn{14}{|l|}{ } \\
+
+\multicolumn{14}{|l|}{ADDRESS 1} \\
+\multicolumn{14}{|l|}{ } \\
+\button{4096} & \button{2048} & \button{1024} & \fbutton{512} & \button{256} & \button{128} &
+\button{64} & \button{32} & \button{16} & \button{8} & \button{4} & \button{2} & \fbutton{1} & \fbutton{B} \\
+\multicolumn{14}{|l|}{ } \\
+
+\multicolumn{14}{|l|}{FUNCTION 2} \\
+\multicolumn{14}{|l|}{ } \\
+\fbutton{$4_{1}$} & \button{$2_{1}$} & \button{$1_{1}$} & \button{$4_{2}$} & \button{$2_{2}$} & \fbutton{$1_{2}$} &
+\multicolumn{8}{r|}{ } \\
+\multicolumn{14}{|l|}{ } \\
+
+\multicolumn{14}{|l|}{ADDRESS 2} \\
+\multicolumn{14}{|l|}{ } \\
+\button{4096} & \button{2048} & \button{1024} & \button{512} & \button{256} & \button{128} &
+\button{64} & \button{32} & \button{16} & \button{8} & \button{4} & \button{2} & \fbutton{1} &  \\
+\multicolumn{14}{|l|}{ } \\
+
+\hline
+\multicolumn{4}{|l}{\myuline{OPERATION}} & \multicolumn{3}{|l}{BUTTON} & \multicolumn{3}{|l}{DOWN} & \multicolumn{4}{|l|}{UP} \\
+\hline
+\multicolumn{4}{|l}{\myuline{INPUTTING BINARY TAPE}} & \multicolumn{3}{|l}{Function 1:$4_{1}$} & \multicolumn{3}{|l}{Input programme} & \multicolumn{4}{|l|}{Compare programme} \\
+\hline
+\multicolumn{4}{|l}{\myuline{INPUTTING NORMALLY}} & \multicolumn{3}{|l}{Function 1:$4_{1}$} & \multicolumn{3}{|l}{No constant search} & \multicolumn{4}{|l|}{Constant search} \\
+\multicolumn{4}{|l}{} & \multicolumn{3}{|l}{Address 1:512} & \multicolumn{3}{|l}{Entry to translate} & \multicolumn{4}{|l|}{} \\
+\multicolumn{4}{|l}{} & \multicolumn{3}{|l}{Address 1:512} & \multicolumn{3}{|l}{Entry to obey START} & \multicolumn{4}{|l|}{} \\
+\multicolumn{4}{|l}{} & \multicolumn{2}{|r}{and :1} & & \multicolumn{3}{|c}{i.e. 513} & \multicolumn{4}{|l|}{} \\
+\multicolumn{4}{|l}{} & \multicolumn{3}{|l}{B} & \multicolumn{3}{|l}{Translate check} & \multicolumn{4}{|l|}{Ignore check} \\
+\multicolumn{4}{|l}{} & \multicolumn{3}{|l}{Function 2:$1_{2}$} & \multicolumn{3}{|l}{Translate Trace} & \multicolumn{4}{|l|}{Ignore trace} \\
+
+\hline
+\multicolumn{4}{|l}{\myuline{RUNNING}} & \multicolumn{3}{|l}{B} & \multicolumn{3}{|l}{Print Check} & \multicolumn{4}{|l|}{Ignore check} \\
+\multicolumn{4}{|l}{} & \multicolumn{3}{|l}{Function 2:$4_{1}$} & \multicolumn{3}{|l}{Print optional Title} & \multicolumn{4}{|l|}{Ignore Option Title} \\
+\multicolumn{4}{|l}{} & \multicolumn{3}{|l}{Function 2:$1_{2}$} & \multicolumn{3}{|l}{Print Trace} & \multicolumn{4}{|l|}{Ignore Trace} \\
+\hline
+\multicolumn{4}{|l}{\myuline{GENERAL}} & \multicolumn{3}{|l}{Address 2:1} & \multicolumn{3}{|l}{Stop waiting if \myuline{up}} & \multicolumn{4}{|l|}{Stop waiting if \myuline{down}} \\
+\hline
+\end{tabular}
+
+% to encourage clearpage to work
+\vspace{12cm}
+\ \\
+\end{minipage}}%multicolinterrupt
+
+\clearpage
+%\pagebreak[4]
+
+\section{\myuline{ERROR INDICATION}}
+
+In translation and in running errors will be
+indicated by the continuous output of a letter.
+Although this letter will give some indication of the
+type of error encountered it should not be looked upon
+as a rigorous classification.  A particular indication
+can be very misleading due to the very nature of an
+error. The following indications will be given.
+
+\renewcommand{\labelenumi}{(\roman{enumi})}
+\begin{enumerate}
+\def\theenumi{\roman{enumi}}
+
+\item \myuline{In Translation}
+
+\myuline{Continuous letter—shift-letter}
+
+
+\begin{tabular}{cl}
+
+\myuline{Indication} & \myuline{Classification} \\
+A & Incompatibility of variables and \\
+  & integers. Variables not set. \\
+B & Incorrect characters at beginning of \\
+  & arithmetic expression \\
+C & Incorrect character elsewhere in \\
+  & arithmetic expression \\
+D & Error in data or number in body of \\
+  & programme \\
+E & WORD wrongly used or not set \\
+F & \\
+G & \\
+H & Error in DATA read \\
+I & Reference too big or set twice. \\
+  & Depth of loops, arith. too deep. \\
+  & Programme too big. \\
+J & Too many digits in integers, various \\
+  & odd mistakes \\
+K & Excess of left or right-hand brackets \\
+  & in arith. depth of loop at CLOSE not \\
+  & zero. \\
+\end{tabular}
+
+\item \myuline{In Running}
+
+\myuline{continuous letter-shift-letter}
+
+\begin{tabular}{cl}
+A & Jumping to reference which has not \\
+  & been set or calling on procedure \\
+  & which has not been defined. \\
+\end{tabular}
+
+\myuline{Continuous digit (or letter)}
+
+\begin{tabular}{cl}
+1 or A & A in sin A, cos A or tan A too big \\
+       & (see appropriate section) \\
+2 or B & $A\leqslant 0$ in log A \\
+3 or S & $A>254 \log_{e} 2$ in exp A \\
+5 or U & $A<0$ in SQRT A \\
+\end{tabular}
+\end{enumerate}
+
+\renewcommand{\labelenumi}{\ifnum\value{enumi}=1 \myuline{Notes} (\roman{enumi})\else (\roman{enumi})\fi}
+\begin{enumerate}
+\def\theenumi{\roman{enumi}}
+
+\item In translation if the computer 'gets lost'
+this is most probably because on a :: wait after a SET
+instruction the translator has been entered at the
+beginning instead of the wait being 'cancelled'.
+
+\item In running if the programme does strange
+unaccountable things, this is most probably because the
+variable SET's have not been high enough and the
+programme is being overwritten by data.
+\end{enumerate}
+
+
+\begin{framed}
+\begin{flushleft}
+\myuline{\textit{Hand written notes:}}
+\end{flushleft}
+
+\myuline{Continuous letter-shift blank}
+
+\begin{tabular}{cl}
+       & DO(<1) \\
+\end{tabular}
+
+
+\myuline{Modification}
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:I → Contents of accumulator
+\end{lstlisting}
+\end{addmargin}
+\end{framed}
+
+% to encourage all text in one column
+\ifTwoColumn\columnbreak\fi
+\vspace{6cm}
+\ \\
+
+\ifTwoColumn
+\end{multicols}
+\fi
+
+% ===== End Page ==================================================
+
+\end{document}

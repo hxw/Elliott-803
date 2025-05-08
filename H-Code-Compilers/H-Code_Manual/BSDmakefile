@@ -1,0 +1,42 @@
+# BSDmakefile
+
+OPT =
+EXTRA =
+.ifmake clean || complete-clean
+.elifndef TWO_COLUMN
+.error "TWO_COLUMN is not defined"
+.elif    "${TWO_COLUMN}" == "yes"
+OPT = \def\TwoColumn{1}
+.elif  "${TWO_COLUMN}" == "no"
+EXTRA = _single
+.else
+.error "TWO_COLUMN must be 'yes' or 'no' and not '${TWO_COLUMN}'"
+.endif
+
+DOC = H-Code_Manual
+
+.PHONY: all
+all: ${DOC}.pdf
+
+.PHONY: install
+install: all
+	cp -p "${DOC}.pdf" "${DESTDIR}/${DOC}${EXTRA}.pdf"
+
+.PHONY: view
+view: ${DOC}.pdf
+	evince "${DOC}.pdf"
+
+.SUFFIXES: .tex .pdf
+.PHONY: FORCE
+FORCE:
+
+.tex.pdf: FORCE
+	latexmk -xelatex -view=none -quiet -usepretex='${OPT}' '${.IMPSRC}'
+
+.PHONY: clean
+clean:
+	latexmk -xelatex -view=none -quiet -c
+
+.PHONY: complete-clean
+complete-clean: clean
+	latexmk -xelatex -view=none -quiet -C

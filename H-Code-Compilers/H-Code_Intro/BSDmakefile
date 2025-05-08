@@ -1,0 +1,29 @@
+# BSDmakefile
+
+DOC = H-Code_Intro
+EXTRA =
+
+.PHONY: all
+all: ${DOC}.pdf
+
+.PHONY: install
+install: all
+	cp -p "${DOC}.pdf" "${DESTDIR}/${DOC}${EXTRA}.pdf"
+
+.PHONY: view
+view: ${DOC}.pdf
+	evince "${DOC}.pdf"
+
+
+.SUFFIXES: .tex .pdf
+
+.tex.pdf:
+	latexmk -xelatex -view=none -verbose '${.IMPSRC}'
+
+.PHONY: clean
+clean:
+	latexmk -xelatex -view=none -quiet -c
+
+.PHONY: complete-clean
+complete-clean: clean
+	latexmk -xelatex -view=none -quiet -C

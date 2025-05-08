@@ -1,0 +1,30 @@
+:SETV(A,B,C,D1)
+:SETS(S)
+:SETR(SOLUTION OF QUADRATIC (5))
+
+:DEFINE(SOLUTION)
+0→S
+1):READ(A,B,C)
+'
+
+'S+1→S:5
+:IF(A=0.0)GOTO4
+B*B-(A*C*4)→D
+:IF(D<0.0)GOTO3
+:IF(D=0.0)GOTO2
+
+D:SQRT→D1
+'  REAL          '(-B+D1)/(A*2):4.5'   '(-B-D1)/(A*2):4.5,:GOTO1
+2)
+'  EQUAL REAL    '-B/(A*2):4.5,:GOTO1
+3)
+'  COMPLEX       '-B/(A*2):4.5'   '-D:SQRT/(A*2):4.5,:GOTO1
+4)
+:IF(B=0.0)GOTO5
+'  SINGLE ROOT   '-C/B:4.5,:GOTO1
+5)
+'  NO SOLUTION':GOTO1
+
+:CLOSE
+:START (0,SOLUTION)
+::

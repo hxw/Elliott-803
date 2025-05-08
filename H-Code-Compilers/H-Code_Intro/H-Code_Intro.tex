@@ -1,0 +1,1849 @@
+\documentclass[10pt, a4paper, oneside]{article}
+
+%\usepackage[utf8]{inputenc}
+\usepackage{comment}
+\usepackage{multicol}
+\usepackage[left=2cm, right=2cm, top=2cm, bottom=2cm]{geometry}
+\usepackage{fancyhdr}
+\usepackage{listings}
+\usepackage{titlesec}
+\usepackage{amssymb}
+\usepackage{capt-of} %% to get the caption
+\usepackage{framed}  %% framed multi-line text
+\usepackage{scrextend} %% addmargin
+
+\usepackage[xetex]{pict2e}
+
+\setlength{\unitlength}{1mm}
+\setlength{\fboxsep}{0pt}
+
+\usepackage{fontspec}
+\setmainfont{Linux Libertine O}
+
+\setlength{\columnsep}{10mm}
+
+\fancyhf{}
+
+\pagestyle{fancy}
+
+% empty footer
+\cfoot{   }
+
+\titleformat{\section}[hang]
+{\small\bfseries}
+{\thesection.}{0.5em}{}
+
+\titleformat{\subsection}[hang]
+{\small\bfseries}
+{\thesubsection.}{0.5em}{}
+
+% better underline
+%\usepackage{contour}
+\usepackage{ulem}
+
+\setlength{\ULdepth}{1.0pt}
+\newcommand{\myuline}[1]{\uline{#1}}
+
+\renewcommand{\ULdepth}{1.8pt}
+%\contourlength{0.8pt}
+
+%\newcommand{\myuline}[1]{%
+%  \uline{\phantom{#1}}%
+%  \llap{\contour{white}{#1}}%
+%}
+
+% to be able top span columns
+\newcounter{tempcolnum}
+
+\makeatletter
+\newcommand{\multicolinterrupt}[1]{% Stuff to span both rows
+\setcounter{tempcolnum}{\col@number}
+\end{multicols}
+#1%
+\begin{multicols}{\value{tempcolnum}}
+}
+\makeatother
+
+% listing font and margins
+\lstset{basicstyle=\ttfamily\footnotesize,breaklines=false}
+\newcommand{\listingLeft}{1cm}
+\newcommand{\listingRight}{2pt}
+
+% tt font sizes
+\newcommand{\mytt}[1]{\texttt{\footnotesize #1}}
+\newcommand{\mytinytt}[1]{\texttt{\tiny #1}}
+\newcommand{\mysctt}[1]{\texttt{\scriptsize #1}}
+\newcommand{\mysmalltt}[1]{\texttt{\small #1}}
+
+
+\begin{document}
+
+\begin{flushleft}
+\textbf{\Huge \fbox{BRUSH} \Large RESEARCH DIVISION} \hfill \normalsize Report No.RDR/100.
+\end{flushleft}
+
+\vspace{3cm}
+
+\begin{center}
+\myuline{\textbf{AN INTRODUCTION TO THE PROGRAMMING OF A DIGITAL COMPUTER}} \\
+\myuline{\textbf{WITH PARTICULAR REFERENCE TO THE BRUSH AUTOMATIC CODING}} \\
+\myuline{\textbf{SCHEME FOR THE ELLIOTT 803 COMPUTER}} \\
+\textbf{by} \\
+\textbf{D. C. Hogg} \\
+\end{center}
+
+\vspace{3cm}
+
+% a horizontal rule
+\par\noindent\rule{\textwidth}{0.4pt}\relax
+
+\vspace{3cm}
+
+\begin{center}
+\parbox{0.55\textwidth}{%
+SUMMARY:- The basic concepts used in working with a digital
+computer are explained.  Enough of the basic facilities of
+the Brush automatic coding scheme (H-Code) are described to
+enable programmes to be written.  Examples are given.  The
+document serves as an Introduction to the H-Code manual.}
+\end{center}
+
+\vspace{3cm}
+\par\noindent\rule{\textwidth}{0.4pt}\relax\vspace{1mm}
+\noindent\rule{\textwidth}{0.4pt}\relax
+
+\vspace{1cm}
+
+\begin{center}
+August, 1962
+\end{center}
+
+\vfill
+
+\begin{center}
+\large BRUSH ELECTRICAL ENGINEERING CO., LTD. \\
+\small A MEMBER OF THE HAWKER SIDDELEY GROUP \\
+\large LOUGHBOROUGH, ENGLAND \\
+\end{center}
+
+
+% ===== End Page ==================================================
+\newpage
+
+% use builtins
+\tableofcontents
+\listoffigures
+
+\vfill
+
+% a horizontal rule
+\par\noindent\rule{\textwidth}{0.4pt}\relax
+
+% replicate the distribution list
+\vspace{5mm}
+\noindent
+\begin{tabular}{ll}
+\myuline{DISTRIBUTION} & \\
+& Dr. L.R.Blake \\
+& Dr. D.A.Jones \\
+& Research Division Library \\
+& Central Reference Library \\
+& Chief Engineers \\
+& \\
+& and As Required \\
+\end{tabular}
+
+
+% ===== End Page ==================================================
+\newpage
+
+\setcounter{page}{1}
+\cfoot{\thepage}
+
+\begin{center}
+\myuline{AN INTRODUCTION TO THE PROGRAMMING OF A DIGITAL COMPUTER} \\
+\myuline{WITH PARTICULAR REFERENCE TO THE BRUSH AUTOMATIC CODING} \\
+\myuline{SCHEME FOR THE ELLIOTT 803 COMPUTER.} \\
+by \\
+D. C. Hogg. \\
+\end{center}
+
+\small
+
+\begin{multicols}{2}
+
+\section{\myuline{COMPUTERS}}
+
+We are concerned with \myuline{automatic electronic digital computers}.
+A \myuline{digital computer} handles numbers
+in the form of a series of digits, such as
+one does when doing a calculation by hand.  For
+example, the number 53 might be represented by a gearwheel
+turned through five teeth, and another turned
+through three teeth or, alternatively, by two trains
+of pulses containing 5 and 3 pulses respectively.
+The precision of such machines can be increased
+indefinitely merely by allowing for a sufficiently
+large number of digits In the number.
+
+This is in contrast to \myuline{analogue computers} in
+which numbers are represented by some physical
+quantity, such as length, angle or electrical
+potential, and in which arithmetical operations on
+such numbers are performed by using some law of
+Physics, e.g. Ohm's Law, and then making a measurement
+to find the answer.  A slide rule is an example
+of an analogue computer: here the logarithms of
+numbers are proportional to lengths; these lengths
+are added and subtracted mechanically to give lengths
+proportional to the logarithms of products and
+quotients.
+
+The accuracy of an analogue computer is limited by
+the precision with which the physical quantity used can
+be measured; whereas the accuracy of a digital computer
+depends only on the number of digits allocated to a
+number in the machine. This facility which allows
+calculation to a large number of significant figures can
+be most important.  Even if the raw data of a problem
+1s given only to three decimal digits and the results
+are only required to that accuracy, rounding-off errors
+(e.g. subtraction of two large nearly equal quantities)
+may build up invalidating the final result.  Most
+electronic digital computers work with numbers of 11
+decimal digits accuracy.
+
+The drawback with a digital computer is that all
+operations take place serially and, therefore, calculation
+time may in certain cases build up appreciably in
+spite of the very fast speed of electronic computation.
+Furthermore, in order to solve a problem using
+digital computer, the mathematical solution has, in
+general, to be known completely whereas analogue computers
+only require the formulation of the problem.
+
+\section{\myuline{INTRODUCTION TO PROGRAMMING}}
+
+\subsection{PROGRAMME}
+
+A \myuline{digital computer} is a general-purpose machine.
+It is prepared for a particular job by feeding into
+it a \myuline{programme}, or list of instructions.  This
+programme is stored within the \myuline{memory} or \myuline{store} of the
+computer.  It is important to realise that it is
+only when a computer has got a programme within it,
+that it becomes a usable machine.
+
+Because it is the programme which makes a
+computer do a particular job, it follows that it is
+only necessary to feed in a different programme to
+prepare the computer for a different type of work;
+there is no need to make any changes to the computer
+itself.  This is one reason why it is possible for so
+many people to do such a variety of work on one
+machine.  No matter what the machine was doing
+previously, it is immediately set up to do your
+particular job when you feed in your programme.
+
+When a programme is fed into a computer, the
+\myuline{whole} programme goes in and is stored before the
+computer begins to obey the instructions of the
+programme.  The instructions are \myuline{NOT}, repeat \myuline{NOT},
+obeyed as they are read in.  This is a very important
+idea, even though it is quite simple.  Each programme
+is designed to do a particular \myuline{type} of work.  When the
+programme has been stored in the computer, the instructions
+are then obeyed one by one, and one of the first
+instructions will be to read and store the \myuline{data for the
+particular job being done}.  Thus the same programme may
+be used several times with different sets of data,
+without reading in the programme each time.
+
+The computer, having stored the data it
+requires, then continues to work through the
+instructions of the programme, taking items of stored
+information, producing and storing intermediate
+results and finally producing the answers.  These are
+then punched on to paper tape for subsequent printing
+on a teleprinter page, attention being paid to the
+layout in columns and the insertion of headings where
+desirable.
+
+\subsection{TACKLING THE PROBLEM}
+
+It is important to realise that a computer is a
+pure automaton.  It has no intelligence, no initiative
+and no capacity for dealing with unforeseen
+circumstances.  This means that the programme must
+be written in such a way that every possibility is
+catered for and the programmer must foresee any
+exceptional cases that could arise.
+
+When preparing a problem (programming) for a
+computer the procedure is as follows:—
+
+\renewcommand{\labelenumi}{\ifnum\value{enumi}=1 Stage (\roman{enumi})\else (\roman{enumi})\fi}
+\begin{enumerate}
+
+\item The problem and the solution of the
+problem suitable for computing, must
+first be \myuline{precisely} defined.  In
+mathematical problems this is
+probably done in she mathematical
+statement of the problem, but in
+other problems, particularly those
+involving logical decisions, this
+first stage may, in fact, be a
+considerable part of the work.
+
+\item We must assign a letter of the
+alphabet and numerical suffix to
+each variable which occurs in the
+calculation.  (see Section \ref{sec:STORNUM})
+
+\item The steps of the problem are written
+down in the form of a \myuline{flow diagram}
+(see below)
+
+\item The flow diagram has to be converted
+to a form (or code) that the computer
+can understand.  Using the Brush
+Automatic Coding Scheme, this is done
+quite simply, using a code which
+resembles normal mathematical and
+logical statements.
+
+\item When the programme has been written,
+it has to be put into a form which
+can be "read" by the computer.  This
+is done with a teleprinter which
+produces a punched paper tape and a
+typed sheet with a copy of the
+programme.
+
+\hspace{1em} Each time a number, letter or
+symbol is printed, a corresponding
+combination of up to 5 holes is
+punched across the tape, and these
+holes can be sensed by the photoelectric
+tape-readers on the computer.
+The information on this programme tape
+is read in by the computer, automatically
+converted to a form suitable to
+it, and stored.
+
+\hspace{1em} The numbers involved in the
+calculation (data) are similarly
+punched on a paper tape, referred to
+as the \myuline{data tape}.  This is usually a
+separate tape, but it may be attached
+to the end of the programme tape.
+\end{enumerate}
+
+\begin{flushleft}
+EXAMPLE OF FLOW DIAGRAM.
+\end{flushleft}
+
+The computer is to read a list of numbers (A),
+one by one, form and print  $1 / \sqrt{A}$ and stop when a
+negative number is encountered.  If $A = 0$ then print
+"No solution" and read the next number.
+
+A possible flow diagram for this very trivial
+problem would be:
+
+\begingroup
+\centering
+\fbox{%
+\begin{picture}(70,52)
+\thicklines
+
+\put(31,49){\hbox{\kern3pt\mysctt{START}}}
+\put(35,48){\vector(0,-1){3}}
+
+\put(24,40){\polygon(0,0)(22,0)(22,5)(0,5)}
+\put(24,42){\hbox{\kern3pt\mysctt{Read A off tape}}}
+
+\put(35,40){\vector(0,-1){4}}
+
+\put(35,34){\oval(15,5)}
+\put(29,33){\hbox{\kern3pt\mysctt{Is A=0?}}}
+\put(22,32){\hbox{\kern3pt\mytinytt{YES}}}
+\put(43,32){\hbox{\kern3pt\mytinytt{NO}}}
+\Vector(28,33)(19,25)
+\Vector(42,33)(45,27)
+
+\put(12,18){\polygon(0,0)(14,0)(14,7)(0,7)}
+\put(12,22){\hbox{\kern3pt\mysctt{Print}}}
+\put(12,19){\hbox{\kern3pt\mytinytt{"No Solution"}}}
+
+\put(45,25){\oval(15,5)}
+\put(39,24){\hbox{\kern3pt\mysctt{Is A<0?}}}
+\put(33,22){\hbox{\kern3pt\mytinytt{NO}}}
+\put(53,22){\hbox{\kern3pt\mytinytt{YES}}}
+\Vector(38,24)(35,19)
+\Vector(52,24)(55,18)
+
+\put(29,12){\polygon(0,0)(14,0)(14,7)(0,7)}
+\put(29,16){\hbox{\kern3pt\mysctt{Calculate}}}
+\put(29,13){\hbox{\kern3pt\mysctt{$1/\sqrt{A}$}}}
+
+\put(35,12){\vector(0,-1){3}}
+
+\put(29,2){\polygon(0,0)(14,0)(14,7)(0,7)}
+\put(29,6){\hbox{\kern3pt\mysctt{Print}}}
+\put(29,3){\hbox{\kern3pt\mysctt{$1/\sqrt{A}$}}}
+
+\put(50,12){\polygon(0,0)(9,0)(9,6)(0,6)}
+\put(51,14){\hbox{\kern3pt\mysctt{STOP}}}
+
+
+\put(1,30){\hbox{\kern3pt\mytinytt{Return}}}
+\put(1,28){\hbox{\kern3pt\mytinytt{to read}}}
+\put(1,26){\hbox{\kern3pt\mytinytt{next}}}
+\put(1,24){\hbox{\kern3pt\mytinytt{number}}}
+
+% back up
+\put(12,41){\oval(4,4)[tl]}
+\put(12,43){\vector(1,0){12}}
+\put(10,8){\vector(0,1){25}}
+\put(10,32){\line(0,1){9}}
+
+% no solution
+\put(12,23){\oval(4,4)[bl]}
+
+% solution
+\put(12,8){\oval(4,4)[bl]}
+\put(12,6){\line(1,0){8}}
+\put(29,6){\vector(-1,0){10}}
+
+\end{picture}}
+
+\captionof{figure}{Example of flow diagram}\label{fig:exflow}
+\endgroup
+
+
+\section{\myuline{THE BRUSH AUTOMATIC CODING SCHEME - H-CODE}}
+
+\subsection{STORAGE OF NUMBERS} \label{sec:STORNUM}
+
+The operation of the computer can be visualised
+by thinking of it as a huge collection of pigeon-holes
+called \myuline{storage-locations} or simply \myuline{locations}.
+Problems are solved on the computer by simple basic
+arithmetical and logical operations on data which has
+been stored in convenient locations.
+
+In the Brush automatic coding scheme (\myuline{H-Code})
+the stored numbers are identified \myuline{symbolically}.  While
+the programme is being written it is inappropriate to
+consider the values of the numbers, they will in fact
+be different each time the programme is used.  A
+symbolic form is therefore required and it is, of
+course, similar to simple algebraic notation.
+
+A number in a location is referred to by any
+letter of the alphabet together with a numerical
+suffix (if needed) e.g.
+
+$A_{13}$, $B_{16}$, $C$, $Z_{2}$.
+
+$C$ is understood to be equivalent to $C_{0}$.
+
+$A, A_{1}, A_{2} - - - - A_{13}$ etc., etc., will be
+consecutive locations in the machine.  It is not up
+to the programmer to allocate particular locations in
+the machine to a particular letter.  This is done
+automatically.  It is sufficient to tell the machine
+that $A_{0} - A_{45}$, $B_{0} - B_{50}$ etc., are required and the
+computer will do the actual allocating.
+
+There are two types of numbers used by the
+computer:-
+
+\renewcommand{\labelenumi}{(\alph{enumi})}
+\begin{enumerate}
+
+\item \myuline{Floating-point variables} or simply \myuline{variables}
+
+These usually refer to physical quantities
+etc., and are of any form, integral, fractional, or
+mixed mumbers within the approximate range $\pm 10^{77} - \pm 10^{-77}$
+
+\item \myuline{Fixed-point variables, suffices, integer—variables},
+or simply \myuline{integers}
+
+These are used mainly for counting and
+organisation of the programme.  They are whole numbers
+i.e. integers and exist within the approximate range
+$0 - \pm 10^{12}$
+\end{enumerate}
+
+Except under special circumstances, variables
+and integers cannot be mixed in arithmetic statements.
+
+It is now apparent that not only do we have to
+tell the machine how many locations we have to use for
+a particular letter but also whether the letter is to
+represent a \myuline{variable} or an \myuline{integer}.
+
+The actual instructions in H-Code which appear
+at the beginning of the programme are, for example
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:SETV (A50, B3, C, X1)
+:SETS (N13, L2, T)
+\end{lstlisting}
+\end{addmargin}
+
+On reading these the computer will allocate \myuline{51}
+locations to be identified as $A, A_{1}, A_{2} - - - - A_{50}$
+and to be understood to be variables.  Similarly for
+$B$, $C$ and $X$.
+
+Under \mytt{SETS} the letters will similarly identify
+locations which will hold integers.
+
+If a letter is set to be a variable it cannot
+also be an integer and vice-versa.
+
+However, as explained above, it is of no
+concern to the programmer which locations are actually
+allocated to the variables or integers.  His only
+concern is that a number placed in location $A_{10}$(say) in
+one part of the programme will have the same value when
+$A_{10}$ is referred to later, unless changed by a step in
+the programme itself.
+
+\subsection{THE NAMING OF PROGRAMMES}
+
+In H-Code a number of independently written
+programmes (or \myuline{procedures}) can be used together, with
+the restriction that all use the same variables and
+integers.
+
+In order that we can refer to and use one
+programme inside another, we give to each procedure a
+name (consisting of letters only).
+
+So that the computer is prepared to understand
+reference to a procedure and to receive a procedure
+when put into the computer, we have to set the
+procedure names in the same way as we have set the
+variables and integers.
+Example:
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:SETR (LTV, DESIGN 6, ENDW 3)
+\end{lstlisting}
+\end{addmargin}
+
+The number appearing after the name is a
+reference number.  This is explained in \ref{sec:REFJMP}
+
+\subsection{THE PROGRAM}
+
+The set statements (\mytt{SETV}, \mytt{SETS}, \mytt{SETR}) are
+merely directives to the machine to reserve locations
+for programmes or procedures of given names written
+with specified variables and integers.
+
+After the sets, the Computer is in a position
+to receive the programme.  This programme it
+translates and \myuline{stores} in a form which it can
+subsequently be obeyed.
+
+Each procedure is headed by a statement
+indicating to the machine the name of the procedure.
+It is written e.g.
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:DEFINE (DESIGN)
+\end{lstlisting}
+\end{addmargin}
+
+The actual orders of the procedure \mytt{DESIGN} then
+follow.
+
+The name in the \mytt{DEFINE} statement will have been
+set in the \mytt{SETR} instruction, as will all the subsequent
+procedures.
+
+\subsection{ARITHMETIC} \label{sec:ARITH}
+
+In the computer arithmetical operations
+(\mytt{+}, \mytt{-}, \mytt{*}, \mytt{/}, See note(i) below\footnotemark[1]) take place only between
+numbers in the storage locations and the number in a
+special location called an \myuline{accumulator}.  For example,
+if we want to add two numbers together, one of the
+numbers must first be transferred from the store to the
+accumulator, and the other added to it.  The result of
+any operation is always in the accumlator.
+
+\footnotetext[1]{
+N.B. (i) $*$ is used for the multiplication sign.  As
+well as distinguishing it from a letter $x$ it is the
+teleprinter symbol for X (presumably for the same
+reason).}
+
+In order that the computer be efficiently and
+quickly programmed, the form of the arithmetic in
+H-Code follows this principle of accumulator working,
+so that If we write the following statement in our
+programme:
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+A + B * C → Y
+\end{lstlisting}
+\end{addmargin}
+
+the computer translates it operation by operation viz.
+
+\begin{tabular}{lp{5cm}}
+$A$  & Bring $c(A)$ into ACC (see note (ii) below\footnotemark[2]) \\
+$+B$ & Add $c(B)$ to ACC giving $c(A)+c(B)$ in ACC \\
+$*C$ & Multiply $c(ACC$) by $c(C)$ giving \\
+     & $[c(A)+c(B)]*c(C)$ in ACC \\
+$\rightarrow Y$ & Send the $c(ACC)$ to $Y$ giving $c(Y)=[c(A)+c(B)]*c(C)$
+\end{tabular}
+
+\footnotetext[2]{
+(ii) $c(A)$ means "the contents of location A".  ACC
+stands for "the accumulator" and $c(ACC)$ "the contents
+of the accumlator".}
+
+i.e. in mathematical terms we have written a programme
+to calculate
+
+\begin{math}
+Y = (A+B)C
+\end{math}
+
+As we can see, this does not correspond \myuline{exactly} to standard
+mathematical conventions, but \myuline{if desired} we can put in
+suitable brackets i.e.
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+(A + B) * C → Y
+\end{lstlisting}
+\end{addmargin}
+
+These brackets are ignored by the computer but they
+must occur in pairs.  This principle of accumulator
+working is extended to functions so that if we wanted
+an order in a programme to calculate
+
+\begin{addmargin}[1cm]{1em}%
+\begin{math}
+Y = Ae^{\sqrt{BX+C}}
+\end{math}
+\end{addmargin}
+
+we would write
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+(B * X + C):SQRT:EXP * A → Y
+\end{lstlisting}
+\end{addmargin}
+
+which, step by step, is:-
+
+\begin{tabular}{lp{5cm}}
+$($   & Ignored \\
+$B$   & $c(B) \rightarrow ACC$ \\
+$*X$  & $c(ACC) * c(X) \rightarrow ACC$ \\
+$+C$  & $c(ACC) + c(C) \rightarrow ACC$ \\
+$)$   & Ignored \\
+:SQRT & Square root of $c(ACC) \rightarrow ACC$ \\
+:EXP  & Exponential of $c(ACC) \rightarrow ACC$ \\
+$*A$  & $c(ACC) * c(A) \rightarrow ACC$ \\
+$\rightarrow Y$ & $c(ACC) \rightarrow Y$ \\
+\end{tabular}
+
+(We put a colon (:) before words in the
+programme to distinguish English from letters which
+refer to locations)
+
+This simple method of indicating to the
+computer the mathematical formulae it has to calculate
+can be applied to innumerable equations.  However, if
+we have an equation such as:-
+
+\begin{addmargin}[1cm]{1em}%
+\begin{math}
+Y = ab + cd
+\end{math}
+\end{addmargin}
+
+it cannot be programmed in one expression with the
+facilities mentioned so far.  This is because after
+multiplying a and b together, the result is in the
+accumulator and this has to be added to the product of
+c and d.  Clearly, this second multiplication has to
+be performed using the accumulator, therefore the first
+product has to be stored away temporarily.  In our
+programme, we can write this as:—
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+A * B + (C * D) → Y
+\end{lstlisting}
+\end{addmargin}
+
+In this case the brackets are most important and
+indicate to the computer that the quantity in
+brackets must be computed separately.
+
+step by step this is:-
+
+\begin{tabular}{lp{5.5cm}}
+$A$  & $c(A) \rightarrow ACC$ \\
+$*B$ & $c(ACC)*c(B) \rightarrow ACC$ \\
+$+($ & $c(ACC) \rightarrow$ Special storage location $X_{1}$ \\
+$C$  & $c(C) \rightarrow ACC$ \\
+$*D$ & $c(ACC)*c(D) \rightarrow ACC$ \\
+$)$  & $c(ACC)+c(X_{1}) \rightarrow ACC$ \\
+$\rightarrow Y$ & $c(ACC) \rightarrow Y$ \\
+\end{tabular}
+
+We can extend this facility to any depth
+effectively e.g. the instruction to calculate:—
+
+\begin{addmargin}[1cm]{1em}%
+\begin{math}
+Y = A/\sqrt{AB+CD}
+\end{math}
+\end{addmargin}
+
+is written
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+A/((A * B + (C * D)):SQRT) → Y
+\end{lstlisting}
+\end{addmargin}
+
+The outer pair of brackets are \myuline{necessary} to
+indicate that the contents are to be calculated
+separately.
+
+The inner pair of brackets are \myuline{necessary} to
+indicate that $C * D$ is to be computed separately.
+
+But the brackets around $A * B + (C * D)$ are
+\myuline{not necessary} as the result of this computation is in
+the accumulator and we can immediately take the square
+root of it.  They are merely put in to "clarify" the
+statement.
+
+If a pair of brackets is immediately preceded
+by \mytt{+} \mytt{-} \mytt{*} or \mytt{/} then the expression between the brackets
+is computed separately.  If not preceded by one of
+these operators then the pair of brackets are ignored.
+
+N.B. Note that in the preceding examples,
+and those that follow wherever we have used A, B, C
+etc, we could as well have used:
+
+\begin{addmargin}[1cm]{1em}%
+$A_{13}$, $B_{56}$, $C_{2}$, . . etc.
+\end{addmargin}
+
+Also variables can be replaced by mixed
+number constants e.g. 167.63, 123.0 etc.
+
+Integers can be replaced by integer
+constants e.g. 3, 176 etc.  Numbers which are
+variables should always have a decimal point.  Numbers
+which are integers should never have a decimal point.
+
+
+\subsection{REFERENCE NUMBERS AND JUMP INSTRUCTIONS}\label{sec:REFJMP}
+
+In a programme, the instructions are usually
+obeyed in the sequence in which they are written.  The
+\myuline{jump instructions}, however, enable this sequence to be
+broken and can specify which instruction is to be
+obeyed next at a particular point in the programme.
+
+To do this, it is necessary to be able to
+identify the instruction to which the jump has to go.
+This is done by \myuline{labelling}.  A \myuline{label} or \myuline{reference number}
+is a positive integer constant written with a
+bracket, before the instruction e.g.
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+3) A + B → Y
+\end{lstlisting}
+\end{addmargin}
+
+The simplest jump instruction is written:e.g.
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:GOTO 7
+\end{lstlisting}
+\end{addmargin}
+
+This means that the next instruction to be
+obeyed is that with reference number 7.
+
+Jump instructions may be made \myuline{conditional}
+on some equality or inequality e.g. we can write:
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:IF ( A + B > X:SIN) GOTO 9
+\end{lstlisting}
+\end{addmargin}
+
+This means "obey the instruction with
+reference number 9 if a + b is greater than sin x
+and continue the sequence from there, otherwise go on
+to the next instruction as usual".
+
+Any arithmetical quantities can be compared
+and \mytt{>} can be replaced by:-
+
+\begin{addmargin}[1cm]{1em}%
+$<$, $=$, $\ngtr$, $\nless$, $\ne$.
+\end{addmargin}
+
+In the \mytt{SETR} instruction which appears at the
+head of the programme, we have to suffix each routine
+name with the highest reference number or label which
+is going to occur in that particular routine.  This
+is so that the computer can reserve locations for the
+organisation of the reference numbers.
+
+Each individual routine has its own reference
+numbers, i.e. if reference 3 occurs in a particular
+routine it has no connection with reference 3 in
+another routine.
+
+\subsection{INPUT AND OUTPUT OF NUMBERS}
+
+The Instruction
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:READ (A,B,C,D,E)
+\end{lstlisting}
+\end{addmargin}
+
+is used to read numbers punched on paper tape.  When
+it is obeyed the computer will read the first number
+on the data tape and store it in location A, the second
+in B etc.
+
+When the computer has finished the calculation
+it has to communicate its results to the outside world.
+It punches the requisite numbers on to paper tape which
+is then fed into a teleprinter which produces a
+typewritten copy of the numbers.
+
+The order in the programme which instructs
+the computer to do this is typified by:
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+C : 2.4 or even (B + A) : 5.3
+\end{lstlisting}
+\end{addmargin}
+
+in the second example \mytt{(B + A)} is formed in
+the accumulator and \mytt{:5.3} signifies that the number in
+the accumulator 1s to be punched out with up to 5
+digits before the decimal point and 3 after it.
+
+Any characters which appear in the body of
+the programme between inverted commas e.g.
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+'LBS/FT.3'
+\end{lstlisting}
+\end{addmargin}
+
+will be punched on the output tape when the order is
+obeyed.  This facility is normally used in conjunction
+with the above number print in order to give
+explanation and layout to the numerical answers.
+
+\subsection{LOOPS OF INSTRUCTIONS}
+
+An essential feature of using a digital
+computer is that repetitive processes are used.  In
+this way, a group of instructions which are only
+written once may be used repeatedly during the
+calculation, probably operating on different numbers
+each time.
+
+In H-Code the instructions (or rather pairs
+of instructions) which facilitate the use of repetitive
+processes are, for example:—
+
+\renewcommand{\labelenumi}{(\roman{enumi})}
+\begin{enumerate}
+\def\theenumi{\roman{enumi}}
+
+\item\label{it:LOOP} \ \vspace{-1.5ex}
+\begin{lstlisting}
+:LOOP
+      } programme to be obeyed
+      } repetitively
+:REPEAT
+\end{lstlisting}
+
+The programme between the \mytt{:LOOP} and \mytt{:REPEAT} is
+obeyed repetitively. That is after the \mytt{:REPEAT} control
+goes back automatically to the instruction immediately
+following the \mytt{:LOOP} instruction.
+
+\item\label{it:COND} \ \vspace{-1.5ex}
+\begin{lstlisting}
+:LOOP
+      } programme to be obeyed
+      } repetitively
+:IF (A<C) REPEAT
+\end{lstlisting}
+
+This is similar to (\ref{it:LOOP}) but the \mytt{:REPEAT} is
+conditional.  The range of conditions is the same as
+a conditional \mytt{:GOTO} instruction.
+
+\item\label{it:DO} \ \vspace{-1.5ex}
+\begin{lstlisting}
+:DO (5)
+      } Programme to be obeyed
+      } 5 times
+:REPEAT
+\end{lstlisting}
+
+The programme between the \mytt{:DO} and \mytt{:REPEAT} is
+obeyed 5 times or more generally, obeyed the number of
+times specified by the \mytt{:DO} instruction.  The \mytt{:REPEAT}
+\myuline{must} be unconditional.
+\end{enumerate}
+
+Loops can occur with each other and are
+paired as shown in the following example:—
+
+\begingroup
+\centering
+\makebox{%
+\begin{picture}(70,50)
+\thicklines
+
+\put(15,46){\hbox{\kern3pt\mytt{:DO(...)}}}
+\put(15,38){\hbox{\kern3pt\mytt{:LOOP}}}
+\put(15,35){\hbox{\kern3pt\mytt{:LOOP}}}
+\put(15,26){\hbox{\kern3pt\mytt{:REPEAT}}}
+\put(15,23){\hbox{\kern3pt\mytt{:DO(...)}}}
+\put(15,13){\hbox{\kern3pt\mytt{:REPEAT}}}
+\put(15,10){\hbox{\kern3pt\mytt{:IF (...) REPEAT}}}
+\put(15,1){\hbox{\kern3pt\mytt{:REPEAT}}}
+
+\put(6,46){\vector(1,0){10}}
+\put(6,46){\line(0,-1){44}}
+\put(6,2){\line(1,0){10}}
+
+\put(8,38){\vector(1,0){8}}
+\put(8,38){\line(0,-1){27}}
+\put(8,11){\line(1,0){8}}
+
+\put(10,35){\vector(1,0){6}}
+\put(10,35){\line(0,-1){8}}
+\put(10,27){\line(1,0){6}}
+
+\put(10,23){\vector(1,0){6}}
+\put(10,23){\line(0,-1){9}}
+\put(10,14){\line(1,0){6}}
+
+\end{picture}}
+\endgroup
+
+
+A \mytt{:REPEAT} is paired with the last unpaired
+\mytt{:LOOP} or \mytt{:DO}.  Other programme can occur anywhere
+between the \mytt{:DO}s, \mytt{:LOOP}s, and \mytt{:REPEAT}s.
+
+\subsection{AUTOMATIC SELECTION OF NUMBERS;MODIFICATION}
+
+Often during a computation, we require to
+work systematically through sets of mumbers stored as
+variables in the computer.  To do this, we require
+the methods of programming mentioned in the previous
+section but we also need to be able to select in turn
+a succession of variables, referring to a different
+variable each time we go round the loop.
+
+This technique is made possible by being able
+to write:
+
+$A_{N}$ (punched as \mytt{AN} or \mytt{A (N)} )
+
+instead of e.g. $A_{3}$, when referring to a variable.  When
+the programme is obeyed the computer uses the current
+value of \mytt{N} to determine the particular \mytt{A} which is to be
+used.
+
+So if we write:
+
+\begin{addmargin}[1cm]{1em}%
+\begin{math}
+A_{N} \rightarrow X
+\end{math}
+\end{addmargin}
+
+and on obeying this order $N=3$ then the actual order
+obeyed is
+
+\begin{addmargin}[1cm]{1em}%
+\begin{math}
+A_{3} \rightarrow X
+\end{math}
+\end{addmargin}
+
+$A$ can be a variable or an integer, but $N$
+must be an integer.
+
+An integer used in this way is called a
+\myuline{modifier}.
+
+To obtain a \myuline{succession} of values the $N$ (say)
+is modified inside the loop so that $A_{N}$ will refer to
+another variable next time around.
+
+This technique of modification is one of the
+most valuable features available in a computer.
+
+To illustrate this, we give an example:
+
+Form $C_{i} = A_{i} + B_{i}, for i = 0 (1) 99$ i.e. $i$ takes all
+the values from 0 to 99 in steps of 1.
+
+The orders which will do this are:
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+0 → I
+:DO(100)
+AI + BI → CI
+I + 1 → I
+:REPEAT
+\end{lstlisting}
+\end{addmargin}
+
+Initially $I = 0$ so that the order:-
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+AI + BI → CI
+\end{lstlisting}
+\end{addmargin}
+
+will be:-
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+A0 + B0 → C0
+\end{lstlisting}
+\end{addmargin}
+
+Before the loop is repeated $I$ is increased
+by 1 so that the second time round the loop $I = 1$ and
+the order is:-
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+A1 + B1 → C1
+\end{lstlisting}
+\end{addmargin}
+
+This is repeated 100 times.  When the loop
+is obeyed for the last time $I = 99$ so that the order is:-
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+A99 + B99 → C99
+\end{lstlisting}
+\end{addmargin}
+
+\begingroup
+\centering
+\fbox{%
+\begin{picture}(70,50)
+
+\thicklines
+\put(3,35){\polygon(0,0)(64,0)(64,10)(0,10)}
+\put(12,40){\hbox{\kern3pt \texttt{Master Program for A, B, C.}}}
+
+\put(3,20){\polygon(0,0)(20,0)(20,10)(0,10)}
+\put(4,27){\hbox{\kern3pt\mysctt{Subroutine A}}}
+\put(4,22){\hbox{\kern3pt\mysctt{Master for A$_{1}$}}}
+
+\put(25,20){\polygon(0,0)(20,0)(20,10)(0,10)}
+\put(26,27){\hbox{\kern3pt\mysmalltt{Subroutine}}}
+\put(34,22){\hbox{\kern3pt\mysmalltt{B}}}
+
+\put(47,20){\polygon(0,0)(20,0)(20,10)(0,10)}
+\put(48,27){\hbox{\kern3pt\mysmalltt{Subroutine}}}
+\put(55,22){\hbox{\kern3pt\mysmalltt{C}}}
+
+\put(3,5){\polygon(0,0)(20,0)(20,10)(0,10)}
+\put(4,11){\hbox{\kern3pt\mysmalltt{Subroutine}}}
+\put(10,7){\hbox{\kern3pt\mysmalltt{A$_{1}$}}}
+
+% A
+\put(6,35){\vector(0,-1){5}}
+\put(19,30){\vector(0,1){5}}
+
+% A1
+\put(6,20){\vector(0,-1){5}}
+\put(19,15){\vector(0,1){5}}
+
+% B
+\put(28,35){\vector(0,-1){5}}
+\put(41,30){\vector(0,1){5}}
+
+% C
+\put(50,35){\vector(0,-1){5}}
+\put(63,30){\vector(0,1){5}}
+
+\end{picture}}
+
+\captionof{figure}{Subroutine flow diagram}\label{fig:subfd}
+\endgroup
+
+
+\subsection{SUBROUTINES}
+
+When writing a programme it is often
+convenient to split up the program into a number of
+distinct parts, each of which carries out a process
+which is more or less an independent operation.  We
+might also want to incorporate into our program a
+procedure which has been written by someone else, for
+example, a procedure to solve a set of linear
+equations whose coefficients have arisen in the main
+programme.  Procedures or programmes which are used
+in this way are called \myuline{subroutines}.  Subroutines can
+of course use other subroutines themselves etc.  A
+programme which uses the subroutine is called its
+\myuline{master}.  A flow diagram incorporating subroutines
+might look like fig. \ref{fig:subfd}.
+
+We have to make sure before the master
+enters a subroutine that the variables which the
+subroutine requires for its calculation have been set.
+The subroutine must not ruin any information which the
+master might want retained.
+
+When a subroutine is being written, the
+writer, in general, does not know in what context the
+subroutine is going to be used, so that he cannot put
+an instruction to pass control-back to a particular
+master programme.  The return must therefore be
+general.  In H-code we write the instruction
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:EXIT
+\end{lstlisting}
+\end{addmargin}
+
+In the subroutine.  This has the effect of passing
+control back to its master, whatever programme that
+master might be.
+
+If we wanted to use the procedure \mytt{XYZ} as a
+subroutine and start obeying it at reference 3 (say)
+we would write in the master the instruction
+
+\begin{addmargin}[1cm]{1em}%
+\begin{lstlisting}
+:XYZ3
+\end{lstlisting}
+\end{addmargin}
+
+When the instruction \mytt{:EXIT} is obeyed in the
+subroutine control passes back to the master and the
+computer obeys next the instruction immediately after
+the instruction \mytt{:XYZ3}.  This is illustrated in fig.\ref{fig:scall}
+
+
+\begingroup
+\centering
+\fbox{%
+\begin{picture}(70,60)
+\thicklines
+
+\put(3,55){\hbox{\kern3pt\mytt{Master Program}}}
+\put(40,55){\hbox{\kern3pt\mytt{Subroutine XYZ}}}
+
+\put(5,7){\line(0,1){40}}
+\put(30,7){\line(0,1){40}}
+\qbezier(5,7)(11,1)(17,7)
+\qbezier(17,7)(23,13)(30,7)
+\qbezier(5,47)(11,41)(17,47)
+\qbezier(17,47)(23,53)(30,47)
+
+\put(40,7){\line(0,1){40}}
+\put(65,7){\line(0,1){40}}
+\qbezier(40,7)(46,1)(52,7)
+\qbezier(52,7)(58,13)(65,7)
+\qbezier(40,47)(46,41)(52,47)
+\qbezier(52,47)(58,53)(65,47)
+
+
+\put(5,26){\hbox{\kern3pt\mytt{:XYZ3}}}
+
+\put(40,35){\hbox{\kern3pt\mytt{3)}}}
+\put(40,15){\hbox{\kern3pt\mytt{:EXIT}}}
+
+% MP
+\put(10,43){\vector(0,-1){15}}
+\put(10,25){\vector(0,-1){15}}
+
+% Call
+\Vector(15,28)(40,37)
+\Vector(41,16)(14,25)
+
+% XYZ
+\put(50,35){\vector(0,-1){18}}
+
+\end{picture}}
+
+\captionof{figure}{The use of a subroutine}\label{fig:scall}
+\endgroup
+
+
+\section{\myuline{EXAMPLES}}
+
+Enough of H-Code has been introduced to
+enable us to give an example of the programming of two
+simple problems.
+
+(It should be emphasised that only a minimum
+of the available facilities have been introduced.  The
+more powerful facilities, and a list of all facilities,
+are described in the H-Code Manual).
+
+\end{multicols}
+
+% ===== End Page ==================================================
+\newpage
+
+
+\begingroup
+\centering
+
+\myuline{A. The programme sheet.}
+
+\setlength\FrameSep{2mm}
+\begin{framed}
+\begin{addmargin}[\listingLeft]{\listingRight}
+\begin{lstlisting}
+:SETV(A,B,C,D1)
+:SETS(S)
+:SETR(SOLUTION OF QUADRATIC (5))
+
+:DEFINE(SOLUTION)
+0 →S
+1):READ(A,B,C)
+'
+
+'S+1 →S:5
+:IF(A=0.0)GOTO4
+B*B-(A*C*4) →D
+:IF(D<0.0)GOTO3
+:IF(D=0.0)GOTO2
+
+D:SQRT →D1
+'  REAL          '(-B+D1)/(A*2):4.5'    '(-B-D1)/(A*2):4.5,:GOTO1
+2)
+'  EQUAL REAL    '-B/(A*2):4.5,:GOTO1
+3)
+'  COMPLEX       '-B/(A*2):4.5'    '-D:SQRT/(A*2):4.5,:GOTO1
+4)
+:IF(B=0.0)GOTO5
+'  SINGLE ROOT   '-C/B:4.5,:GOTO1
+5)
+'  NO SOLUTION':GOTO1
+
+:CLOSE
+:START (0,SOLUTION)
+::
+\end{lstlisting}
+\end{addmargin}
+\end{framed}
+
+\myuline{B. The data sheet with 5 sets of coefficients.}
+
+\begin{framed}
+\begin{addmargin}[\listingLeft]{\listingRight}
+\begin{lstlisting}
+0  4.321  3.8506
+2  4  2
+1  -2.145  -3.564
+1.0  2.0  2.0
+0  0  3.6
+)
+\end{lstlisting}
+\end{addmargin}
+\end{framed}
+
+\myuline{C. The result sheet.}
+
+\begin{framed}
+\scriptsize
+\begin{addmargin}[\listingLeft]{\listingRight}
+\begin{lstlisting}
+1  SINGLE ROOT   -0.89114
+
+2  EQUAL REAL    -1.00000
+
+3  REAL           3.24373     -1.09873
+
+4  COMPLEX       -1.00000      1.00000
+
+5  NO SOLUTION
+\end{lstlisting}
+\end{addmargin}
+\end{framed}
+
+\captionof{figure}{Copy of teleprinter for example 1.}\label{fig:ex1}
+\endgroup
+
+
+% ===== End Page ==================================================
+\newpage
+
+\begin{multicols}{2}
+
+\begin{flushleft}
+EXAMPLE 1.
+\end{flushleft}
+
+The object of this is to solve a series of
+quadratic equations whose coefficients are punched on
+tape.  The roots, real and imaginary, are printed in
+rows preceded by the serial number of the equation.
+
+As the problem \myuline{must} be precisely defined, the
+following information is given:-
+
+\renewcommand{\labelenumi}{(\alph{enumi}).}
+\begin{enumerate}
+
+\item The coefficients of the general quadratic
+equation $ax^{2} + bx + c = 0$ will be given on tape, in
+the order a,b,c.
+
+\item if the equation has two different real roots
+we are to print "REAL" followed by the roots:-
+
+\begin{math}
+\frac{-b+\sqrt{b^{2}-4ac}}{2a}, \frac{-b-\sqrt{b^{2}-4ac}}{2a}
+\end{math}
+
+If equal roots print “EQUAL REAL" followed
+
+by the double roots:
+\begin{math}
+\frac{-b}{2a}
+\end{math}
+
+If a = 0 print "SINGLE ROOT" followed by
+solution of $bx + c = 0$ i.e. - $c/b$ unless in addition
+b = 0 when print "NO SOLUTION'.
+
+If complex roots print "COMPLEX" followed
+by real and imaginary parts.
+
+\begin{math}
+\frac{-b}{2a}, \frac{\sqrt{4ac-b^{2}}}{2a}
+\end{math}
+
+\item Each solution is to be preceded by the serial
+number of the equation.
+
+\end{enumerate}
+
+\begin{flushleft}
+\myuline{Parameters}:
+\end{flushleft}
+
+As only capital letters are available on the
+teleprinter, we have to allocate a letter (and
+numerical suffix if necessary) to each variable and
+integer to be used in the computation.  We shall use:-
+
+\begin{tabular}{clcl}
+Variable & \mytt{A}  & for & $a$ \\
+   "     & \mytt{B}  &  "  & $b$ \\
+   "     & \mytt{C}  &  "  & $c$ \\
+   "     & \mytt{D}  &  "  & $b^{2} -4ac = D$ \\
+   "     & \mytt{D1} &  "  & $\sqrt{D}$ \\
+\end{tabular}
+
+Integer \mytt{S} for $s$ the serial number of the current set of
+coefficients.
+
+\begin{flushleft}
+\myuline{The flow diagram}:
+\end{flushleft}
+
+Shown in fig. \ref{fig:ex1fd}
+
+\begin{flushleft}
+\myuline{Notes on the print—out}
+\end{flushleft}
+
+The following points have not been explained
+in the text.  Referring to fig. \ref{fig:ex1}:-
+
+\renewcommand{\labelenumi}{\Alph{enumi}.}
+\begin{enumerate}
+
+\item Although we have referred to the programme
+as both \mytt{SOLUTION OF QUADRATIC} and \mytt{SOLUTION}, in fact
+the computer only reads up to the first 4 letters of a
+name, any further letters being ignored.
+
+\hspace{1em}Instead of using a separate line for each
+order we can separate them with a comma.  In the case
+of a title instruction the comma is implied.
+
+\hspace{1em}The instruction \mytt{:CLOSE} indicates that the
+procedure it follows is terminated.
+
+\hspace{1em}The \mytt{:START} Instruction indicates that the
+first order to be obeyed is that following reference 0
+in procedure \mytt{SOLUTION}.  The first order of a
+procedure is addressed as reference 0.
+
+\hspace{1em}The \mytt{::} at the end of the programme sheet is
+a device to stop the computer reading more tape.
+
+\item The \mytt{)} at the end of the data sheet tells the
+computer, in reading data, to stop,
+
+\hspace{1em}Each item of data should be terminated by
+at least 2 spaces or a new line.
+
+\end{enumerate}
+
+\begingroup
+\centering
+\fbox{%
+\begin{picture}(70,106)
+
+\thicklines
+
+\put(31,101){\hbox{\kern3pt\mysctt{START}}}
+\put(35,101){\vector(0,-1){5}}
+
+\put(20,91){\polygon(0,0)(27,0)(27,5)(0,5)}
+\put(20,93){\hbox{\kern3pt\mysctt{Read a,b,c off tape}}}
+\put(35,91){\vector(0,-1){3}}
+
+\put(20,83){\polygon(0,0)(27,0)(27,5)(0,5)}
+\put(20,85){\hbox{\kern3pt\mysctt{Increase S by 1}}}
+\put(35,83){\vector(0,-1){3}}
+
+\put(20,75){\polygon(0,0)(27,0)(27,5)(0,5)}
+\put(20,77){\hbox{\kern3pt\mysctt{Print S on new line}}}
+\put(35,75){\vector(0,-1){3}}
+
+\put(35,70){\oval(10,5)}
+\put(30,69){\hbox{\kern3pt\mysctt{Test a}}}
+\put(35,68){\vector(0,-1){3}}
+\put(24,71){\hbox{\kern3pt\tiny\texttt{$=0$}}}
+\put(37,66){\hbox{\kern3pt\tiny\texttt{$\ne{0}$}}}
+
+\put(35,62){\oval(26,5)}
+\put(23,61){\hbox{\kern3pt\mysctt{Test $D=b^{2}-4ac$}}}
+\put(35,60){\vector(0,-1){3}}
+\put(17,64){\hbox{\kern3pt\tiny\texttt{$<0$}}}
+\put(17,57){\hbox{\kern3pt\tiny\texttt{$=0$}}}
+\put(37,58){\hbox{\kern3pt\tiny\texttt{$>0$}}}
+
+\put(27,52){\polygon(0,0)(15,0)(15,5)(0,5)}
+\put(27,53){\hbox{\kern3pt\mysctt{$D_{1}=\sqrt{D}$}}}
+\put(35,52){\vector(0,-1){3}}
+
+\put(15,43){\polygon(0,0)(38,0)(38,6)(0,6)}
+\put(15,45){\hbox{\kern3pt\mysctt{Print "REAL" $\frac{-b+D_{1}}{2a},\frac{-b-D_{1}}{2a}$}}}
+\put(65,46){\line(-1,0){12}}
+
+\put(15,35){\polygon(0,0)(38,0)(38,6)(0,6)}
+\put(15,37){\hbox{\kern3pt\mysctt{Print "EQUAL REAL" $\frac{-b}{2a}$}}}
+\put(65,38){\line(-1,0){12}}
+
+\put(15,27){\polygon(0,0)(38,0)(38,6)(0,6)}
+\put(15,29){\hbox{\kern3pt\mysctt{Print "COMPLEX" $\frac{-b}{2a},\frac{\sqrt{-D}}{2a}$}}}
+\put(65,30){\line(-1,0){12}}
+
+\put(35,22){\oval(10,5)}
+\put(30,21){\hbox{\kern3pt\mysctt{Test b}}}
+\put(35,20){\vector(0,-1){3}}
+\put(24,19){\hbox{\kern3pt\tiny\texttt{$=0$}}}
+\put(37,18){\hbox{\kern3pt\tiny\texttt{$\ne{0}$}}}
+
+\put(15,11){\polygon(0,0)(38,0)(38,6)(0,6)}
+\put(15,13){\hbox{\kern3pt\mysctt{Print "SINGLE ROOT" $\frac{-c}{b}$}}}
+\put(65,14){\line(-1,0){12}}
+
+\put(15,3){\polygon(0,0)(38,0)(38,6)(0,6)}
+\put(15,5){\hbox{\kern3pt\mysctt{Print "NO SOLUTION"}}}
+\put(65,6){\line(-1,0){12}}
+
+% Test a
+\put(5,70){\line(1,0){25}}
+\put(5,70){\line(0,-1){48}}
+\put(5,22){\vector(1,0){25}}
+
+% Test b
+\put(10,17){\line(5,1){20}}
+\put(10,17){\line(0,-1){12}}
+\put(10,5){\vector(1,0){5}}
+
+% Test D
+\put(8,63){\line(1,0){14}}
+\put(8,63){\line(0,-1){34}}
+\put(8,29){\vector(1,0){7}}
+
+\put(10,58){\line(5,1){13}}
+\put(10,58){\line(0,-1){21}}
+\put(10,37){\vector(1,0){5}}
+
+
+% back up
+\put(65,6){\vector(0,1){5}}
+\put(65,10){\vector(0,1){15}}
+\put(65,24){\vector(0,1){12}}
+\put(65,35){\vector(0,1){8}}
+\put(65,42){\vector(0,1){28}}
+\put(65,60){\line(0,1){34}}
+\put(65,94){\vector(-1,0){18}}
+
+
+\end{picture}}
+
+\captionof{figure}{The flow diagram for example 1.}\label{fig:ex1fd}
+\endgroup
+
+\vspace{3mm}
+
+A,B. In \ref{sec:ARITH} it was stated that numbers which are
+variables should always have a decimal point.  Although
+this is a rule which is always correct, there are
+situations when it can be violated.  For example,
+when a number follows a variable the computer knows
+that the number represents a floating point quantity
+therefore we can write \mytt{A*2} but we can \myuline{not} write \mytt{2*A}.
+
+In data the variable in the \mytt{:READ} instruction
+determines whether the data is to be fixed or floating
+point, therefore no decimal point is necessary.
+
+But if in doubt, use the decimal point.
+
+\vspace{3mm}
+
+\begin{flushleft}
+EXAMPLE 2.
+\end{flushleft}
+
+This example illustrates the use of a
+standard procedure as a subroutine.
+
+The object of the problem is to find the
+value of the integral
+
+\begin{addmargin}[1cm]{1em}%
+\begin{math}
+z = \int_{a}^{b} \frac{1}{d^{2}-x^{2}} \, dx
+\end{math}
+\end{addmargin}
+
+for given values of a, b, d.
+
+\end{multicols}
+
+
+% ===== End Page ==================================================
+\newpage
+
+
+\begingroup
+\centering
+
+\setlength\FrameSep{2mm}
+
+\myuline{A. The programme sheet.}
+
+\setlength\FrameSep{2pt}
+\begin{framed}
+\begin{addmargin}[\listingLeft]{\listingRight}
+\begin{lstlisting}
+:SETR(MASTER,SIMPSON,AUXILIARY)
+:SETV(Y2,A,B,T,H1,S,E,X,Z1,D)
+:SETS(C)
+
+
+:DEFINE(AUXILIARY)
+1.0/(D*D-(X*X)) →Y,:EXIT
+:CLOSE
+
+
+:DEFINE(MASTER)
+:READ(D,A,B)
+'
+
+     ERROR       NO. OF INTERVALS     VALUE OF INTEGRAL
+'
+0.1 →E,:DO(8)
+:SIMPSON
+'
+'E:3.8'       'C:4 '             'Z:2.8
+E/10 →E,:REPEAT
+((D+B)*(D-A)/((D-B)*(D+A)))LOG/(D*2) →Z
+'
+
+ VALUE OF INTEGRAL BY ANALYTICAL SOLUTION
+
+' Z:2.8
+:STOP
+:CLOSE
+
+
+:DEFINE(SIMPSON)
+A →X,:AUXILIARY,Y →Y1,  B →X,:AUXILIARY,Y →Y2, (A+B)/2 →X,:AUXILIARY,Y →T
+(B-A)/2 →H,(T*4+Y1+Y2)*H/3 →Z1,0.0 →S,1 →C
+:LOOP
+S+T →S,H/2 →H →H1,Z1 →Z,0.0 →T
+:DO(C+C →C)
+A+H1 →X,:AUXILIARY,Y:ON(T)
+(H+H)ON(H1)
+:REPEAT
+:IF(((T*4+S+S+Y1+Y2)*H/3 →Z1-Z)MOD>E)REPEAT
+:EXIT
+:CLOSE
+
+:START(0,MASTER)
+::
+\end{lstlisting}
+\end{addmargin}
+\end{framed}
+
+\myuline{B. The data sheet.}
+
+\begin{framed}
+\begin{addmargin}[\listingLeft]{\listingRight}
+\begin{lstlisting}
+1     0     .5
+\end{lstlisting}
+\end{addmargin}
+\end{framed}
+
+\myuline{C. The result sheet.}
+
+\begin{framed}
+\begin{addmargin}[\listingLeft]{\listingRight}
+\begin{lstlisting}
+     ERROR       NO. OF INTERVALS     VALUE OF INTEGRAL
+   0.10000000           2              0.55000000
+   0.01000000           2              0.55000000
+   0.00100000           2              0.55000000
+   0.00010000           4              0.54936267
+   0.00001000           8              0.54931002
+   0.00000100          16              0.54930639
+   0.00000010          32              0.54930616
+   0.00000001          64              0.54930614
+
+ VALUE OF INTEGRAL BY ANALYTICAL SOLUTION
+
+  0.54930614
+\end{lstlisting}
+\end{addmargin}
+\end{framed}
+
+\captionof{figure}{Copy of teleprinter for example 2.}\label{fig:ex2}
+\endgroup
+
+
+% ===== End Page ==================================================
+\newpage
+
+\begin{multicols}{2}
+
+\begingroup
+\centering
+\fbox{%
+\begin{picture}(70,106)
+
+\thicklines
+
+\put(31,101){\hbox{\kern3pt\mysctt{START}}}
+\put(35,101){\vector(0,-1){5}}
+
+\put(20,91){\polygon(0,0)(27,0)(27,5)(0,5)}
+\put(20,93){\hbox{\kern3pt\mysctt{Read d,a,b off tape}}}
+\put(35,91){\vector(0,-1){5}}
+
+\put(5,77){\polygon(0,0)(60,0)(60,9)(0,9)}
+\put(30,83){\hbox{\kern3pt\mysctt{Print}}}
+\put(7,79){\hbox{\kern3pt\mysctt{"Error   No. of intervals   Value of integral"}}}
+\put(35,77){\vector(0,-1){5}}
+
+\put(25,67){\polygon(0,0)(22,0)(22,5)(0,5)}
+\put(25,69){\hbox{\kern3pt\mysctt{Set E = 0.1}}}
+\put(35,67){\vector(0,-1){10}}
+
+\put(26,52){\polygon(0,0)(16,0)(16,5)(0,5)}
+\put(28,54){\hbox{\kern3pt\mysctt{SIMPSON}}}
+\put(35,52){\vector(0,-1){5}}
+
+\put(49,52){\polygon(0,0)(16,0)(16,5)(0,5)}
+\put(49,59){\hbox{\kern3pt\scriptsize Auxiliary}}
+\put(49,54){\hbox{\kern3pt\mysctt{$y = \frac{1}{d^{2}-a^{2}}$}}}
+
+% call/return
+\put(42,56){\vector(1,0){7}}
+\put(49,53){\vector(-1,0){7}}
+
+\put(23,38){\polygon(0,0)(27,0)(27,9)(0,9)}
+\put(24,44){\hbox{\kern3pt\mysctt{Print E, C, Z to}}}
+\put(24,40){\hbox{\kern3pt\mysctt{to lie under title}}}
+\put(35,38){\vector(0,-1){5}}
+
+\put(25,28){\polygon(0,0)(22,0)(22,5)(0,5)}
+\put(28,30){\hbox{\kern3pt\mysctt{NEW E= E/10}}}
+\put(35,28){\vector(0,-1){5}}
+
+\put(5,14){\polygon(0,0)(60,0)(60,9)(0,9)}
+\put(7,20){\hbox{\kern3pt\mysctt{Print "Value of integral by analytical}}}
+\put(7,16){\hbox{\kern3pt\mysctt{solution", $z = \frac{1}{2d}\log\{\frac{d+b}{d-b}\dot\frac{d-a}{d+a}\}$}}}
+\put(35,14){\vector(0,-1){7}}
+
+\put(31,5){\hbox{\kern3pt\mysctt{STOP}}}
+
+% do loop
+\put(10,62){\vector(1,0){25}}
+\put(10,62){\line(0,-1){32}}
+\put(10,30){\line(1,0){15}}
+
+\put(3,63){\hbox{\kern3pt\scriptsize do this loop 8 times}}
+
+\end{picture}}
+
+\captionof{figure}{The flow diagram for example 2.}\label{fig:ex2fd}
+\endgroup
+
+\vspace{3mm}
+
+Although this integral has an analytical
+solution, namely
+
+\begin{addmargin}[1cm]{1em}%
+\begin{math}
+z = \frac{1}{2d}\log_{e}\{\frac{d+b}{d-b}\dot\frac{d-a}{d+a}\}
+\end{math}
+\end{addmargin}
+
+
+we shall for the sake of interest calculate it by using
+this result and also by using a standard procedure which
+calculates an integral by a method based on Simpson's
+rule.  To use this procedure as a subroutine we do not
+have to know how it works, it is sufficient to be given
+the following information:-
+
+\begin{description}
+\item The name of the procedure is \mytt{SIMPSON}.
+\item It has no references.
+\item It uses the variables \mytt{A,B,Y,Y1,Y2,T,H,H1,S,E,X,Z,Z1}, and the integer \mytt{C}.
+\item It is entered at reference 0 with the following variables set:-
+\begin{description}
+\item \mytt{A,B} as the limits of integration.
+\item \mytt{E} as the accuracy to which the integration is to be performed.
+\end{description}
+\end{description}
+
+It is obvious that \mytt{SIMPSON} must also be able
+to calculate the dependent from the independent
+variable, therefore we must define a subroutine which
+calculates y given x where
+
+\begin{addmargin}[1cm]{1em}%
+\begin{math}
+z = \int_{a}^{b} y \, dx
+\end{math}
+\end{addmargin}
+
+\mytt{SIMPSON} becomes the master of this subroutine.  A
+subroutine used in this way is called an \myuline{auxiliary}.
+
+\mytt{SIMPSON} does not need to know the interval
+of integration.  It calculates its own interval in
+order to obtain the required accuracy.
+
+\columnbreak
+
+On leaving \mytt{SIMPSON} \mytt{Z} is the value of the
+integral and \mytt{C} is the number of intervals into which
+\mytt{SIMPSON} divides the range of integration to obtain the
+required accuracy.
+
+To illustrate how the number of intervals
+increases with the increase in accuracy required we
+are asked to print out the number of intervals and the
+value of the integral for the error E = .1, .01, .001,
+...... .00000001.  Finally we shall print out the
+value of the integral calculated analytically.
+
+\begin{flushleft}
+\myuline{Parameters:}
+\end{flushleft}
+
+We shall use variables and suffices
+corresponding to those in the mathematical statement
+of the problem.
+
+\begin{flushleft}
+\myuline{The flow diagram}
+\end{flushleft}
+
+Shown in fig. \ref{fig:ex2fd}
+
+\begin{flushleft}
+\myuline{Notes on the print-out:}
+\end{flushleft}
+
+Referring to fig. \ref{fig:ex2}:-
+
+A. The function \mytt{LOG} is $\log_{e}(x)$.  Other functions
+available include \mytt{SIN}, \mytt{COS}, \mytt{TAN}, \mytt{ARCTAN}, \mytt{EXP}, \mytt{MOD}
+(the modulus), \mytt{FRAC} (The fractional part).
+
+The instruction \mytt{:STOP} is self-explanatory.
+
+Note that the procedures can be "written' in
+any order as the order of appearance in the programme
+has no relation to the order in which they are obeyed.
+
+\end{multicols}
+
+% ===== End Page ==================================================
+
+\end{document}

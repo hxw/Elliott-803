@@ -35,6 +35,8 @@ are only a single character it offered a way to define local variables
 to provide more. It has subroutines and provides a method to pass
 multiple parameters and return multiple results.
 
+**New addition**: [H-Code Documentation](H-Code-Compilers/README.markdown)
+
 ## Missing
 
 * Library routines - we did not have tape copies, only the printed
