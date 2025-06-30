@@ -20,7 +20,7 @@ all:
 
 .PHONY: clean
 clean:
-.for d in ${DIRS}}
+.for d in ${DIRS}
 	${MAKE} -C "${d}" clean
 .endfor
 
