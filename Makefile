@@ -42,6 +42,11 @@ install: all
 	done
 .endfor
 
+.PHONY: h-code-docs
+h-code-docs:
+	${MAKE} -C H-Code-Compilers DESTDIR="${DESTDIR:tA}" PREFIX="${PREFIX}"
+
 .PHONY: clean
 clean:
-	make -C emulator clean
+	${MAKE} -C emulator clean
+	${MAKE} -C H-Code-Compilers clean

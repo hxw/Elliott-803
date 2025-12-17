@@ -6,15 +6,16 @@ DIRS += H-Code_Manual
 # items which need to be redone in single column
 DIRS_SINGLE = H-Code_Manual
 
+DESTDIR ?= ${PWD}
 
 .PHONY: all
 all:
 .for d in ${DIRS}
-	${MAKE} -C "${d}" DESTDIR="${PWD}" TWO_COLUMN=yes all install
+	${MAKE} -C "${d}" DESTDIR="${DESTDIR}" TWO_COLUMN=yes all install
 	${MAKE} -C "${d}" complete-clean
 .endfor
 .for d in ${DIRS_SINGLE}
-	${MAKE} -C "${d}" DESTDIR="${PWD}" TWO_COLUMN=no all install
+	${MAKE} -C "${d}" DESTDIR="${DESTDIR}" TWO_COLUMN=no all install
 	${MAKE} -C "${d}" complete-clean
 .endfor
 
