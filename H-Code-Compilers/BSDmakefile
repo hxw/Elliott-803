@@ -10,6 +10,7 @@ DESTDIR ?= ${PWD}
 
 .PHONY: all
 all:
+	mkdir -p "${DESTDIR}"
 .for d in ${DIRS}
 	${MAKE} -C "${d}" DESTDIR="${DESTDIR}" TWO_COLUMN=yes all install
 	${MAKE} -C "${d}" complete-clean
