@@ -7,18 +7,6 @@
 | H-Code\_Manual/            | More detailed version of H-Code Language   |
 | OLD-MEMORY.markdown        | My initial memories of H-Code language prior to getting Intro/Manual   |
 | README.markdown            | This file                                  |
-| h-code-compiler-plus.hex5  | Plus version of the compiler               |
-| h-code-compiler.hex5       | Normal version of the compiler             |
-
-## Two different compilers.
-
-legible tape on these shows:
-~~~
-H-CODE COMPILER
-H-CODE COMPILER PLUS.
-~~~
-
-I do not know the exact difference between these.
 
 ## Recovered documents
 

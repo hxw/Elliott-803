@@ -4,13 +4,13 @@ TAPES += Elliott-Algol60-A104
 TAPES += Elliott-Programs
 TAPES += Elliott-Programs/X5
 TAPES += H-Code-Compilers
-TAPES += hello
+TAPES += H-Code-Samples
 TAPES += Algol60-Samples
 
 VERSION ?= zero
 
 PREFIX ?= /usr/local
-DATADIR ?= ${PREFIX}/share/Elliott-803
+DATADIR ?= ${PREFIX}/share/elliott-803
 SHARE_DIR = ${DESTDIR}${DATADIR}
 
 .for TD in ${TAPES}
@@ -44,9 +44,9 @@ install: all
 
 .PHONY: h-code-docs
 h-code-docs:
-	${MAKE} -C H-Code-Compilers DESTDIR="${DESTDIR:tA}" PREFIX="${PREFIX}"
+	${MAKE} -C H-Code-Docs DESTDIR="${DESTDIR:tA}" PREFIX="${PREFIX}"
 
 .PHONY: clean
 clean:
 	${MAKE} -C emulator clean
-	${MAKE} -C H-Code-Compilers clean
+	${MAKE} -C H-Code-Docs complete-clean
