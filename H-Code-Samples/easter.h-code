@@ -1,0 +1,65 @@
+:SETR(ESTR,MNTH13,MODD)
+:SETS(A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Y2)
+
+:DEFI(MNTH)
+:GOTO(O)
+1)  ' JANUARY'  :GOTO(13)
+2)  ' FEBRUARY'  :GOTO(13)
+3)  ' MARCH'  :GOTO(13)
+4)  ' APRIL'  :GOTO(13)
+5)  ' MAY'  :GOTO(13)
+6)  ' JUNE'  :GOTO(13)
+7)  ' JULY'  :GOTO(13)
+8)  ' AUGUST'  :GOTO(13)
+9)  ' SEPTEMBER'  :GOTO(13)
+10)  ' OCTOBER'  :GOTO(13)
+11)  ' NOVEMBER'  :GOTO(13)
+12)  ' DECEMBER'  :GOTO(13)
+13)  :EXIT
+:CLOS
+
+
+
+:DEFI(MODD)
+O - ((O/O1)*O1)→O
+:EXIT
+:CLOS
+
+
+:DEFI(ESTR)
+
+1900→Y
+:DO(130)
+
+:(Y,19)MODD→(A)
+Y/100→B
+:(Y,100)MODD→(C)
+B/4→D
+:(B,4)MODD→(E)
+
+8*B+13/25→G
+:(19*A+B-D-G+15,30)MODD→(H)
+C/4→I
+:(C,4)MODD→(K)
+:(E+I*2+32-H-K,7)MODD→(L)
+11*H+(19*L)+A/433→M
+-7*M+H+L+90/25→N
+:(33*N-(7*M)+H+L+19,32)MODD→(P)
+
+
+'EASTER DAY '  Y:4  ' IS ON '  P:4  ' '  :(N)MNTH  '
+'
+
+1:ON(Y)
+:REPE
+
+:STOP
+:CLOS
+
+:STAR(0,ESTR)
+
+:LIST(
+$40 513:000 )
+)
+*
+::

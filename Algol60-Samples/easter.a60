@@ -1,0 +1,67 @@
+EASTER DAY CALCULATION'
+
+BEGIN INTEGER A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,YEAR,YEARS,YEARF'
+
+INTEGER PROCEDURE MOD(X, Y)' VALUE X, Y' INTEGER X, Y'
+        MOD := X - (X DIV Y) * Y'
+
+PROCEDURE MONTH(X)' VALUE X' INTEGER X'
+BEGIN SWITCH SS:=JAN,FEB,MAR,APR,MAY,JUN,JLY,AUG,SEP,OCT,NOV,DEC,DONE'
+
+      GOTO SS(X)'
+JAN:  PRINT £ JANUARY?'
+      GOTO DONE'
+FEB:  PRINT £ FEBRUARY?'
+      GOTO DONE'
+MAR:  PRINT £ MARCH?'
+      GOTO DONE'
+APR:  PRINT £ APRIL?'
+      GOTO DONE'
+MAY:  PRINT £ MAY?'
+      GOTO DONE'
+JUN:  PRINT £ JUNE?'
+      GOTO DONE'
+JLY:  PRINT £ JULY?'
+      GOTO DONE'
+AUG:  PRINT £ AUGUST?'
+      GOTO DONE'
+SEP:  PRINT £ SEPTEMBER?'
+      GOTO DONE'
+OCT:  PRINT £ OCTOBER?'
+      GOTO DONE'
+NOV:  PRINT £ NOVEMBER?'
+      GOTO DONE'
+DEC:  PRINT £ DECEMBER?'
+      GOTO DONE'
+DONE:
+END'
+
+READ YEARS,YEARF'
+
+DIGITS(4)'
+
+COMMENT ALGORITHM FROM https://en.wikipedia.org/wiki/Date_of_Easter#Anonymous_Gregorian_algorithm'
+
+FOR YEAR := YEARS STEP 1 UNTIL YEARF DO
+BEGIN
+   A := MOD(YEAR,19)'
+   B := YEAR DIV 100'
+   C := MOD(YEAR,100)'
+   D := B DIV 4'
+   E := MOD(B,4)'
+   G := (8 * B + 13) DIV 25'
+   H := MOD (19 * A  + B - D - G + 15,30)'
+   I := C DIV 4'
+   K := MOD(C,4)'
+   L := MOD(32 + 2 * E + 2 * I - H - K,7)'
+   M := (A + 11 * H + 19 * L) DIV 433'
+   N := (H + L - 7 * M + 90) DIV 25'
+   P := MOD(H + L - 7 * M + 33 * N + 19,32)'
+
+   PRINT ££L?EASTER DAY ?,SAMELINE,YEAR,£ IS ON ?,P,MONTH(N)'
+END'
+
+END'
+
+1961
+2030
