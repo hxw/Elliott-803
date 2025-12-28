@@ -4,8 +4,9 @@ TAPES += Elliott-Algol60-A104
 TAPES += Elliott-Programs
 TAPES += Elliott-Programs/X5
 TAPES += H-Code-Compilers
-TAPES += H-Code-Samples
-TAPES += Algol60-Samples
+
+SAMPLES += H-Code-Samples
+SAMPLES += Algol60-Samples
 
 VERSION ?= zero
 
@@ -31,7 +32,7 @@ test: all
 .PHONY: install
 install: all
 	${MAKE} -C emulator DESTDIR="${DESTDIR:tA}" PREFIX="${PREFIX}" DEFAULT_TAPE_DIR="${DEFAULT_TAPE_DIR}" install
-.for TD in ${TAPES}
+.for TD in ${TAPES} ${SAMPLES}
 	install -p -d -m 755 '${SHARE_DIR}/${TD}'
 	for f in '${TD}'/* ; \
 	do \
