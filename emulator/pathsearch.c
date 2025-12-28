@@ -14,6 +14,27 @@ ps_error_t path_search(char *buffer,
                        const wchar_t *filename_wc) {
   ps_error_t rc = PS_ok;
 
+  // absolute or relative filename then no PATH scanning necessary
+  size_t n = snprintf(buffer, buffer_length, "%s%ls", filename, filename_wc);
+  if (n >= buffer_length - 1) {
+    return PS_filename_too_long;
+  }
+  if (('/' == buffer[0]) ||                     // absolute path
+      ('.' == buffer[0] && '/' == buffer[1]) || // current directory
+      ('.' == buffer[0] && '.' == buffer[1] &&  // parent directory
+       '/' == buffer[2])                        // ..
+  ) {
+    if (0 == access(buffer, R_OK)) {
+      rc = PS_ok;
+    } else {
+      rc = PS_file_not_found;
+    }
+
+    return rc;
+  }
+
+  // otherwise search the PATH for the filename
+  memset(buffer, 0, buffer_length);
   char *path = NULL;
   char *p = getenv("E803_TAPE_DIR");
   if (NULL == p) {

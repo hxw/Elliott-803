@@ -17,7 +17,8 @@ SHARE_DIR = ${DESTDIR}${DATADIR}
 TP += ${DATADIR}/${TD}
 .endfor
 
-DEFAULT_TAPE_DIR ?= ${TP:S/ /:/gW}
+# trailing ':' to search current directory last
+DEFAULT_TAPE_DIR ?= ${TP:S/ /:/gW}:
 
 .PHONY: all
 all:
