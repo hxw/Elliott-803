@@ -10,5 +10,3 @@ wg -1
 wait 5
 screen 3
 wg +0
-wait 10
-screen 1

@@ -39,6 +39,7 @@ END'
 READ YEARS,YEARF'
 
 DIGITS(4)'
+PUNCH(3)'
 
 COMMENT ALGORITHM FROM https://en.wikipedia.org/wiki/Date_of_Easter#Anonymous_Gregorian_algorithm'
 
